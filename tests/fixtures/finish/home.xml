@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="" resource-id="org.fossify.home:id/home_screen_grid" class="android.view.View" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,80][1920,1140]" >
+<node index="0" text="Chrome" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[464,866][688,1060]"/>
+<node index="0" text="Play Store" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[848,866][1072,1060]"/>
+<node index="0" text="Camera" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1232,866][1456,1060]"/>
+<node index="0" text="" resource-id="" class="android.view.View" package="org.fossify.home" content-desc="Settings" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1232,513][1456,707]"/>
+</node>
+</node>
+</hierarchy>

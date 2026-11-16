@@ -1,0 +1,5 @@
+system/screen_off_timeout=2147483646
+global/stay_on_while_plugged_in=15
+role/android.app.role.BROWSER=com.sec.android.app.sbrowser
+global/navigation_bar_gesture_hint=1
+secure/edge_enable=1

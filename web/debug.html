@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Test every screen: Clean theme for Decent Espresso Tablet</title>
+<style>
+:root { color-scheme: dark; --bg: #1a0d07; --panel: #26140b; --line: rgba(255, 232, 214, 0.14); --ink: #fff4ea; --ink-2: #d9c4b2; --accent: #ffb25e; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif; }
+main { max-width: 64rem; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+h1 { font-size: 1.9rem; letter-spacing: -0.02em; margin: 0 0 0.4rem; }
+h2 { font-size: 1.2rem; margin: 2.2rem 0 0.8rem; }
+p { color: var(--ink-2); margin: 0.3rem 0 0.8rem; max-width: 46rem; }
+a { color: var(--accent); }
+.cards { display: grid; gap: 0.8rem; }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 1rem; padding: 1rem 1.2rem; }
+.card h3 { margin: 0 0 0.2rem; font-size: 1.05rem; }
+.card p { margin: 0 0 0.6rem; font-size: 0.95rem; }
+.links { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.links a { text-decoration: none; font-size: 0.88rem; padding: 0.3rem 0.7rem; border-radius: 999px; border: 1px solid rgba(255, 178, 94, 0.4); }
+.links a.walk { background: var(--accent); color: #2a1406; border-color: var(--accent); font-weight: 600; }
+.links a:hover { background: rgba(255, 178, 94, 0.15); }
+.links a.walk:hover { background: #ffc380; }
+code { font-size: 0.9em; color: var(--ink); }
+table { border-collapse: collapse; font-size: 0.92rem; margin-top: 0.4rem; }
+td, th { border-bottom: 1px solid var(--line); padding: 0.35rem 0.8rem 0.35rem 0; text-align: left; vertical-align: top; }
+th { color: var(--ink-2); font-weight: 600; }
+</style>
+</head>
+<body>
+<main>
+<h1>Test every screen</h1>
+<p>Everything here runs in <b>safe mode</b> (<code>?safe</code>): a pretend tablet, so every screen looks and moves as in a real run but nothing happens in the background. Nothing connects to a real one. <b>Walk it</b> starts the scenario at the beginning with a Next / Back bar at the bottom left. The other links jump straight to one screen, in the state a real run would leave it: the page runs the steps before it for you, so give it a few seconds.</p>
+<div id="list" class="cards"></div>
+
+<h2>What the switches mean</h2>
+<table>
+<tr><th>In the address</th><th>Meaning</th></tr>
+<tr><td><code>safe</code></td><td>Safe mode (<code>demo</code> still works): pretend tablet, SM-X133 on tested firmware, with Decaid, and the Next / Back bar. <code>safe=nodecaid</code> without Decaid, <code>done</code> already set up (undo offered), <code>build</code> untested firmware, <code>model</code> another tablet, <code>fail</code> stops partway, <code>manual</code> two last steps can't be done automatically</td></tr>
+<tr><td><code>opts</code></td><td><code>both</code> (default), <code>clean</code> clean-up only, <code>home</code> new Home screen only</td></tr>
+<tr><td><code>decaid</code></td><td>When Decaid is missing: <code>add</code> install it, <code>skip</code> keep the original Decent app</td></tr>
+<tr><td><code>net</code></td><td>The tablet at the last steps: <code>none</code> (default) no Wi-Fi and no Google account, <code>wifi</code> Wi-Fi only, <code>all</code> both</td></tr>
+<tr><td><code>to</code></td><td>Jump to a screen: <code>usb connect review confirm running finish finished undo undone</code></td></tr>
+</table>
+</main>
+<script>
+// Each scenario: what it is, its address switches, and the screens worth opening for it.
+const SETUP = ["review", "confirm", "running", "finish", "finished"];
+const S = [
+  ["Typical: Decaid on the tablet, both options", "The path most owners take.", "safe&opts=both", ["start", "about", "usb", "connect", ...SETUP]],
+  ["No Decaid: install it", "The confirm screen asks for the Decaid file. The pretend tablet goes on without one.", "safe=nodecaid&decaid=add", SETUP],
+  ["No Decaid: keep the original Decent app", "Skips Decaid. The \"open Decaid once\" tip disappears from the last screen.", "safe=nodecaid&decaid=skip", SETUP],
+  ["Clean-up only, no new Home screen", "No launcher steps at the end: no icons, grid or Decadent install.", "safe&opts=clean", SETUP],
+  ["New Home screen only, no clean-up", "Apps stay on; only the Home screen and its last steps.", "safe&opts=home", SETUP],
+  ["Last steps: tablet already on Wi-Fi and signed in", "Nothing to ask: Finish for me straight away.", "safe&net=all", ["finish", "finished"]],
+  ["Last steps: Wi-Fi but no Google account", "Shows the sign-in choice. \"Continue without an account\" leaves the updates to the owner.", "safe&net=wifi", ["finish", "finished"]],
+  ["Last steps: some can't be done automatically", "Two steps fall back to their written instructions, listed under Left for you.", "safe=manual&net=all", ["finish", "finished"]],
+  ["Tablet already set up: undo", "The choose screen offers Undo; undo lets the owner pick what to put back.", "safe=done", ["review", "undo", "undone"]],
+  ["Untested firmware on the right tablet", "A warning, and options only after the owner accepts.", "safe=build", ["review"]],
+  ["Another tablet model", "Refused, with no way past it.", "safe=model", ["review"]],
+  ["Setup stops partway", "An error with a Back button. Safe to run again.", "safe=fail", ["running"]],
+];
+const list = document.getElementById("list");
+for (const [title, about, q, screens] of S) {
+  const card = document.createElement("section"); card.className = "card";
+  const links = [`<a class="walk" href="./?${q}">Walk it</a>`, ...screens.map((s) => s === "start" ? `<a href="./?${q}">start</a>` : s === "about" ? `<a href="./?${q}&step=about">about</a>` : `<a href="./?${q}&to=${s}">${s}</a>`)];
+  card.innerHTML = `<h3>${title}</h3><p>${about}</p><div class="links">${links.join("")}</div>`;
+  list.append(card);
+}
+</script>
+</body>
+</html>

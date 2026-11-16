@@ -1,0 +1,702 @@
+[
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.android.game.gamehome",
+  "batch": "1",
+  "name": "Game Hub",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.gm",
+  "batch": "1",
+  "name": "Gmail",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.apps.docs",
+  "batch": "1",
+  "name": "Google Drive",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.apps.maps",
+  "batch": "1",
+  "name": "Google Maps",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.apps.tachyon",
+  "batch": "1",
+  "name": "Google Meet",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.apps.photos",
+  "batch": "1",
+  "name": "Google Photos",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.videos",
+  "batch": "1",
+  "name": "Google TV",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.microsoft.office.officehubrow",
+  "batch": "1",
+  "name": "Microsoft 365 (Office)",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.microsoft.skydrive",
+  "batch": "1",
+  "name": "Microsoft OneDrive",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.microsoft.office.outlook",
+  "batch": "1",
+  "name": "Microsoft Outlook",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.netflix.mediaclient",
+  "batch": "1",
+  "name": "Netflix",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.android.calendar",
+  "batch": "1",
+  "name": "Samsung Calendar",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.android.app.spage",
+  "batch": "1",
+  "name": "Samsung Free / News",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.sree",
+  "batch": "1",
+  "name": "Samsung Global Goals",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.sec.android.app.shealth",
+  "batch": "1",
+  "name": "Samsung Health",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.sec.android.app.kidshome",
+  "batch": "1",
+  "name": "Samsung Kids",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.android.kidsinstaller",
+  "batch": "1",
+  "name": "Samsung Kids installer",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.android.voc",
+  "batch": "1",
+  "name": "Samsung Members",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.android.app.notes",
+  "batch": "1",
+  "name": "Samsung Notes",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.samsung.ecomm.global.gbr",
+  "batch": "1",
+  "name": "Samsung Shop",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.spotify.music",
+  "batch": "1",
+  "name": "Spotify",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.sec.android.app.voicenote",
+  "batch": "1",
+  "name": "Voice Recorder",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Consumer apps",
+  "pkg": "com.google.android.apps.youtube.music",
+  "batch": "1",
+  "name": "YouTube Music",
+  "why": "Consumer app; not used on a dedicated espresso controller"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.audiomirroring",
+  "batch": "2",
+  "name": "Audio mirroring",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.mdecservice",
+  "batch": "2",
+  "name": "Call & text on other devices",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.accessory.budsunitemgr",
+  "batch": "2",
+  "name": "Galaxy Buds manager",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.app.watchmanagerstub",
+  "batch": "2",
+  "name": "Galaxy Wearable stub",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.storyservice",
+  "batch": "2",
+  "name": "Gallery stories",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.google.android.apps.messaging",
+  "batch": "2",
+  "name": "Google Messages",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.hiya.star",
+  "batch": "2",
+  "name": "Hiya caller ID (Smart Call)",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.microsoft.appmanager",
+  "batch": "2",
+  "name": "Link to Windows",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.mdx",
+  "batch": "2",
+  "name": "Link to Windows service (Samsung)",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.allshare.service.mediashare",
+  "batch": "2",
+  "name": "Media share service",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.service.peoplestripe",
+  "batch": "2",
+  "name": "People edge panel",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.sec.android.mimage.photoretouching",
+  "batch": "2",
+  "name": "Photo editor",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.widget.pictureframe",
+  "batch": "2",
+  "name": "Picture frame widget",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.app.sharelive",
+  "batch": "2",
+  "name": "Quick Share",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.galaxycontinuity",
+  "batch": "2",
+  "name": "Samsung Flow",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.sec.android.easyMover",
+  "batch": "2",
+  "name": "Smart Switch",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.sec.android.easyMover.Agent",
+  "batch": "2",
+  "name": "Smart Switch agent",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.smartswitchassistant",
+  "batch": "2",
+  "name": "Smart Switch assistant",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.smartmirroring",
+  "batch": "2",
+  "name": "Smart View (screen mirroring)",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.app.find",
+  "batch": "2",
+  "name": "SmartThings Find",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.stickercenter",
+  "batch": "2",
+  "name": "Sticker center",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.app.taskedge",
+  "batch": "2",
+  "name": "Tasks edge panel",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.sec.android.app.ve.vebgm",
+  "batch": "2",
+  "name": "Video editor music",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Sharing, linking and companion features",
+  "pkg": "com.samsung.android.app.dressroom",
+  "batch": "2",
+  "name": "Wallpaper and style gallery",
+  "why": "Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet"
+ },
+ {
+  "group": "Replaced or not needed",
+  "pkg": "com.google.android.apps.bard",
+  "batch": "9",
+  "name": "Gemini",
+  "why": "AI assistant added by One UI 8.5; not needed on an espresso controller"
+ },
+ {
+  "group": "Replaced or not needed",
+  "pkg": "com.sec.android.app.myfiles",
+  "batch": "9",
+  "name": "My Files",
+  "why": "Samsung's file manager. File Manager +, which Decent ships, stays"
+ },
+ {
+  "group": "Replaced or not needed",
+  "pkg": "com.samsung.android.app.contacts",
+  "batch": "8",
+  "name": "Samsung Contacts",
+  "why": "No calls or contacts on a Wi-Fi tablet"
+ },
+ {
+  "group": "Replaced or not needed",
+  "pkg": "com.sec.android.app.sbrowser",
+  "batch": "3",
+  "name": "Samsung Internet",
+  "why": "Samsung's browser. Chrome becomes the browser instead"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.app.updatecenter",
+  "batch": "4",
+  "name": "App Update Center",
+  "why": "Updates Samsung's own apps. Not the firmware updater, which stays"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.bbc.bbcagent",
+  "batch": "4",
+  "name": "BBC agent",
+  "why": "Collects device information; manages trusted apps in Knox containers"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.rubin.app",
+  "batch": "4",
+  "name": "Customization Service",
+  "why": "Collects usage data for personalised ads"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.dqagent",
+  "batch": "4",
+  "name": "Device quality agent",
+  "why": "Diagnostic logging to Samsung"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.da.daagent",
+  "batch": "4",
+  "name": "Dual Messenger",
+  "why": "No use here"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.knox.analytics.uploader",
+  "batch": "4",
+  "name": "Knox analytics uploader",
+  "why": "Sends analytics to Samsung"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.app.parentalcare",
+  "batch": "4",
+  "name": "Parental controls",
+  "why": "No use here"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.app.omcagent",
+  "batch": "4",
+  "name": "Recommended-apps agent",
+  "why": "Installs Samsung recommended apps after setup"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.scloud",
+  "batch": "4",
+  "name": "Samsung Cloud",
+  "why": "No Samsung account is signed in"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.appseparation",
+  "batch": "4",
+  "name": "Separated Apps",
+  "why": "Sandbox for work and personal apps; no use here"
+ },
+ {
+  "group": "Samsung data collection and promotion agents",
+  "pkg": "com.samsung.android.smartsuggestions",
+  "batch": "4",
+  "name": "Smart suggestions",
+  "why": "Suggestion feature; no use here"
+ },
+ {
+  "group": "Samsung services with wider effects",
+  "pkg": "com.samsung.android.forest",
+  "batch": "5",
+  "name": "Digital Wellbeing",
+  "why": "Screen-time tracking; not needed here"
+ },
+ {
+  "group": "Samsung services with wider effects",
+  "pkg": "com.sec.android.app.samsungapps",
+  "batch": "5",
+  "name": "Galaxy Store",
+  "why": "Samsung's app store. Updates to Samsung's own apps through it stop"
+ },
+ {
+  "group": "Samsung services with wider effects",
+  "pkg": "com.google.android.googlequicksearchbox",
+  "batch": "5",
+  "name": "Google app",
+  "why": "Google app: Discover, OK Google and Circle to Search. Chrome still works"
+ },
+ {
+  "group": "Samsung services with wider effects",
+  "pkg": "com.samsung.android.mobileservice",
+  "batch": "5",
+  "name": "Samsung Experience Service",
+  "why": "Samsung sign-in and group sharing stop; most of those apps are already disabled"
+ },
+ {
+  "group": "Samsung services with wider effects",
+  "pkg": "com.sec.spp.push",
+  "batch": "5",
+  "name": "Samsung push service",
+  "why": "Samsung notifications. Firmware updates still arrive with it off (tested)"
+ },
+ {
+  "group": "Samsung services with wider effects",
+  "pkg": "com.samsung.android.intellivoiceservice",
+  "batch": "5",
+  "name": "Samsung voice wake-up (name only)",
+  "why": "Samsung voice wake-up (purpose inferred from its name)"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.android.egg",
+  "batch": "6",
+  "name": "Android easter egg",
+  "why": "No use here"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.autodoodle.service",
+  "batch": "6",
+  "name": "Auto Doodle",
+  "why": "Photo editor add-on. Not present on One UI 8.5"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "android.autoinstalls.config.samsung",
+  "batch": "6",
+  "name": "Auto-install config",
+  "why": "Installs OEM apps at setup"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.sait.sohservice",
+  "batch": "6",
+  "name": "Battery data collector",
+  "why": "Collects battery data"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.beaconmanager",
+  "batch": "6",
+  "name": "Beacon manager",
+  "why": "Nearby device scanning"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.bcservice",
+  "batch": "6",
+  "name": "Broadcast service",
+  "why": "Hidden diagnostic and TCP dump tool"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.app.chromecustomizations",
+  "batch": "6",
+  "name": "Chrome customisations",
+  "why": "Samsung items on Chrome's homepage"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.app.clipboardedge",
+  "batch": "6",
+  "name": "Clipboard edge panel",
+  "why": "Edge panel"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.mcfds",
+  "batch": "6",
+  "name": "Continuity service",
+  "why": "Cross-device feature"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.homemode",
+  "batch": "6",
+  "name": "Daily Board",
+  "why": "Slideshow mode"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.sdm.config",
+  "batch": "6",
+  "name": "Deskphone manager config",
+  "why": "No use here"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.dsms",
+  "batch": "6",
+  "name": "DSMS",
+  "why": "Hidden diagnostic logging"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.game.gos",
+  "batch": "6",
+  "name": "Game optimizer",
+  "why": "Game service"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.google.android.feedback",
+  "batch": "6",
+  "name": "Google feedback",
+  "why": "Sends crash reports"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.google.android.apps.restore",
+  "batch": "6",
+  "name": "Google restore",
+  "why": "Backup restore wizard; runs on boot"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.sdk.handwriting",
+  "batch": "6",
+  "name": "Handwriting service",
+  "why": "No pen in use"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.iaft",
+  "batch": "6",
+  "name": "IAFT",
+  "why": "Dump and error tracing"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.imslogger",
+  "batch": "6",
+  "name": "IMS logger",
+  "why": "Logging for calling; Wi-Fi tablet"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.mdx.kit",
+  "batch": "6",
+  "name": "Multi-device kit",
+  "why": "Support for linking apps already disabled"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.easysetup",
+  "batch": "6",
+  "name": "Nearby device setup",
+  "why": "Pop-ups for nearby devices"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.android.providers.partnerbookmarks",
+  "batch": "6",
+  "name": "Partner bookmarks",
+  "why": "Partner bookmarks in Chrome"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.privateaccesstokens",
+  "batch": "6",
+  "name": "Private access tokens",
+  "why": "Used by Samsung Internet, already disabled"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.app.quicktool",
+  "batch": "6",
+  "name": "Quick Tools",
+  "why": "Ruler and compass edge panel"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.mapsagent",
+  "batch": "6",
+  "name": "Recommendation agent",
+  "why": "Auto-installs recommended apps"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.safetyinformation",
+  "batch": "6",
+  "name": "Safety information",
+  "why": "Static text"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.app.billing",
+  "batch": "6",
+  "name": "Samsung checkout",
+  "why": "Samsung Store purchases"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.knox.securefolder",
+  "batch": "6",
+  "name": "Secure Folder",
+  "why": "Not in use"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.dbsc",
+  "batch": "6",
+  "name": "Service consent",
+  "why": "Pairs with Samsung push for consent prompts"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.shortcutbackupservice",
+  "batch": "6",
+  "name": "Shortcut backup",
+  "why": "Part of Smart Switch, already disabled"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.samsung.android.smartcallprovider",
+  "batch": "6",
+  "name": "Smart Call",
+  "why": "Caller ID; Wi-Fi tablet"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.app.volumemonitorprovider",
+  "batch": "6",
+  "name": "Volume monitor",
+  "why": "Earphone volume data for Digital Wellbeing"
+ },
+ {
+  "group": "Small background services",
+  "pkg": "com.sec.android.daemonapp",
+  "batch": "6",
+  "name": "Weather daemon",
+  "why": "Weather and finance widgets"
+ }
+]

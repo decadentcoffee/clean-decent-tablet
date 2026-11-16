@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="decadentcoffee.app/app/" resource-id="com.android.chrome:id/url_bar" class="android.widget.EditText" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[200,20][1600,90]"/>
+<node index="0" text="" resource-id="com.android.chrome:id/menu_button" class="android.widget.ImageButton" package="com.android.chrome" content-desc="More options" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1820,20][1900,90]"/>
+<node index="0" text="" resource-id="" class="android.webkit.WebView" package="com.android.chrome" content-desc="Decadent" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,100][1920,1200]"/>
+</node>
+</hierarchy>

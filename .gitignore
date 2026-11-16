@@ -1,0 +1,8 @@
+logs/
+.DS_Store
+.lavish/
+web/candidates/
+# Agent notes stay local
+CLAUDE.md
+.claude/
+.ruff_cache/

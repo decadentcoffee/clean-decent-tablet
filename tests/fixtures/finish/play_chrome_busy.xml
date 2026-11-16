@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.android.vending" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="Google Chrome" resource-id="" class="android.widget.TextView" package="com.android.vending" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[300,200][1200,280]"/>
+<node index="0" text="Cancel" resource-id="" class="android.widget.Button" package="com.android.vending" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1520,400][1820,480]"/>
+</node>
+</hierarchy>

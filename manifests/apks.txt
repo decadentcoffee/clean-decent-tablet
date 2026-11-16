@@ -1,0 +1,5 @@
+# name package url sha256. Fossify is a pinned build: change it only after testing a new version.
+# Decaid is always Decent's latest release (owner, 16 Nov 2026): the fourth field is the release's checksum list,
+# and the page reads the same checksum from GitHub's API for that release.
+decaid net.tadel.reaprime https://github.com/decentespresso/decaid/releases/latest/download/decaid-android-latest.apk https://github.com/decentespresso/decaid/releases/latest/download/decaid-latest-SHA256SUMS.txt
+fossify org.fossify.home https://github.com/FossifyOrg/Launcher/releases/download/1.10.0/launcher-16-foss-release.apk a603d3d510482feafd73d52a93a1ea9baefd2ca0aae329a14cbf0e21f43638e3

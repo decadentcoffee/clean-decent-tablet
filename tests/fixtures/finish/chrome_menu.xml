@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="New tab" resource-id="" class="android.widget.TextView" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1400,100][1900,180]"/>
+<node index="0" text="History" resource-id="" class="android.widget.TextView" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1400,180][1900,260]"/>
+<node index="0" text="Install app" resource-id="" class="android.widget.TextView" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1400,260][1900,340]"/>
+<node index="0" text="Settings" resource-id="" class="android.widget.TextView" package="com.android.chrome" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1400,340][1900,420]"/>
+</node>
+</hierarchy>

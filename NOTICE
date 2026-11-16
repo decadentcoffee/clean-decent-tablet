@@ -1,0 +1,10 @@
+This project is MIT licensed (see LICENSE). It uses or serves these third-party parts, each under its own licence:
+
+- Fossify Launcher (org.fossify.home), GPL-3.0. The webpage serves the unmodified release APK for installation.
+  Source: https://github.com/FossifyOrg/Launcher
+- Tango / ya-webadb (@yume-chan/adb, @yume-chan/adb-daemon-webusb, @yume-chan/adb-credential-web,
+  @yume-chan/stream-extra), MIT, Copyright (c) 2020-2025 Simon Chan. Bundled into the webpage's app.js.
+  Source: https://github.com/yume-chan/ya-webadb
+- Decaid (net.tadel.reaprime) is not included. The webpage checks a copy the user downloads from its own releases page.
+
+Decent, DE1 and Decaid belong to their owners. This project is not made by or affiliated with Decent Espresso.

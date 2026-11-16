@@ -1,0 +1,28 @@
+# screen	event	label	next screen	effect. The first matching row wins; * matches any screen or label, - is empty space.
+home	long	-	home_menu
+home	long	*	home_popup	mark
+home_popup	tap	Remove	home	remove
+home_popup	key:KEYCODE_BACK	*	home
+home_menu	key:KEYCODE_BACK	*	home
+home_menu	tap	Launcher settings	settings
+settings	tap	Row count	rows
+rows	tap	3 rows	settings	set:rows=3
+rows	key:KEYCODE_BACK	*	settings
+settings	tap	Column count	cols
+cols	tap	5 columns	settings	set:cols=5
+cols	key:KEYCODE_BACK	*	settings
+settings	swipe-up	*	settings2
+settings2*	swipe-down	*	settings
+settings2	tap	Close app drawer on opening an app	settings2	set:close=on
+settings*	key:KEYCODE_BACK	*	home
+home	swipe-up	*	drawer
+drawer	text	Decadent	drawer_q
+drawer*	key:KEYCODE_BACK	*	home
+*	am	market://details?id=com.android.chrome	play_chrome
+*	am	market://details?id=com.google.android.webview	play_webview
+play_chrome	tap	Update	play_chrome_busy	ver:com.android.chrome=131.0.6778.39
+*	am	https://decadentcoffee.app/app/	chrome_page
+chrome_page	tap	More options	chrome_menu
+chrome_menu	tap	Install app	chrome_install
+chrome_install	tap	Install	chrome_page	webapk
+*	am	android.settings.ADD_ACCOUNT_SETTINGS	accounts

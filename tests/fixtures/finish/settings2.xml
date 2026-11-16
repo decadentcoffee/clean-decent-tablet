@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="Show app labels" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,200][1500,280]"/>
+<node index="0" text="" resource-id="" class="android.widget.Switch" package="org.fossify.home" content-desc="" checkable="true" checked="true" clickable="true" enabled="true" bounds="[1700,200][1820,280]"/>
+<node index="0" text="Close app drawer on opening an app" resource-id="org.fossify.home:id/settings_close_app_drawer_on_other_app" class="android.widget.Switch" package="org.fossify.home" content-desc="" checkable="true" checked="@CLOSE@" clickable="true" enabled="true" bounds="[100,320][1820,400]"/>
+</node>
+</hierarchy>

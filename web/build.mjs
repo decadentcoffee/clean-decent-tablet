@@ -1,0 +1,21 @@
+// Bundle the page into dist/. Fetches the pinned Fossify APK and checks its SHA-256.
+import { build } from "esbuild";
+import { readFileSync, writeFileSync, mkdirSync, copyFileSync, existsSync } from "node:fs";
+import { createHash } from "node:crypto";
+const root = new URL("..", import.meta.url).pathname;
+const read = (p) => readFileSync(root + p, "utf8");
+const files = { "decent-setup.sh": read("device/decent-setup.sh"), "packages-disable.txt": read("device/packages-disable.txt"), "device.expect": read("device/device.expect") };
+const apks = read("manifests/apks.txt").split("\n").filter((l) => l && !l.startsWith("#")).map((l) => { const [name, pkg, url, sha] = l.split(" "); return { name, pkg, url, sha }; });
+const dist = new URL("dist/", import.meta.url).pathname;
+mkdirSync(dist, { recursive: true });
+await build({ entryPoints: [new URL("src/app.js", import.meta.url).pathname], bundle: true, format: "iife", target: "chrome110", minify: true, outfile: dist + "app.js", define: { __DEVICE_FILES__: JSON.stringify(files), __APKS__: JSON.stringify(apks) } });
+for (const f of ["index.html", "style.css", "deco.js", "debug.html"]) copyFileSync(new URL(f, import.meta.url).pathname, dist + f);
+mkdirSync(dist + "img", { recursive: true });
+for (const f of ["de1-1600.jpg", "de1-2528.jpg", "decadent-lockup.svg"]) copyFileSync(new URL("img/" + f, import.meta.url).pathname, dist + "img/" + f);
+for (const f of ["LICENSE", "NOTICE"]) copyFileSync(root + f, dist + f + ".txt");
+const fossify = apks.find((a) => a.name === "fossify");
+const out = dist + "fossify.apk";
+if (!existsSync(out)) writeFileSync(out, Buffer.from(await (await fetch(fossify.url)).arrayBuffer()));
+const got = createHash("sha256").update(readFileSync(out)).digest("hex");
+if (got !== fossify.sha) throw new Error("fossify.apk checksum mismatch");
+console.log("built", dist, Object.keys(files).length, "files; fossify ok");

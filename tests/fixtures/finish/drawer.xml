@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="Search apps" resource-id="org.fossify.home:id/search_bar" class="android.widget.EditText" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[400,100][1520,180]"/>
+<node index="0" text="Camera" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[200,300][420,500]"/>
+<node index="0" text="Chrome" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[460,300][680,500]"/>
+<node index="0" text="Decaid" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[720,300][940,500]"/>
+<node index="0" text="Play Store" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[980,300][1200,500]"/>
+<node index="0" text="Settings" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1240,300][1460,500]"/>
+<node index="0" text="YouTube" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1500,300][1720,500]"/>
+</node>
+</hierarchy>

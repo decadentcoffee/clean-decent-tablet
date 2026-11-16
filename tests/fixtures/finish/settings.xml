@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="Settings" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,40][400,120]"/>
+<node index="0" text="Show a search bar" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,200][1500,280]"/>
+<node index="0" text="" resource-id="" class="android.widget.Switch" package="org.fossify.home" content-desc="" checkable="true" checked="true" clickable="true" enabled="true" bounds="[1700,200][1820,280]"/>
+<node index="0" text="Row count" resource-id="org.fossify.home:id/settings_home_screen_row_count_label" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,320][1500,380]"/>
+<node index="0" text="@ROWS@" resource-id="org.fossify.home:id/settings_home_screen_row_count" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,380][1500,420]"/>
+<node index="0" text="Column count" resource-id="org.fossify.home:id/settings_home_screen_column_count_label" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,460][1500,520]"/>
+<node index="0" text="@COLS@" resource-id="org.fossify.home:id/settings_home_screen_column_count" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,520][1500,560]"/>
+</node>
+</hierarchy>

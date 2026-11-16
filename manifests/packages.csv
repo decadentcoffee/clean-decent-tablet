@@ -1,0 +1,384 @@
+package,name,partition,original_state,category,proposed_action,batch,reason,risk,dependencies,verification,rollback,approval,tested_model_build
+android,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+android.auto_generated_rro_product__,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+android.autoinstalls.config.samsung,Auto-install config,/data,enabled,CANDIDATE,disable,6,Installs OEM apps at setup,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 android.autoinstalls.config.samsung,approved,SM-X133/X133DXS4BZB6
+app.olauncher,Olauncher,/data,not installed,KEEP,keep,,Installed as a backup Home app (GitHub APK v6.9.17). Fossify is the default,low,,"4 Nov 2026: slots, drawer and reboot OK",,,SM-X133/X133DXS4BZB6
+com.alphainventor.filemanager,File Manager +,/data,enabled,KEEP,keep,,Shipped by Decent: installed in the same 32 seconds as AndroWish on 16 Feb 2026. Owner keeps everything Decent shipped (D-11),low,,,,,
+com.android.avatarpicker,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal,,,,,,
+com.android.backupconfirm,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.bips,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.bluetooth,Bluetooth,/apex,enabled,KEEP,keep,,DE1 link,high,,,,,
+com.android.bluetoothmidiservice,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.bookmarkprovider,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.calllogbackup,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.cameraextensions,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.carrierconfig,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal,,,,,,
+com.android.carrierdefaultapp,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.certinstaller,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.chrome,Chrome,/data,enabled,KEEP,keep,,Browser and runtime for the Decadent PWA,high,,,,,
+com.android.companiondevicemanager,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.companiondevicemanager.auto_generated_characteristics_rro,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.credentialmanager,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.cts.ctsshim,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.android.cts.priv.ctsshim,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.android.devicediagnostics,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.dreams.basic,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.dreams.phototable,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.dynsystem,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.egg,Android easter egg,/system,enabled,CANDIDATE,disable,6,No use here,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.android.egg,approved,SM-X133/X133DXS4BZB6
+com.android.externalstorage,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.hotspot2.osulogin,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.android.htmlviewer,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.inputdevices,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.intentresolver,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.internal.display.cutout.emulation.corner,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.display.cutout.emulation.double,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.display.cutout.emulation.hole,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.display.cutout.emulation.tall,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.display.cutout.emulation.waterfall,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.systemui.navbar.gestural,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.systemui.navbar.threebutton,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.internal.systemui.navbar.transparent,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.keychain,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.localtransport,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.location.fused,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.managedprovisioning,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.mms.service,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.mtp,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.ons,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.pacprocessor,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.phone,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.phone.auto_generated_characteristics_rro,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.printspooler,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.blockednumber,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.calendar,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.contactkeys,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.downloads,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.downloads.ui,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.media,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.partnerbookmarks,Partner bookmarks,/system,enabled,CANDIDATE,disable,6,Partner bookmarks in Chrome,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.android.providers.partnerbookmarks,approved,SM-X133/X133DXS4BZB6
+com.android.providers.settings,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.telephony,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.providers.telephony.auto_generated_characteristics_rro,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.providers.userdictionary,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.proxyhandler,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.role.notes.enabled,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.se,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.server.telecom,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.settings,Settings,/system,enabled,KEEP,keep,,Troubleshooting,high,,,,,
+com.android.settings.intelligence,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.sharedstoragebackup,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.shell,Shell,/system,enabled,KEEP,keep,,ADB,high,,,,,
+com.android.simappdialog,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.storagemanager,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal,,,,,,
+com.android.systemui,System UI,/system_ext,enabled,KEEP,keep,,Core,high,,,,,
+com.android.theme.font.notoserifsource,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.android.traceur,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.uwb.resources,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.android.vending,Google Play Store,/data,enabled,KEEP,keep,,"Updates Chrome, WebView; mints WebAPKs",high,,,,,
+com.android.virtualdevicemanager,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.android.virtualdevicemanager.auto_generated_characteristics_rro,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.android.virtualmachine.res,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.android.vpndialogs,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.wallpaper.livepicker,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.wallpaperbackup,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.android.wallpapercropper,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal,,,,,,
+com.android.wifi.dialog,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.android.wifi.resources,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.adservices.api,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.apps.bard,Gemini,added by One UI 8.5,not on 8.0,CANDIDATE,disable,9,"Added by One UI 8.5. Owner asked to disable it, 4 Nov 2026 (D-15)",low,,,adb shell pm enable --user 0 com.google.android.apps.bard,approved,
+com.google.android.apps.carrier.carrierwifi,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.apps.docs,Google Drive,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.docs,approved,SM-X133/X133DXS4BZB6
+com.google.android.apps.maps,Google Maps,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.maps,approved,SM-X133/X133DXS4BZB6
+com.google.android.apps.messaging,Google Messages,/data,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.messaging,approved,SM-X133/X133DXS4BZB6
+com.google.android.apps.photos,Google Photos,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.photos,approved,SM-X133/X133DXS4BZB6
+com.google.android.apps.restore,Google restore,/data,enabled,CANDIDATE,disable,6,Backup restore wizard; runs on boot,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.restore,approved,SM-X133/X133DXS4BZB6
+com.google.android.apps.tachyon,Google Meet,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.tachyon,approved,SM-X133/X133DXS4BZB6
+com.google.android.apps.turbo,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.apps.youtube.music,YouTube Music,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.apps.youtube.music,approved,SM-X133/X133DXS4BZB6
+com.google.android.appsearch.apk,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.as,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.google.android.as.oss,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.google.android.captiveportallogin,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.google.android.cellbroadcastreceiver,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.cellbroadcastservice,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.configupdater,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.connectivity.resources,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.documentsui,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.google.android.ext.services,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.ext.shared,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.google.android.federatedcompute,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.feedback,Google feedback,/system_ext,enabled,CANDIDATE,disable,6,Sends crash reports,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.feedback,approved,SM-X133/X133DXS4BZB6
+com.google.android.gm,Gmail,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.gm,approved,SM-X133/X133DXS4BZB6
+com.google.android.gms,Google Play services,/data,enabled,KEEP,keep,,Chrome WebAPK install and Play updates,high,,,,,
+com.google.android.gms.location.history,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.gms.supervision,,/product,disabled,KEEP,keep,,Disabled by Decent before this project (D-1); leave as is,,,,,,
+com.google.android.googlequicksearchbox,Google app,/data,enabled,CANDIDATE,disable,5,"Discover, OK Google and Circle to Search stop. Chrome should be unaffected (inferred)",medium,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.googlequicksearchbox,approved,SM-X133/X133DXS4BZB6
+com.google.android.gsf,Google Services Framework,/system_ext,enabled,KEEP,keep,,Play services dependency,high,,,,,
+com.google.android.health.connect.backuprestore,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.healthconnect.controller,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.modulemetadata,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.networkstack,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.google.android.networkstack.tethering,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.networkstack.tethering.overlay,,/vendor,enabled,KEEP,keep,,System component on /vendor; not reviewed for removal,,,,,,
+com.google.android.ondevicepersonalization.services,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.onetimeinitializer,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.gmsconfig.asi,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.gmsconfig.common,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.gmsconfig.geotz,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.gmsconfig.gsa,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.gmsconfig.searchselector,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.captiveportallogin.forframework,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.cellbroadcastreceiver,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.cellbroadcastservice,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.documentsui,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.ext.services,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.healthfitness.forframework,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.mediaprovider,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.google.android.overlay.modules.modulemetadata.forframework,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.permissioncontroller,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.overlay.modules.permissioncontroller.forframework,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.packageinstaller,Package installer,/system,enabled,KEEP,keep,,Installs and updates,high,,,,,
+com.google.android.partnersetup,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.google.android.permissioncontroller,Permission controller,/apex,enabled,KEEP,keep,,Permissions,high,,,,,
+com.google.android.photopicker,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.printservice.recommendation,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.google.android.providers.media.module,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.rkpdapp,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.safetycenter.resources,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.sdksandbox,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.server.deviceconfig.resources,,/apex,enabled,KEEP,keep,,System component on /apex; not reviewed for removal,,,,,,
+com.google.android.setupwizard,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal,,,,,,
+com.google.android.syncadapters.calendar,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.android.tts,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.google.android.verifier,Google package verifier,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.google.android.verifier.overlay,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.google.android.videos,Google TV,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.google.android.videos,approved,SM-X133/X133DXS4BZB6
+com.google.android.webview,Android System WebView,/data,enabled,KEEP,keep,,Web runtime for apps,high,,,,,
+com.google.android.youtube,YouTube,/data,enabled,KEEP,keep,,"Owner kept it on review, 3 Nov 2026",low,,,,,
+com.google.mainline.adservices,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.google.mainline.telemetry,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.hecorat.screenrecorder.free,AZ Screen Recorder,/data,enabled,KEEP,keep,,Shipped by Decent: installed in the same 32 seconds as AndroWish on 16 Feb 2026. Owner keeps everything Decent shipped (D-11),low,,,,,
+com.hiya.star,Hiya caller ID (Smart Call),/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.hiya.star,approved,SM-X133/X133DXS4BZB6
+com.knox.vpn.proxyhandler,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.mediatek,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.mediatek.datachannel.service,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.mediatek.entitlement.o2,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.mediatek.frameworkresoverlay,,/vendor,enabled,KEEP,keep,,System component on /vendor; not reviewed for removal,,,,,,
+com.mediatek.gbaservice,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.mediatek.mdmconfig,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.mediatek.op07.wfo,,/system_ext,enabled,KEEP,keep,,System component on /system_ext; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.microsoft.appmanager,Link to Windows,/data,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.microsoft.appmanager,approved,SM-X133/X133DXS4BZB6
+com.microsoft.office.officehubrow,Microsoft 365 (Office),/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.microsoft.office.officehubrow,approved,SM-X133/X133DXS4BZB6
+com.microsoft.office.outlook,Microsoft Outlook,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.microsoft.office.outlook,approved,SM-X133/X133DXS4BZB6
+com.microsoft.skydrive,Microsoft OneDrive,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.microsoft.skydrive,approved,SM-X133/X133DXS4BZB6
+com.monotype.android.font.foundation,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.monotype.android.font.roboto,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.monotype.android.font.samsungone,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.mygalaxy.service,,/system,disabled,KEEP,keep,,Disabled by Decent before this project (D-1); leave as is,,,,,,
+com.netflix.mediaclient,Netflix,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.netflix.mediaclient,approved,SM-X133/X133DXS4BZB6
+com.osp.app.signin,Samsung account,/system,enabled,KEEP,keep,,"Runs last. List says removal crashed Settings on Android 11, no data for 16. Tested alone, undone at once if Settings fails. Android refuses to disable it on this build (""Failed to change state""), 3 Nov 2026",medium,,Refused by pm disable-user; stays enabled,,,SM-X133/X133DXS4BZB6
+com.pressensor.coffeeflow,Coffee Flow (Pressensor),/data,enabled,KEEP,keep,,Distributed by Decent (D-5). https://pressensor.com/pages/about-the-app. Installed in the same 32 seconds on 16 Feb 2026,low,,,,,
+com.samsung.SMT,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.SMT.lang_en_us_f00,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.SMT.lang_pt_br_f00,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.SMT.lang_vi_vn_f00,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.aasaservice,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.accessibility,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.accessory.budsunitemgr,Galaxy Buds manager,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.accessory.budsunitemgr,approved,SM-X133/X133DXS4BZB6
+com.samsung.advp.imssettings,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.ConnectivityOverlay_NoTelephony,,/vendor,enabled,KEEP,keep,,System component on /vendor; not reviewed for removal,,,,,,
+com.samsung.android.ConnectivityUxOverlay,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.android.DisableVoiceCapableOverlay,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.samsung.android.accessibility.talkback,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.allshare.service.mediashare,Media share service,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.allshare.service.mediashare,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.clipboardedge,Clipboard edge panel,/system,enabled,CANDIDATE,disable,6,Edge panel,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.clipboardedge,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.clockpack,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.app.contacts,Samsung Contacts,/system,enabled,CANDIDATE,disable,8,"Owner asked, 4 Nov 2026 (D-11). Contacts access from the dialer stops; Wi-Fi tablet",low,,,adb shell pm enable --user 0 com.samsung.android.app.contacts,approved,
+com.samsung.android.app.dressroom,Wallpaper and style gallery,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.dressroom,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.find,SmartThings Find,/data,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.find,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.notes,Samsung Notes,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.notes,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.omcagent,Recommended-apps agent,/system,enabled,CANDIDATE,disable,4,Installs Samsung recommended apps after setup,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.omcagent,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.parentalcare,Parental controls,/system,enabled,CANDIDATE,disable,4,No use here,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.parentalcare,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.routines,Modes and Routines,/system,enabled,KEEP,keep,,Possible boot automation without extra apps; investigate in Phase E,high,,,,,
+com.samsung.android.app.sharelive,Quick Share,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.sharelive,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.smartcapture,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.app.soundpicker,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.app.spage,Samsung Free / News,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.spage,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.taskedge,Tasks edge panel,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.taskedge,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.telephonyui,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.app.updatecenter,App Update Center,/system,enabled,CANDIDATE,disable,4,"Updates Samsung's own apps. Not the firmware updater, which stays",low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.updatecenter,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.app.watchmanagerstub,Galaxy Wearable stub,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.app.watchmanagerstub,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.appseparation,Separated Apps,/data,enabled,CANDIDATE,disable,4,Sandbox for work and personal apps; no use here,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.appseparation,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.audiomirroring,Audio mirroring,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.audiomirroring,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.aware.service,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.bbc.bbcagent,BBC agent,/system,enabled,CANDIDATE,disable,4,Collects device information; manages trusted apps in Knox containers,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.bbc.bbcagent,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.beaconmanager,Beacon manager,/system,enabled,CANDIDATE,disable,6,Nearby device scanning,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.beaconmanager,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.biometrics.app.setting,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.bluelightfilter,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.brightnessbackupservice,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.calendar,Samsung Calendar,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.calendar,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.callassistant,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.callbgprovider,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.cidmanager,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.container,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.da.daagent,Dual Messenger,/system,enabled,CANDIDATE,disable,4,No use here,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.da.daagent,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.dbsc,Service consent,/system,enabled,CANDIDATE,disable,6,Pairs with Samsung push for consent prompts,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.dbsc,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.dialer,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.dqagent,Device quality agent,/system,enabled,CANDIDATE,disable,4,Diagnostic logging to Samsung,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.dqagent,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.dsms,DSMS,/system,enabled,CANDIDATE,disable,6,Hidden diagnostic logging,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.dsms,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.dynamiclock,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.easysetup,Nearby device setup,/system,enabled,CANDIDATE,disable,6,Pop-ups for nearby devices,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.easysetup,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.emergency,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.fmm,Find My Mobile,/system,enabled,KEEP,keep,,"Remote locate, lock and wipe stop working; no Samsung account is signed in anyway. Android refuses to disable it on this build (""Failed to change state""), 3 Nov 2026",low,,Refused by pm disable-user; stays enabled,,,SM-X133/X133DXS4BZB6
+com.samsung.android.forest,Digital Wellbeing,/system,enabled,CANDIDATE,disable,5,List warns of DeX taskbar instability; DeX is not in use here,medium,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.forest,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.galaxycontinuity,Samsung Flow,/data,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.galaxycontinuity,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.game.gamehome,Game Hub,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.game.gamehome,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.game.gos,Game optimizer,/system,enabled,CANDIDATE,disable,6,Game service,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.game.gos,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.globalpostprocmgr,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.gru,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.homemode,Daily Board,/data,enabled,CANDIDATE,disable,6,Slideshow mode,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.homemode,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.honeyboard,Samsung Keyboard,/system,enabled,KEEP,keep,,Only real keyboard,high,,,,,
+com.samsung.android.incallui,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.intellivoiceservice,Samsung voice wake-up (name only),/system,enabled,CANDIDATE,disable,5,Not on the list; running now. Purpose inferred from its name,medium,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.intellivoiceservice,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.internal.overlay.config.default_contextual_search,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.samsung.android.kgclient,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.kidsinstaller,Samsung Kids installer,/system,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.kidsinstaller,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.knox.analytics.uploader,Knox analytics uploader,/system,enabled,CANDIDATE,disable,4,Sends analytics to Samsung,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.knox.analytics.uploader,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.knox.app.networkfilter,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.attestation,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.containercore,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.er,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.kfbp,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.knnr,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.kpecore,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.sandbox,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.knox.zt.framework,,/system,disabled,KEEP,keep,,Disabled by Decent before this project (D-1); leave as is,,,,,,
+com.samsung.android.location,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.lool,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.samsung.android.mapsagent,Recommendation agent,/system,enabled,CANDIDATE,disable,6,Auto-installs recommended apps,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.mapsagent,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.mcf.autohotspot,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.samsung.android.mcfds,Continuity service,/system,enabled,CANDIDATE,disable,6,Cross-device feature,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.mcfds,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.mdecservice,Call & text on other devices,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.mdecservice,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.mdm,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.mdx,Link to Windows service (Samsung),/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.mdx,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.mdx.kit,Multi-device kit,/system,enabled,CANDIDATE,disable,6,Support for linking apps already disabled,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.mdx.kit,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.messageguardsync,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.samsung.android.mobileservice,Samsung Experience Service,/system,enabled,CANDIDATE,disable,5,Samsung sign-in and group sharing stop; most of those apps are already disabled,medium,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.mobileservice,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.mtp,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.net.wifi.wifiguider,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.networkstack,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.android.networkstack.tethering.overlay,,/vendor,enabled,KEEP,keep,,System component on /vendor; not reviewed for removal,,,,,,
+com.samsung.android.privacydashboard,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.privateaccesstokens,Private access tokens,/system,enabled,CANDIDATE,disable,6,"Used by Samsung Internet, already disabled",low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.privateaccesstokens,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.providers.contacts,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.providers.media,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.providers.trash,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.rampart,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.rubin.app,Customization Service,/system,enabled,CANDIDATE,disable,4,Collects usage data for personalised ads,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.rubin.app,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.scloud,Samsung Cloud,/system,enabled,CANDIDATE,disable,4,No Samsung account is signed in,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.scloud,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.scpm,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.scs,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.samsung.android.sdk.handwriting,Handwriting service,/system,enabled,CANDIDATE,disable,6,No pen in use,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.sdk.handwriting,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.sdm.config,Deskphone manager config,/system,enabled,CANDIDATE,disable,6,No use here,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.sdm.config,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.secondconnection,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.secsoundpicker,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.server.wifi.mobilewips,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.service.peoplestripe,People edge panel,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.service.peoplestripe,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.setting.multisound,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.settingshelper,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.shortcutbackupservice,Shortcut backup,/system,enabled,CANDIDATE,disable,6,"Part of Smart Switch, already disabled",low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.shortcutbackupservice,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.sm.devicesecurity,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.smartcallprovider,Smart Call,/system,enabled,CANDIDATE,disable,6,Caller ID; Wi-Fi tablet,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.smartcallprovider,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.smartmirroring,Smart View (screen mirroring),/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.smartmirroring,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.smartsuggestions,Smart suggestions,/system,enabled,CANDIDATE,disable,4,Suggestion feature; no use here,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.smartsuggestions,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.smartswitchassistant,Smart Switch assistant,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.smartswitchassistant,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.stickercenter,Sticker center,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.stickercenter,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.themecenter,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.vexfwk.service,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.samsung.android.video,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.visual.cloudcore,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.voc,Samsung Members,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.voc,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.wallpaper.live,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wallpaper.res,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wcmurlsnetworkstack,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.android.widget.pictureframe,Picture frame widget,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.android.widget.pictureframe,approved,SM-X133/X133DXS4BZB6
+com.samsung.android.wifi.decrease.scan.interval.resources,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.samsung.android.wifi.h2e.resources,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wifi.increase.scan.interval.resources,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal. Removed by One UI 8.5,,,,,,
+com.samsung.android.wifi.largetcpbuffer.resources,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wifi.p2paware.resources,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wifi.resources,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wifi.resources.jdm,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wifi.saeupgradeoffload.resources,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.android.wifi.softap.resources,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.app.newtrim,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.cmh,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.drmboost,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.ecomm.global.gbr,Samsung Shop,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.ecomm.global.gbr,approved,SM-X133/X133DXS4BZB6
+com.samsung.internal.systemui.navbar.gestural_no_hint,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.internal.systemui.navbar.sec_gestural,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.internal.systemui.navbar.sec_gestural_no_hint,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.samsung.klmsagent,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.knox.securefolder,Secure Folder,/system,enabled,CANDIDATE,disable,6,Not in use,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.knox.securefolder,approved,SM-X133/X133DXS4BZB6
+com.samsung.safetyinformation,Safety information,/system,enabled,CANDIDATE,disable,6,Static text,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.safetyinformation,approved,SM-X133/X133DXS4BZB6
+com.samsung.sait.sohservice,Battery data collector,/system,enabled,CANDIDATE,disable,6,Collects battery data,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.sait.sohservice,approved,SM-X133/X133DXS4BZB6
+com.samsung.sec.android.application.csc,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.samsung.sree,Samsung Global Goals,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.sree,approved,SM-X133/X133DXS4BZB6
+com.samsung.storyservice,Gallery stories,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.samsung.storyservice,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.SecSetupWizard,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.billing,Samsung checkout,/system,enabled,CANDIDATE,disable,6,Samsung Store purchases,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.billing,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.bluetoothagent,Bluetooth agent,/system,enabled,KEEP,keep,,Bluetooth,high,,,,,
+com.sec.android.app.camera,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.chromecustomizations,Chrome customisations,/system,enabled,CANDIDATE,disable,6,Samsung items on Chrome's homepage,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.chromecustomizations,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.clockpackage,Clock,/data,enabled,KEEP,keep,,Launcher clock tap target; no background load,high,,,,,
+com.sec.android.app.factorykeystring,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.googlelpaoverlay,,added by One UI 8.5,not on 8.0,KEEP,keep,,New in X133DXS5BZI3; not reviewed yet,,,,,,
+com.sec.android.app.kidshome,Samsung Kids,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.kidshome,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.launcher,One UI Home,/system,enabled,KEEP,keep,,Current launcher and fallback,high,,,,,
+com.sec.android.app.myfiles,My Files,/data,enabled,CANDIDATE,disable,9,"Owner asked to disable it, 4 Nov 2026 (D-15). File Manager + stays. UAD-ng warns of losing SD card controls in Settings",low,,,adb shell pm enable --user 0 com.sec.android.app.myfiles,approved,
+com.sec.android.app.parser,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.popupcalculator,,/data,enabled,KEEP,keep,,System component on /data; not reviewed for removal,,,,,,
+com.sec.android.app.qsfastpairoverlay,,/product,enabled,KEEP,keep,,System component on /product; not reviewed for removal,,,,,,
+com.sec.android.app.quicktool,Quick Tools,/system,enabled,CANDIDATE,disable,6,Ruler and compass edge panel,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.quicktool,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.safetyassurance,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.samsungapps,Galaxy Store,/system,enabled,CANDIDATE,disable,5,Rated Expert. List says no bootloop. Store updates for Samsung apps stop (inferred),medium,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.samsungapps,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.sbrowser,Samsung Internet,/data,enabled,CANDIDATE,disable,3,"Owner chose Chrome and chose disable over uninstall on review (D-2, D-7)",low,Chrome must hold the browser role first,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.sbrowser,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.servicemodeapp,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.setupwizardlegalprovider,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.shealth,Samsung Health,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.shealth,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.soundalive,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.app.ve.vebgm,Video editor music,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.ve.vebgm,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.voicenote,Voice Recorder,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.voicenote,approved,SM-X133/X133DXS4BZB6
+com.sec.android.app.volumemonitorprovider,Volume monitor,/system,enabled,CANDIDATE,disable,6,Earphone volume data for Digital Wellbeing,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.app.volumemonitorprovider,approved,SM-X133/X133DXS4BZB6
+com.sec.android.autodoodle.service,Auto Doodle,/system,enabled,CANDIDATE,disable,6,"Photo editor add-on, already disabled. Removed by One UI 8.5",low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.autodoodle.service,approved,SM-X133/X133DXS4BZB6
+com.sec.android.daemonapp,Weather daemon,/system,enabled,CANDIDATE,disable,6,Weather and finance widgets,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.daemonapp,approved,SM-X133/X133DXS4BZB6
+com.sec.android.diagmonagent,Samsung diagnostics agent,/system,enabled,KEEP,keep,,"Owner: leave enabled for now, 4 Nov 2026 (D-10). Sends diagnostics to Samsung. Old UAD-ng relaunch-loop warning not confirmed or refuted",medium,,,,,
+com.sec.android.easyMover,Smart Switch,/data,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.easyMover,approved,SM-X133/X133DXS4BZB6
+com.sec.android.easyMover.Agent,Smart Switch agent,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.easyMover.Agent,approved,SM-X133/X133DXS4BZB6
+com.sec.android.emergencylauncher,,/system,enabled,KEEP,keep,,"Shows disabled on One UI 8.5, not by this project (no entry in the change log). Left as found",,,,,,
+com.sec.android.gallery3d,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.iaft,IAFT,/system,enabled,CANDIDATE,disable,6,Dump and error tracing,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.iaft,approved,SM-X133/X133DXS4BZB6
+com.sec.android.mimage.photoretouching,Photo editor,/system,enabled,CANDIDATE,disable,2,"Linking, sharing or companion feature; no use on a Wi-Fi espresso tablet",low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.android.mimage.photoretouching,approved,SM-X133/X133DXS4BZB6
+com.sec.android.provider.badge,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.sdhms,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.android.soagent,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.bcservice,Broadcast service,/system,enabled,CANDIDATE,disable,6,Hidden diagnostic and TCP dump tool,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.bcservice,approved,SM-X133/X133DXS4BZB6
+com.sec.enterprise.knox.cloudmdm.smdms,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.imslogger,IMS logger,/system,enabled,CANDIDATE,disable,6,Logging for calling; Wi-Fi tablet,low,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.imslogger,approved,SM-X133/X133DXS4BZB6
+com.sec.imsservice,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.location.nfwlocationprivacy,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.location.nsflp2,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.mhs.smarttethering,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.spp.push,Samsung push service,/system,enabled,CANDIDATE,disable,5,Samsung notifications stop. Effect on firmware updates unknown; check after Wi-Fi joins,medium,,"4 Nov 2026: persists over reboot; Home, Settings, keyboard, Decadent, Decaid port OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.sec.spp.push,approved,SM-X133/X133DXS4BZB6
+com.sec.sve,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.sec.usbsettings,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.skms.android.agent,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.spotify.music,Spotify,/data,enabled,CANDIDATE,disable,1,Consumer app; not used on a dedicated espresso controller,low,,"3 Nov 2026: persists over reboot; Home, drawer, Settings, keyboard, Decadent opens offline OK. Wi-Fi join and Decaid to DE1 not yet tested",adb shell pm enable --user 0 com.spotify.music,approved,SM-X133/X133DXS4BZB6
+com.val.hardware,,/system,enabled,KEEP,keep,,System component on /system; not reviewed for removal,,,,,,
+com.wssyncmldm,Firmware update agent (FotaAgent.apk),/system,enabled,KEEP,keep,,Android and security updates,high,,,,,
+hu.kavekalmar.sep,SE Profiler (Smart Espresso Profiler),/data,enabled,KEEP,keep,,Distributed by Decent (D-5). https://www.naked-portafilter.com/smart-espresso-profiler/. Installed in the same 32 seconds on 16 Feb 2026,low,,,,,
+net.tadel.reaprime,Decaid,/data,enabled,KEEP,keep,,Decent's newer server and UI; Decadent talks to its API on localhost:8080,high,,,,,
+org.chromium.webapk.a45977050c6c6f69b_v2,Decadent (installed web app),/data,not installed,KEEP,keep,,Built by Chrome and Play once a Google account is signed in. Gives true fullscreen,low,,"4 Nov 2026: fullscreen, sleep and wake, reboot OK",,,SM-X133/X133DXS5BZI3
+org.fossify.home,Fossify Launcher,/data,not installed,KEEP,keep,,"The Home app, chosen by the owner (GitHub APK 1.10.0)",low,,"4 Nov 2026: four icons open, drawer and reboot OK",,,SM-X133/X133DXS5BZI3
+tk.tcl.wish,AndroWish: runs the original Decent app (de1app); Home shortcuts Decent and Update Decent,/data,enabled,KEEP,keep,,Legacy app kept as backup; do not remove (D-3),high,,,,,

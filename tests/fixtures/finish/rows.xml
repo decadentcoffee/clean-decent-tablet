@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="Row count" resource-id="" class="android.widget.TextView" package="org.fossify.home" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[700,300][1220,360]"/>
+<node index="0" text="2 rows" resource-id="" class="android.widget.RadioButton" package="org.fossify.home" content-desc="" checkable="true" checked="false" clickable="true" enabled="true" bounds="[700,380][1220,450]"/>
+<node index="0" text="3 rows" resource-id="" class="android.widget.RadioButton" package="org.fossify.home" content-desc="" checkable="true" checked="false" clickable="true" enabled="true" bounds="[700,450][1220,520]"/>
+<node index="0" text="4 rows" resource-id="" class="android.widget.RadioButton" package="org.fossify.home" content-desc="" checkable="true" checked="true" clickable="true" enabled="true" bounds="[700,520][1220,590]"/>
+<node index="0" text="5 rows" resource-id="" class="android.widget.RadioButton" package="org.fossify.home" content-desc="" checkable="true" checked="false" clickable="true" enabled="true" bounds="[700,590][1220,660]"/>
+<node index="0" text="6 rows" resource-id="" class="android.widget.RadioButton" package="org.fossify.home" content-desc="" checkable="true" checked="false" clickable="true" enabled="true" bounds="[700,660][1220,730]"/>
+</node>
+</hierarchy>

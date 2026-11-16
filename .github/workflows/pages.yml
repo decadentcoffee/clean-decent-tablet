@@ -1,0 +1,41 @@
+# Builds web/ and publishes it with GitHub Pages.
+# Pages on a free account needs a public repo. Until then this runs only by hand.
+# When the repo goes public: Settings > Pages > Source: GitHub Actions, then add `push: { branches: [main] }` under `on:`.
+name: Webpage
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+      - run: npm ci
+        working-directory: web
+      - run: python3 scripts/render-packages.py && git diff --exit-code -- device web/src/apps.json README.md docs/packages.md
+      - run: tests/sim-tablet.sh
+      - run: npm run build
+        working-directory: web
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
