@@ -385,7 +385,9 @@ async function runFinish(afterRestart = false) {
   $("fin-you").hidden = true; $("fin-run").hidden = false; $("fin-after").hidden = true; setError("fin-error");
   $("fin-run-h").textContent = "Finishing the tablet…"; $("fin-keep").hidden = false;
   const home = wantHomeDone, onHome = home && $("fin-decadent").checked, decadent = onHome && !decadentHad;
-  const plan = ["restart", ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(home ? ["place"] : []), "open"];
+  // The Decadent plugin goes into Decaid through Decaid's own installer, whenever Decadent is wanted and Decaid is there.
+  const plugin = onHome && (decaidHave || $("decaid-add").checked);
+  const plan = ["restart", ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(plugin ? ["plugin"] : []), ...(home ? ["place"] : []), "open"];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
   const icons = [...(decaidHave || $("decaid-add").checked ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");

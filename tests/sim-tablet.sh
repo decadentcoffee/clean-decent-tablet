@@ -239,6 +239,14 @@ echo 130.0.6723.102 > "$SIM/ver.com.android.chrome"; fin updates
 grep -qx 'DONE finish update com.android.chrome' "$T/o" && grep -qx 'SKIP finish update com.google.android.webview up to date' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish updates' && [ "$(cat "$SIM/screen")" = home ] && ok "finish updates: Chrome updated, WebView up to date" || { bad "updates"; cat "$T/o"; }
 fin decadent; grep -qx 'DONE finish decadent' "$T/o" && grep -q '^org.chromium.webapk' "$SIM/installed" && ok "finish decadent installs the app from Chrome's menu" || { bad "decadent"; cat "$T/o"; }
 fin decadent; grep -qx 'SKIP finish decadent already installed' "$T/o" && ok "finish decadent again: already installed" || bad "decadent again"
+# The plugin step drives Decaid's own installer. The simulator has no Decaid screens, so only its exits are checked here;
+# the full run is checked on a real tablet (docs/compatibility.md).
+cp "$SIM/installed" "$T/installed.keep"; grep -v '^net.tadel.reaprime$' "$T/installed.keep" > "$SIM/installed"
+fin plugin; grep -qx 'SKIP finish plugin Decaid is not installed' "$T/o" && ok "finish plugin without Decaid: skipped" || { bad "plugin no decaid"; cat "$T/o"; }
+{ cat "$T/installed.keep"; echo net.tadel.reaprime; } | sort -u > "$SIM/installed"
+t0=$(date +%s); fin plugin; t1=$(date +%s)
+grep -qx "MANUAL finish plugin Decaid's menu did not show" "$T/o" && [ $((t1-t0)) -lt 20 ] && ok "finish plugin with no Decaid menu on screen ends MANUAL in $((t1-t0)) s" || { bad "plugin fallback"; cat "$T/o"; }
+cp "$T/installed.keep" "$SIM/installed"
 fin place
 grep -qx 'DONE finish place Decaid' "$T/o" && grep -qx 'DONE finish place Decadent' "$T/o" && grep -qx 'SKIP finish place Settings already there' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish place' && ok "finish place drags Decaid and Decadent, leaves Settings" || { bad "place"; cat "$T/o"; }
 grep -q 'content-desc="Decaid".*bounds="\[486,519\]\[666,699\]"' "$SIM/added" && grep -q 'content-desc="Decadent".*bounds="\[870,519\]\[1050,699\]"' "$SIM/added" && grep -q '^input text Decadent' "$SIM/events" && ok "dropped in middle-row cells 2 and 3; Decadent found through search" || { bad "place cells"; cat "$SIM/added"; }

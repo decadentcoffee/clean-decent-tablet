@@ -44,6 +44,7 @@ export class DemoTablet {
       if (k === "launcher") await say("DONE finish launcher", 900);
       if (k === "updates") { await say("DONE finish update com.android.chrome", 1200); await say("SKIP finish update com.google.android.webview up to date", 300); await say("OK finish updates"); }
       if (k === "decadent") { this.webapk = true; await say("DONE finish decadent", 1200); }
+      if (k === "plugin") await say(this.manual ? "MANUAL finish plugin Decaid's menu did not show" : "DONE finish plugin", 1200);
       if (k === "place") {
         for (const l of ["Decaid", "Decadent", "Settings"]) {
           if (l === "Decaid" && this.noDecaid && !this.pushed.some((p) => p.endsWith("decaid.apk"))) { await say("SKIP finish place Decaid not installed", 200); continue; }

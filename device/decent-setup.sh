@@ -11,7 +11,7 @@
 #   --apps: turn back on what cleanup switched off (--pkgs= limits it) and restore sleep and browser
 #   --home: original Home app, buttons and side panel; removes Fossify unless --keep-apps. Neither: both
 # sh decent-setup.sh finish <step> [--dry-run]  last steps, done on the screen: status wifi account-open icons
-#   wifi-open launcher updates decadent place. wifi-open only opens Wi-Fi settings: the owner joins on the tablet,
+#   wifi-open launcher updates decadent plugin place. wifi-open only opens Wi-Fi settings: the owner joins on the tablet,
 #   and no network name or password ever passes through this script or the page.
 #   place no-decadent leaves the Decadent icon off Home.
 #   A step it cannot do prints MANUAL; the front end then shows the written instructions for it
@@ -576,15 +576,57 @@ fin_place() {
   go_home; say "OK finish place"
 }
 
+# The Decadent plugin for Decaid, through Decaid's own installer: Plugins, the cog, Install plugin, GitHub Release.
+# Decaid then keeps it updated. Installing over a copy that is there keeps its settings and its link. Android's Back
+# key leaves Decaid's coffee screen for its menu and sends nothing to the espresso machine.
+PLUGIN_REPO=decadentcoffee/plugin; DECAID=net.tadel.reaprime
+fin_plugin() {
+  installed "$DECAID" || { say "SKIP finish plugin Decaid is not installed"; return 0; }
+  wifi_up || { say "MANUAL finish plugin needs Wi-Fi"; return 0; }
+  wake
+  monkey -p "$DECAID" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
+  D="package=\"$DECAID\""; p=""; _k=0
+  while [ $_k -le 3 ]; do
+    sleep "${UI_PAUSE_S:-3}"; ui_dump
+    p="$(ui_find content-desc 'Plugins' "$D")"; [ -n "$p" ] && break
+    # Only a full-screen web view (the coffee screen) is left with Back; a first-run screen is the owner's to answer.
+    [ -n "$(ui_line class 'android\.webkit\.WebView' "$D")" ] && [ -z "$(ui_line class 'android\.widget\.(Button|EditText)' "$D")" ] && key KEYCODE_BACK
+    _k=$((_k+1))
+  done
+  [ -n "$p" ] || { say "MANUAL finish plugin Decaid's menu did not show"; return 0; }
+  tap $p
+  for want in 'Plugin actions' 'Install plugin' 'GitHub Release'; do
+    p="$(ui_wait content-desc "$want" 8 "$D")" || { key KEYCODE_BACK; say "MANUAL finish plugin cannot find $want in Decaid"; return 0; }
+    tap $p
+  done
+  p="$(ui_wait class 'android\.widget\.EditText' 8 "$D")" || { key KEYCODE_BACK; say "MANUAL finish plugin Decaid's install form did not open"; return 0; }
+  tap $p; input text "$PLUGIN_REPO"; pause
+  ui_dump
+  [ -n "$(ui_line text "$PLUGIN_REPO" "$D")" ] || { key KEYCODE_BACK; key KEYCODE_BACK; say "MANUAL finish plugin could not type the plugin's name"; return 0; }
+  p="$(ui_find content-desc 'Install' "$D")"
+  [ -n "$p" ] || { key KEYCODE_BACK; key KEYCODE_BACK; say "MANUAL finish plugin cannot find Install in Decaid"; return 0; }
+  tap $p
+  # Done when Decaid says "Plugin installed". Its message shows for a few seconds after the form closes.
+  end=$(( $(date +%s) + $(tmo 45) )); got=""
+  while :; do
+    ui_dump
+    [ -n "$(ui_line 'content-desc|text' 'Plugin installed[^"]*' "$D")" ] && { got=1; break; }
+    [ "$(date +%s)" -ge "$end" ] && break
+  done
+  [ -n "$(ui_line content-desc 'Install from GitHub Release' "$D")" ] && key KEYCODE_BACK
+  key KEYCODE_BACK
+  [ -n "$got" ] && say "DONE finish plugin" || say "MANUAL finish plugin Decaid did not install it"
+}
+
 do_finish() {
   step="${ARGS# }"; step="${step%% *}"
-  case "$step" in status|wifi-open|account-open|icons|launcher|updates|decadent|place) ;;
-    *) die "unknown finish step '$step'. Steps: status wifi-open account-open icons launcher updates decadent place" ;; esac
+  case "$step" in status|wifi-open|account-open|icons|launcher|updates|decadent|plugin|place) ;;
+    *) die "unknown finish step '$step'. Steps: status wifi-open account-open icons launcher updates decadent plugin place" ;; esac
   mkdir -p "$DIR" || die "cannot write $DIR"
   if [ "$DRY" = 1 ]; then say "PLAN finish $step"; return 0; fi
   case "$step" in
     status) fin_status ;; wifi-open) fin_wifi_open ;; account-open) fin_account_open ;; icons) fin_icons ;;
-    launcher) fin_launcher ;; updates) fin_updates ;; decadent) fin_decadent ;; place) fin_place ;;
+    launcher) fin_launcher ;; updates) fin_updates ;; decadent) fin_decadent ;; plugin) fin_plugin ;; place) fin_place ;;
   esac
   rm -f "$UIX" "$UIN" # screen dumps can hold names and addresses
 }

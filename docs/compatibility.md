@@ -16,6 +16,7 @@ Labels: **Verified** = tested on a real device. **Documented** = from an officia
 |---|---|---|
 | Decaid `net.tadel.reaprime` | 0.9.1 | 3 Nov 2026 |
 | Decaid `net.tadel.reaprime` | 0.9.2 (build 3191), updated inside Decaid. Port 8080 answered and the DE1 was connected. Installing it with this project is not tested: the tablet already had Decaid | 16 Nov 2026 |
+| Decadent plugin in Decaid | `finish plugin` installed 0.37.0 from `decadentcoffee/plugin` through Decaid 0.9.2's Plugins screen; Verified by script over adb, the webpage's run is not tested | 17 Nov 2026 |
 | AndroWish `tk.tcl.wish` | 1.0 | 3 Nov 2026 |
 | Chrome | 154.0.8037.92 | 3 Nov 2026 |
 | Android System WebView | 153.0.8010.36 | 3 Nov 2026 |
