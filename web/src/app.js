@@ -8,7 +8,7 @@ const FILES = __DEVICE_FILES__; // decent-setup.sh, packages-disable.txt, device
 const APKS = __APKS__; // [{ name, pkg, url, sha }]
 const qs = new URLSearchParams(location.search);
 // Safe mode (?safe, the older ?demo still works): a pretend tablet for the developer. Every screen looks and
-// behaves as in a real run, with Next / Back in a bar; nothing reaches USB. ?safe=done|nodecaid|manual|model|fail|build.
+// behaves as in a real run, with Next / Back in a bar; nothing reaches USB. ?safe=done|nodecaid|manual|model|fail|build. &asks=N: Decaid asks its first questions for N checks.
 const DEMO = qs.has("safe") || qs.has("demo");
 const DEMO_KIND = qs.get("safe") ?? qs.get("demo");
 
@@ -46,7 +46,7 @@ function supported() { return DEMO || ("usb" in navigator && window.isSecureCont
 async function connect() {
   setError("connect-error"); const btn = $("connect"); btn.disabled = true; btn.textContent = "Connecting…";
   try {
-    if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
+    if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", asks: qs.get("asks") ? +qs.get("asks") : DEMO_KIND === "nodecaid" && qs.get("decaid") === "add" ? 4 : 0, fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
     else {
       const device = await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
       if (!device) throw new Error("No device selected");
@@ -302,13 +302,14 @@ async function runSetup() {
 }
 
 // Last steps. The owner joins Wi-Fi and signs in to Google; the core script's `finish` steps drive the rest
-// through the tablet's screen. A step the tablet doesn't allow ends as MANUAL and shows its written instructions.
+// through the tablet's screen. Decaid's first questions are a pause for the owner (decaidReady). The written instructions
+// are always on the screen as the second way; a step the tablet doesn't allow also lists its own under Left for you.
 let wantHomeDone = true, finWifi = false, finAcct = null, finPoll = null, decadentHad = false;
 const FIN = (s) => $("fin-steps").querySelector(`[data-k="${s}"]`);
 function finState(k, state, why) {
   const li = FIN(k); if (!li) return;
   li.dataset.state = state;
-  li.querySelector(".st").textContent = { run: "…", done: "✓", skip: "–", manual: "!" }[state] || "";
+  li.querySelector(".st").textContent = { run: "…", done: "✓", skip: "–", manual: "!", you: "?" }[state] || "";
   li.title = why || "";
 }
 async function finStatus() {
@@ -373,6 +374,24 @@ async function reconnectByHand() {
     await runFinish(true);
   } catch (e) { setError("fin-error", plainError(e)); $("fin-reconnect-row").hidden = false; }
 }
+// A Decaid that has never been opened asks its first questions (account, permissions, old data). They are the
+// owner's to answer: the page opens Decaid, says so, asks the tablet again every few seconds, and carries on by itself
+// once Decaid's menu shows. True when Decaid is ready for the plugin step.
+let decaidPass = false;
+async function decaidReady() {
+  const ask = $("decaid-ask"), keep = $("fin-keep"), was = keep.textContent, until = Date.now() + 15 * 60000;
+  decaidPass = false;
+  try {
+    for (let first = true; Date.now() < until && !decaidPass; first = false) {
+      const st = parseStatus(await tablet.setup(`finish decaid${first ? " open" : ""}`));
+      if (st.decaid !== "asking") return st.decaid === "ready";
+      if (ask.hidden) { ask.hidden = false; finState("plugin", "you"); keep.textContent = "Keep the cable plugged in. Decaid is waiting for you on the tablet."; }
+      await wait(2000);
+    }
+    return false;
+  } catch { return false; }
+  finally { ask.hidden = true; keep.textContent = was; }
+}
 function outcome(lines, k) {
   const mine = lines.filter((l) => / finish /.test(` ${l} `) || l.startsWith("FAIL"));
   if (mine.some((l) => l.startsWith("MANUAL") || l.startsWith("FAIL"))) return "manual";
@@ -387,7 +406,8 @@ async function runFinish(afterRestart = false) {
   const home = wantHomeDone, onHome = home && $("fin-decadent").checked, decadent = onHome && !decadentHad;
   // The Decadent plugin goes into Decaid through Decaid's own installer, whenever Decadent is wanted and Decaid is there.
   const plugin = onHome && (decaidHave || $("decaid-add").checked);
-  const plan = ["restart", ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(plugin ? ["plugin"] : []), ...(home ? ["place"] : []), "open"];
+  // The plugin goes first: it is the one step that may need the owner (Decaid's first questions), so they are free after it.
+  const plan = ["restart", ...(plugin ? ["plugin"] : []), ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(home ? ["place"] : []), "open"];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
   const icons = [...(decaidHave || $("decaid-add").checked ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
@@ -404,6 +424,8 @@ async function runFinish(afterRestart = false) {
       if (k === "updates" && (!finWifi || finAcct !== "yes")) { finState(k, "manual", finWifi ? "needs a Google account" : "needs Wi-Fi"); continue; }
       if (k === "decadent" && !finWifi) { finState(k, "manual", "needs Wi-Fi"); continue; }
       if (k === "open") { await openApps(); finState(k, "done"); continue; }
+      if (k === "plugin" && !(await decaidReady())) { finState(k, "manual", decaidPass ? "skipped" : "Decaid's first questions were not answered"); continue; }
+      if (k === "plugin") finState(k, "run");
       let lines;
       try { lines = await tablet.setup(`finish ${k}${k === "place" && !onHome ? " no-decadent" : ""}`); } catch (e) { lines = [`MANUAL finish ${k} ${e.message}`]; }
       finState(k, outcome(lines, k), (lines.find((l) => /^(MANUAL|FAIL)/.test(l)) || "").replace(/^\S+ (finish \S+ )?/, ""));
@@ -666,6 +688,8 @@ function init() {
   $("acct-open").onclick = () => tablet && tablet.setup("finish account-open").catch(() => {});
   $("acct-skip").onclick = () => { finAcct = "skip"; finStatus().catch(() => {}); };
   $("fin-go").onclick = () => runFinish();
+  $("decaid-pass").onclick = () => { decaidPass = true; };
+  for (const li of $("fin-steps").children) { const item = document.createElement("li"); item.innerHTML = li.querySelector(".by-hand").innerHTML; $("fin-byhand-list").append(item); }
   $("to-next").onclick = () => show("next");
   $("fin-reconnect").onclick = reconnectByHand;
   $("app-groups").addEventListener("change", (e) => {

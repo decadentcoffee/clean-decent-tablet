@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Install from GitHub Release" checkable="false" checked="false" clickable="true" enabled="true" bounds="[600,200][1320,280]"/>
+<node index="0" text="decadentcoffee/plugin" resource-id="" class="android.widget.EditText" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[600,400][1320,480]"/>
+<node index="0" text="" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="Install" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1100,600][1320,680]"/>
+</node>
+</hierarchy>

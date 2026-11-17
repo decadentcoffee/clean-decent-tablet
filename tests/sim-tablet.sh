@@ -65,6 +65,7 @@ effect() { case "$1" in
   set:*) kv="${1#set:}"; echo "${kv#*=}" > "$SIM/fossify.${kv%%=*}" ;;
   ver:*) kv="${1#ver:}"; echo "${kv#*=}" > "$SIM/ver.${kv%%=*}" ;;
   webapk) echo org.chromium.webapk.a5c1d2 >> "$SIM/installed" ;;
+  plugin) echo installed > "$SIM/decaid.plugin" ;;
 esac; }
 go() { # event label
   s="$(scr)"; lab="$(echo "$2" | tr 'A-Z' 'a-z')"
@@ -141,6 +142,13 @@ esac; exit 0; fi
 if [ "$1" = role ]; then r="${5##*.}"; r="$(echo "$r" | tr 'A-Z' 'a-z')"
   case "$2" in get-role-holders) cat "$SIM/role.$r" ;; add-role-holder) echo "$6" > "$SIM/role.$r" ;; esac
 fi
+exit 0
+S
+# monkey opens an app. Decaid opens on the screen in $SIM/decaid.start; one that is already showing stays where it is.
+cat > "$T/bin/monkey" <<'S'
+#!/bin/bash
+. "$(dirname "$0")/_simui"; echo "monkey $*" >> "$SIM/events"
+[ "$2" = net.tadel.reaprime ] && [ -s "$SIM/decaid.start" ] && case "$(scr)" in decaid_*) ;; *) cat "$SIM/decaid.start" > "$SIM/screen" ;; esac
 exit 0
 S
 chmod +x "$T/bin/"*
@@ -239,13 +247,25 @@ echo 130.0.6723.102 > "$SIM/ver.com.android.chrome"; fin updates
 grep -qx 'DONE finish update com.android.chrome' "$T/o" && grep -qx 'SKIP finish update com.google.android.webview up to date' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish updates' && [ "$(cat "$SIM/screen")" = home ] && ok "finish updates: Chrome updated, WebView up to date" || { bad "updates"; cat "$T/o"; }
 fin decadent; grep -qx 'DONE finish decadent' "$T/o" && grep -q '^org.chromium.webapk' "$SIM/installed" && ok "finish decadent installs the app from Chrome's menu" || { bad "decadent"; cat "$T/o"; }
 fin decadent; grep -qx 'SKIP finish decadent already installed' "$T/o" && ok "finish decadent again: already installed" || bad "decadent again"
-# The plugin step drives Decaid's own installer. The simulator has no Decaid screens, so only its exits are checked here;
-# the full run is checked on a real tablet (docs/compatibility.md).
+# The plugin step drives Decaid's own installer, on screens labelled as Decaid 0.9.2's source labels them.
 cp "$SIM/installed" "$T/installed.keep"; grep -v '^net.tadel.reaprime$' "$T/installed.keep" > "$SIM/installed"
 fin plugin; grep -qx 'SKIP finish plugin Decaid is not installed' "$T/o" && ok "finish plugin without Decaid: skipped" || { bad "plugin no decaid"; cat "$T/o"; }
+fin decaid open; grep -qx 'STATUS decaid=absent' "$T/o" && ok "finish decaid without Decaid: absent" || { bad "decaid absent"; cat "$T/o"; }
 { cat "$T/installed.keep"; echo net.tadel.reaprime; } | sort -u > "$SIM/installed"
+# A Decaid that has never been opened asks its first questions. Those are the owner's: nothing is tapped, the step says asking.
+echo decaid_welcome > "$SIM/decaid.start"; echo home > "$SIM/screen"; : > "$SIM/events"
+fin decaid open; grep -qx 'STATUS decaid=asking' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish decaid' && [ "$(cat "$SIM/screen")" = decaid_welcome ] && ! grep -q '^input tap' "$SIM/events" && ok "a new Decaid's first questions: asking, and nothing tapped for the owner" || { bad "decaid asking"; cat "$T/o" "$SIM/events"; }
+echo decaid_import > "$SIM/screen"; : > "$SIM/events"   # the owner tapped Get Started
+fin decaid; grep -qx 'STATUS decaid=asking' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_import ] && ! grep -q '^monkey' "$SIM/events" && ! grep -q '^input tap' "$SIM/events" && ok "asked again without open: still asking, Decaid not relaunched" || { bad "decaid asking again"; cat "$T/o" "$SIM/events"; }
 t0=$(date +%s); fin plugin; t1=$(date +%s)
-grep -qx "MANUAL finish plugin Decaid's menu did not show" "$T/o" && [ $((t1-t0)) -lt 20 ] && ok "finish plugin with no Decaid menu on screen ends MANUAL in $((t1-t0)) s" || { bad "plugin fallback"; cat "$T/o"; }
+grep -qx 'MANUAL finish plugin Decaid is asking its first questions' "$T/o" && [ $((t1-t0)) -lt 20 ] && [ ! -s "$SIM/decaid.plugin" ] && ok "finish plugin while Decaid is asking ends MANUAL in $((t1-t0)) s" || { bad "plugin while asking"; cat "$T/o"; }
+echo decaid_scan > "$SIM/screen"   # the owner answered the import question; Decaid now looks for the machine
+fin decaid; grep -qx 'STATUS decaid=ready' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_dash ] && ok "after the questions: past the machine search and the coffee screen, ready at Decaid's menu" || { bad "decaid ready"; cat "$T/o"; }
+fin plugin; grep -qx 'DONE finish plugin' "$T/o" && [ "$(cat "$SIM/decaid.plugin" 2>/dev/null)" = installed ] && grep -q '^input text decadentcoffee/plugin' "$SIM/events" && ok "finish plugin installs decadentcoffee/plugin through Decaid's installer" || { bad "plugin install"; cat "$T/o"; }
+# A Decaid already set up opens on the coffee screen; one start does the whole step.
+rm -f "$SIM/decaid.plugin"; echo decaid_skin > "$SIM/decaid.start"; echo home > "$SIM/screen"
+fin plugin; grep -qx 'DONE finish plugin' "$T/o" && [ -s "$SIM/decaid.plugin" ] && ok "finish plugin from the coffee screen" || { bad "plugin from skin"; cat "$T/o"; }
+rm -f "$SIM/decaid.start"; echo home > "$SIM/screen"
 cp "$T/installed.keep" "$SIM/installed"
 fin place
 grep -qx 'DONE finish place Decaid' "$T/o" && grep -qx 'DONE finish place Decadent' "$T/o" && grep -qx 'SKIP finish place Settings already there' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish place' && ok "finish place drags Decaid and Decadent, leaves Settings" || { bad "place"; cat "$T/o"; }

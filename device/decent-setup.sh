@@ -11,9 +11,11 @@
 #   --apps: turn back on what cleanup switched off (--pkgs= limits it) and restore sleep and browser
 #   --home: original Home app, buttons and side panel; removes Fossify unless --keep-apps. Neither: both
 # sh decent-setup.sh finish <step> [--dry-run]  last steps, done on the screen: status wifi account-open icons
-#   wifi-open launcher updates decadent plugin place. wifi-open only opens Wi-Fi settings: the owner joins on the tablet,
+#   wifi-open launcher updates decadent decaid plugin place. wifi-open only opens Wi-Fi settings: the owner joins on the tablet,
 #   and no network name or password ever passes through this script or the page.
 #   place no-decadent leaves the Decadent icon off Home.
+#   decaid [open] reports STATUS decaid=ready|asking|absent: asking means Decaid shows its first questions, which
+#   only the owner answers. The front end waits and asks again; plugin runs once it is ready.
 #   A step it cannot do prints MANUAL; the front end then shows the written instructions for it
 #
 # Add --force to run on a model or build not listed in device.expect. Output lines start with a word a front end can parse:
@@ -580,19 +582,60 @@ fin_place() {
 # Decaid then keeps it updated. Installing over a copy that is there keeps its settings and its link. Android's Back
 # key leaves Decaid's coffee screen for its menu and sends nothing to the espresso machine.
 PLUGIN_REPO=decadentcoffee/plugin; DECAID=net.tadel.reaprime
+# Where Decaid is, from the last screen read: dashboard (its menu shows), scan (it is looking for the machine),
+# skin (the full-screen coffee screen), or asking (anything else: its first questions, or an Android dialog over it).
+decaid_where() {
+  if [ -n "$(ui_line content-desc 'Plugins[^"]*' "$D")" ]; then echo dashboard
+  elif [ -n "$(ui_line 'content-desc|text' '(Continue to )?Dashboard' "$D")" ]; then echo scan
+  elif [ -n "$(ui_line class 'android\.webkit\.WebView' "$D")" ] && [ -z "$(ui_line class 'android\.widget\.(Button|EditText)' "$D")" ]; then echo skin
+  else echo asking; fi
+}
+# decaid_menu <seconds>: bring Decaid to its menu. Prints dashboard, or what Decaid still shows when the time is up.
+# It answers none of Decaid's first questions: those are the owner's. It only leaves the coffee screen with Back, and
+# leaves "looking for the machine" by Decaid's own Dashboard button once Decaid has had time to find one. Neither
+# sends anything to the espresso machine.
+decaid_menu() {
+  _end=$(( $(date +%s) + $(tmo "$1") )); _scan=""; _w=asking; _acts=0
+  while :; do
+    ui_dump; _w="$(decaid_where)"
+    case "$_w" in
+      dashboard) break ;;
+      skin) [ $_acts -lt 6 ] && { _acts=$((_acts+1)); key KEYCODE_BACK; continue; } ;;
+      scan) [ -n "$_scan" ] || _scan=$(( $(date +%s) + $(tmo 12) ))
+        if [ "$(date +%s)" -ge "$_scan" ] && [ $_acts -lt 6 ]; then
+          _p="$(ui_find 'content-desc|text' '(Continue to )?Dashboard' "$D")"
+          [ -n "$_p" ] && { _acts=$((_acts+1)); tap $_p; continue; }
+        fi ;;
+    esac
+    [ "$(date +%s)" -ge "$_end" ] && break
+    pause
+  done
+  echo "$_w"
+}
+# finish decaid [open]: say whether Decaid is at its menu (ready) or still asking the owner something (asking).
+# The front end calls it until ready, so a Decaid that has never been opened is a pause, not a failure.
+fin_decaid() {
+  installed "$DECAID" || { say "STATUS decaid=absent"; say "OK finish decaid"; return 0; }
+  D="package=\"$DECAID\""
+  case "$ARGS " in *" open "*) wake; monkey -p "$DECAID" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep "${UI_PAUSE_S:-3}" ;; esac
+  if [ "$(decaid_menu 20)" = dashboard ]; then say "STATUS decaid=ready"; else say "STATUS decaid=asking"; fi
+  say "OK finish decaid"
+}
+
 fin_plugin() {
   installed "$DECAID" || { say "SKIP finish plugin Decaid is not installed"; return 0; }
+  # Straight after a restart Wi-Fi can take a moment.
+  _n=0; while ! wifi_up && [ $_n -lt "$(tmo 30)" ]; do sleep 1; _n=$((_n+1)); done
   wifi_up || { say "MANUAL finish plugin needs Wi-Fi"; return 0; }
   wake
   monkey -p "$DECAID" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1
-  D="package=\"$DECAID\""; p=""; _k=0
-  while [ $_k -le 3 ]; do
-    sleep "${UI_PAUSE_S:-3}"; ui_dump
-    p="$(ui_find content-desc 'Plugins' "$D")"; [ -n "$p" ] && break
-    # Only a full-screen web view (the coffee screen) is left with Back; a first-run screen is the owner's to answer.
-    [ -n "$(ui_line class 'android\.webkit\.WebView' "$D")" ] && [ -z "$(ui_line class 'android\.widget\.(Button|EditText)' "$D")" ] && key KEYCODE_BACK
-    _k=$((_k+1))
-  done
+  D="package=\"$DECAID\""; sleep "${UI_PAUSE_S:-3}"
+  case "$(decaid_menu 30)" in
+    dashboard) ;;
+    asking) say "MANUAL finish plugin Decaid is asking its first questions"; return 0 ;;
+    *) say "MANUAL finish plugin Decaid's menu did not show"; return 0 ;;
+  esac
+  ui_dump; p="$(ui_find content-desc 'Plugins[^"]*' "$D")"
   [ -n "$p" ] || { say "MANUAL finish plugin Decaid's menu did not show"; return 0; }
   tap $p
   for want in 'Plugin actions' 'Install plugin' 'GitHub Release'; do
@@ -620,13 +663,13 @@ fin_plugin() {
 
 do_finish() {
   step="${ARGS# }"; step="${step%% *}"
-  case "$step" in status|wifi-open|account-open|icons|launcher|updates|decadent|plugin|place) ;;
-    *) die "unknown finish step '$step'. Steps: status wifi-open account-open icons launcher updates decadent plugin place" ;; esac
+  case "$step" in status|wifi-open|account-open|icons|launcher|updates|decadent|decaid|plugin|place) ;;
+    *) die "unknown finish step '$step'. Steps: status wifi-open account-open icons launcher updates decadent decaid plugin place" ;; esac
   mkdir -p "$DIR" || die "cannot write $DIR"
   if [ "$DRY" = 1 ]; then say "PLAN finish $step"; return 0; fi
   case "$step" in
     status) fin_status ;; wifi-open) fin_wifi_open ;; account-open) fin_account_open ;; icons) fin_icons ;;
-    launcher) fin_launcher ;; updates) fin_updates ;; decadent) fin_decadent ;; plugin) fin_plugin ;; place) fin_place ;;
+    launcher) fin_launcher ;; updates) fin_updates ;; decadent) fin_decadent ;; decaid) fin_decaid ;; plugin) fin_plugin ;; place) fin_place ;;
   esac
   rm -f "$UIX" "$UIN" # screen dumps can hold names and addresses
 }

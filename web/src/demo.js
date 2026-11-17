@@ -4,7 +4,7 @@ import APPS from "./apps.json";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const PKG = (i) => APPS[(i - 1) % APPS.length].pkg; // the i-th package, 1-based
 export class DemoTablet {
-  constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; }
+  constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; this.asks = opts.asks || 0; }
   async prepare() {}
   async push(p) { this.pushed.push(p); }
   async run(c, onLine = () => {}) {
@@ -44,6 +44,7 @@ export class DemoTablet {
       if (k === "launcher") await say("DONE finish launcher", 900);
       if (k === "updates") { await say("DONE finish update com.android.chrome", 1200); await say("SKIP finish update com.google.android.webview up to date", 300); await say("OK finish updates"); }
       if (k === "decadent") { this.webapk = true; await say("DONE finish decadent", 1200); }
+      if (k === "decaid") { await say(`STATUS decaid=${this.asks-- > 0 ? "asking" : "ready"}`, 600); await say("OK finish decaid"); }
       if (k === "plugin") await say(this.manual ? "MANUAL finish plugin Decaid's menu did not show" : "DONE finish plugin", 1200);
       if (k === "place") {
         for (const l of ["Decaid", "Decadent", "Settings"]) {

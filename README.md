@@ -55,7 +55,7 @@ All three run the same script on the tablet ([`device/decent-setup.sh`](device/d
 
 Every screen of the webpage is shown below, under [What you'll see](#-what-youll-see).
 
-Only two steps need you: joining Wi-Fi and signing in to Google, plus logging in to Decadent if you use it. The page then finishes the tablet itself: restart, Home screen layout, Play updates and the Decadent install. Any step it can't do shows its written instructions instead. This screen-driving part is not yet tested on a real tablet. The full manual walk-through is in [`docs/installation.md`](docs/installation.md).
+Only two steps need you: joining Wi-Fi and signing in to Google, plus logging in to Decadent if you use it. The page then finishes the tablet itself: restart, Home screen layout, Play updates and the Decadent install. A Decaid that has never been opened asks you its first questions on the tablet; the page waits and then carries on by itself. The written instructions for every step are always on the page if you would rather do one yourself. This screen-driving part is not yet tested on a real tablet. The full manual walk-through is in [`docs/installation.md`](docs/installation.md).
 
 ## 👀 What you'll see
 

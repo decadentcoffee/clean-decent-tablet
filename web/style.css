@@ -563,6 +563,13 @@ footer { text-align: center; text-wrap: balance; }
 .fin-steps li[data-state="manual"] { background: rgba(255, 178, 94, 0.08); box-shadow: inset 0 0 0 1px rgba(255, 178, 94, 0.35); color: var(--ink); }
 .fin-steps li[data-state="manual"] .st { border-color: var(--accent); color: var(--accent); }
 .fin-steps li[data-state="manual"] .by-hand { display: block; }
+.fin-steps .needs-you { grid-column: 2; margin: 0.3rem 0 0; color: var(--ink); line-height: 1.5; }
+.fin-steps .needs-you[hidden] { display: none; }
+.fin-steps .needs-you button { margin: 0.5rem 0 0; display: block; }
+.fin-steps li[data-state="you"] { background: rgba(255, 178, 94, 0.08); box-shadow: inset 0 0 0 1px rgba(255, 178, 94, 0.35); color: var(--ink); }
+.fin-steps li[data-state="you"] .st { border-color: var(--accent); color: var(--accent); }
+.byhand ol { display: grid; gap: 0.45rem; padding-left: 1.3rem; }
+.byhand li p { margin: 0; }
 @media (prefers-reduced-motion: no-preference) {
   .fin-steps li[data-state="run"] .st { animation: fin-pulse 1.2s ease-in-out infinite; }
   @keyframes fin-pulse { 50% { opacity: 0.35; } }

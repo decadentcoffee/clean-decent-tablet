@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="Plugins" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,40][400,120]"/>
+<node index="0" text="" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="Plugin actions" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1780,40][1880,120]"/>
+</node>
+</hierarchy>

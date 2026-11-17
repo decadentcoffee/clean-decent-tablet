@@ -143,6 +143,16 @@
   <ul><li>A computer with Chrome or Edge.</li><li>A USB cable that carries data.</li><li>A Samsung tablet supplied by Decent Espresso: model SM-X133, shown in <b>Settings → About tablet</b>.</li></ul></div>
   </div>
   <p class="reassure">These changes aren't permanent and nothing is deleted, so you can try it and revert easily.</p>
+  <details class="byhand">
+    <summary>Rather set Decadent up by hand?</summary>
+    <p>You don't need this page to use Decadent. On the tablet:</p>
+    <ol>
+      <li>Install <b>Decaid</b> from <a href="https://github.com/decentespresso/decaid/releases/latest" target="_top" rel="noopener">its releases page</a>, open it and answer its first questions.</li>
+      <li>In Decaid open <b>Plugins</b>, tap the cog, then <b>Install plugin</b>, then <b>GitHub Release</b>. Type <b>decadentcoffee/plugin</b> and tap <b>Install</b>.</li>
+      <li>In Chrome open <b>decadentcoffee.app/app</b> and log in. The tablet links to your account by itself.</li>
+    </ol>
+    <p>The clean-up and the Home screen can be done by hand too: <a href="https://github.com/decadentcoffee/clean-decent-tablet/blob/main/docs/installation.md" target="_top" rel="noopener">the full written guide</a>.</p>
+  </details>
   <p id="unsupported" class="alert" hidden>This browser can't connect to a tablet. Open this page in Chrome or Edge on a computer, at an https address.</p>
   <div class="row"><button class="ghost" data-back="start">Back</button><button id="start" class="primary">Get started</button></div>
 </section>
@@ -253,14 +263,14 @@
 
   <div id="fin-run" hidden>
     <h3 id="fin-run-h">Finishing the tablet…</h3>
-    <p id="fin-keep" class="muted">Keep the cable plugged in, and leave the tablet alone until this is done. It takes about five minutes.</p>
+    <p id="fin-keep" class="muted">Keep the cable plugged in, and leave the tablet alone until this is done. It takes about five minutes. A Decaid that has never been opened asks you a few questions first.</p>
     <ol class="fin-steps" id="fin-steps">
       <li data-k="restart"><span class="st" aria-hidden="true"></span><span class="what">Restart the tablet</span><p class="by-hand">Restart the tablet: hold the power key, then tap <b>Restart</b>.</p></li>
+      <li data-k="plugin" data-home><span class="st" aria-hidden="true"></span><span class="what">Add the Decadent plugin to Decaid</span><span class="needs-you" id="decaid-ask" role="status" hidden><b>Decaid needs you on the tablet.</b> It is open and asking its first questions: a Decent account or skip, what it may use, and whether to bring over old data. Answer them there. This page carries on by itself. <button type="button" id="decaid-pass" class="ghost small">Skip the plugin for now</button></span><p class="by-hand">In <b>Decaid</b> open <b>Plugins</b>, tap the cog, then <b>Install plugin</b>, then <b>GitHub Release</b>. Type <b>decadentcoffee/plugin</b> and tap <b>Install</b>. The Decadent app shows these steps too.</p></li>
       <li data-k="icons" data-home><span class="st" aria-hidden="true"></span><span class="what">Remove Chrome, Play Store and Camera from Home</span><p class="by-hand">On Home, long-press <b>Chrome</b>, <b>Play Store</b> and <b>Camera</b>, and tap <b>Remove</b> on each. The apps stay installed.</p></li>
       <li data-k="launcher" data-home><span class="st" aria-hidden="true"></span><span class="what">Set Home to 3 rows and 5 columns</span><p class="by-hand">Long-press empty space, tap <b>Launcher Settings</b>. Set <b>Row count 3</b>, <b>Column count 5</b>, and turn on <b>Close app drawer on opening an app</b>.</p></li>
       <li data-k="updates"><span class="st" aria-hidden="true"></span><span class="what">Update Chrome and Android System WebView</span><p class="by-hand">In the <b>Play Store</b>, update <b>Chrome</b> and <b>Android System WebView</b>.</p></li>
       <li data-k="decadent" data-home><span class="st" aria-hidden="true"></span><span class="what">Install Decadent</span><p class="by-hand">In Chrome open <b>decadentcoffee.app/app</b>, tap the install icon in the address bar, and tap <b>Install</b>.</p></li>
-      <li data-k="plugin" data-home><span class="st" aria-hidden="true"></span><span class="what">Add the Decadent plugin to Decaid</span><p class="by-hand">In <b>Decaid</b> open <b>Plugins</b>, tap the cog, then <b>Install plugin</b>, then <b>GitHub Release</b>. Type <b>decadentcoffee/plugin</b> and tap <b>Install</b>. The Decadent app shows these steps too.</p></li>
       <li data-k="place" data-home><span class="st" aria-hidden="true"></span><span class="what">Put <span class="place-list">Decaid, Decadent and Settings</span> on Home</span><p class="by-hand">On Home, swipe up from the middle of the screen. Hold and drag <span class="place-list"><b>Decaid</b>, <b>Decadent</b> and <b>Settings</b></span> to the middle row. Any apps you like work too.</p></li>
       <li data-k="open"><span class="st" aria-hidden="true"></span><span class="what">Open Decaid, then Decadent</span><p class="by-hand">Open <b>Decaid</b> once, then <b>Decadent</b>.</p></li>
     </ol>
@@ -274,6 +284,11 @@
   <p>You can unplug the tablet now.</p>
   <p class="row"><button type="button" id="to-next" class="primary">What to do next</button></p>
   </div>
+  <details id="fin-byhand" class="byhand">
+    <summary>Rather do a step yourself? The written instructions</summary>
+    <p>Everything this page does on the tablet can be done by hand. Do any step yourself, and the page skips what is already done.</p>
+    <ol id="fin-byhand-list"></ol>
+  </details>
   <section class="share" aria-labelledby="share-h">
     <h3 id="share-h">Tell someone about it</h3>
     <p>Know another DE1 owner? Copy this, or share it straight from your device.</p>

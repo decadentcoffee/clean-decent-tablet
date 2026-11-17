@@ -26,3 +26,13 @@ chrome_page	tap	More options	chrome_menu
 chrome_menu	tap	Install app	chrome_install
 chrome_install	tap	Install	chrome_page	webapk
 *	am	android.settings.ADD_ACCOUNT_SETTINGS	accounts
+# Decaid (labels from its 0.9.2 source). The owner's taps on the first-run screens are set by the test, not by the script.
+decaid_scan	tap	Continue to Dashboard	decaid_skin
+decaid_skin	key:KEYCODE_BACK	*	decaid_dash
+decaid_dash	tap	Plugins	decaid_plugins
+decaid_plugins	tap	Plugin actions	decaid_pmenu
+decaid_pmenu	tap	Install plugin	decaid_source
+decaid_source	tap	GitHub Release	decaid_form
+decaid_form	text	decadentcoffee/plugin	decaid_form_typed
+decaid_form_typed	tap	Install	decaid_done	plugin
+decaid_done	key:KEYCODE_BACK	*	decaid_dash
