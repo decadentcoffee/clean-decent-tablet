@@ -66,6 +66,8 @@ effect() { case "$1" in
   ver:*) kv="${1#ver:}"; echo "${kv#*=}" > "$SIM/ver.${kv%%=*}" ;;
   webapk) echo org.chromium.webapk.a5c1d2 >> "$SIM/installed" ;;
   plugin) echo installed > "$SIM/decaid.plugin" ;;
+  pluginload) echo loaded >> "$SIM/decaid.plugin" ;;
+  pluginauto) echo autoload >> "$SIM/decaid.plugin" ;;
 esac; }
 go() { # event label
   s="$(scr)"; lab="$(echo "$2" | tr 'A-Z' 'a-z')"
@@ -261,7 +263,7 @@ t0=$(date +%s); fin plugin; t1=$(date +%s)
 grep -qx 'MANUAL finish plugin Decaid is asking its first questions' "$T/o" && [ $((t1-t0)) -lt 20 ] && [ ! -s "$SIM/decaid.plugin" ] && ok "finish plugin while Decaid is asking ends MANUAL in $((t1-t0)) s" || { bad "plugin while asking"; cat "$T/o"; }
 echo decaid_scan > "$SIM/screen"   # the owner answered the import question; Decaid now looks for the machine
 fin decaid; grep -qx 'STATUS decaid=ready' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_dash ] && ok "after the questions: past the machine search and the coffee screen, ready at Decaid's menu" || { bad "decaid ready"; cat "$T/o"; }
-fin plugin; grep -qx 'DONE finish plugin' "$T/o" && [ "$(cat "$SIM/decaid.plugin" 2>/dev/null)" = installed ] && grep -q '^input text decadentcoffee/plugin' "$SIM/events" && ok "finish plugin installs decadentcoffee/plugin through Decaid's installer" || { bad "plugin install"; cat "$T/o"; }
+fin plugin; grep -qx 'DONE finish plugin' "$T/o" && [ "$(tr '\n' ' ' < "$SIM/decaid.plugin" 2>/dev/null)" = "installed loaded autoload " ] && grep -q '^input text decadentcoffee/plugin' "$SIM/events" && [ "$(cat "$SIM/screen")" = decaid_dash ] && ok "finish plugin installs decadentcoffee/plugin through Decaid's installer, loads it and sets it to start with Decaid" || { bad "plugin install"; cat "$T/o"; }
 # A Decaid already set up opens on the coffee screen; one start does the whole step.
 rm -f "$SIM/decaid.plugin"; echo decaid_skin > "$SIM/decaid.start"; echo home > "$SIM/screen"
 fin plugin; grep -qx 'DONE finish plugin' "$T/o" && [ -s "$SIM/decaid.plugin" ] && ok "finish plugin from the coffee screen" || { bad "plugin from skin"; cat "$T/o"; }

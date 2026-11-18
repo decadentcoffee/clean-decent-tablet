@@ -4,5 +4,7 @@
 <node index="0" text="Plugins" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[100,40][400,120]"/>
 <node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Plugin installed: Decadent" checkable="false" checked="false" clickable="true" enabled="true" bounds="[600,1000][1320,1080]"/>
 <node index="0" text="" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="Plugin actions" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1780,40][1880,120]"/>
+<node index="0" text="" resource-id="" class="android.widget.Switch" package="net.tadel.reaprime" content-desc="Decadent&#10;by Decadent • v0.43.0" checkable="false" checked="false" clickable="true" enabled="true" bounds="[40,300][1880,700]"/>
+<node index="0" text="" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="Show menu" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1760,340][1840,420]"/>
 </node>
 </hierarchy>

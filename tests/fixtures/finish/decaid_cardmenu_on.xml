@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
+<node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Unload" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1500,400][1880,480]"/>
+<node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Settings" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1500,480][1880,560]"/>
+<node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Reload" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1500,560][1880,640]"/>
+<node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Remove" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1500,640][1880,720]"/>
+</node>
+</hierarchy>

@@ -582,12 +582,13 @@ fin_place() {
 # Decaid then keeps it updated. Installing over a copy that is there keeps its settings and its link. Android's Back
 # key leaves Decaid's coffee screen for its menu and sends nothing to the espresso machine.
 PLUGIN_REPO=decadentcoffee/plugin; DECAID=net.tadel.reaprime
-# Where Decaid is, from the last screen read: dashboard (its menu shows), scan (it is looking for the machine),
-# skin (the full-screen coffee screen), or asking (anything else: its first questions, or an Android dialog over it).
+# Where Decaid is, from the last screen read: dashboard (its menu shows), skin (the full-screen coffee screen, a web
+# view; a skin's own buttons show in the screen read, so buttons do not make it a question), scan (it is looking for
+# the machine), or asking (anything else: its first questions, or an Android dialog over it).
 decaid_where() {
   if [ -n "$(ui_line content-desc 'Plugins[^"]*' "$D")" ]; then echo dashboard
+  elif [ -n "$(ui_line class 'android\.webkit\.WebView' "$D")" ]; then echo skin
   elif [ -n "$(ui_line 'content-desc|text' '(Continue to )?Dashboard' "$D")" ]; then echo scan
-  elif [ -n "$(ui_line class 'android\.webkit\.WebView' "$D")" ] && [ -z "$(ui_line class 'android\.widget\.(Button|EditText)' "$D")" ]; then echo skin
   else echo asking; fi
 }
 # decaid_menu <seconds>: bring Decaid to its menu. Prints dashboard, or what Decaid still shows when the time is up.
@@ -620,6 +621,39 @@ fin_decaid() {
   case "$ARGS " in *" open "*) wake; monkey -p "$DECAID" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep "${UI_PAUSE_S:-3}" ;; esac
   if [ "$(decaid_menu 20)" = dashboard ]; then say "STATUS decaid=ready"; else say "STATUS decaid=asking"; fi
   say "OK finish decaid"
+}
+
+# The plugin's card in Decaid's Plugins list, once all of it is on screen (the list is scrolled down to it).
+PLUGIN_CARD='Decadent&#10;by Decadent[^"]*'
+plugin_card() {
+  _i=0
+  while [ $_i -lt 12 ]; do
+    ui_dump; _c="$(ui_line 'content-desc|text' "$PLUGIN_CARD" "$D")"
+    set -- $(box "$(head -n 1 "$UIN")"); _W=${3:-0}; _H=${4:-0}
+    if [ -n "$_c" ]; then set -- $(box "$_c"); [ "${4:-$_H}" -lt $((_H - 4)) ] && { echo "$_c"; return 0; }; fi
+    input swipe $((_W/2)) $((_H*3/4)) $((_W/2)) $((_H*2/5)) 300; pause
+    _i=$((_i+1))
+  done
+  return 1
+}
+# Switch the plugin on from the Plugins list: Load in its menu starts it now, and the card's own switch (Auto-load
+# on startup) starts it with Decaid from then on. A plugin that is already on is left as it is.
+plugin_on() {
+  plugin_card >/dev/null || return 1
+  _m="$(awk '/="Decadent&#10;by Decadent/ {f=1; next} f && /content-desc="Show menu"/ {print; exit}' "$UIN")"
+  [ -n "$_m" ] || return 1
+  tap $(mid "$_m")
+  ui_wait 'content-desc|text' 'Load|Unload' 5 "$D" >/dev/null || return 1
+  _p="$(ui_find 'content-desc|text' 'Load' "$D")"
+  if [ -n "$_p" ]; then tap $_p; sleep "${UI_PAUSE_S:-2}"; else key KEYCODE_BACK; fi
+  _c="$(plugin_card)" || return 1
+  if [ "$(attr_of "$_c" checked)" != true ]; then
+    _d="$(wm density 2>/dev/null | awk '{print $NF}' | tail -n 1)"; case "$_d" in ''|*[!0-9]*) _d=213 ;; esac
+    set -- $(box "$_c"); tap $(( $1 + 42 * _d / 160 )) $(( $4 - 32 * _d / 160 ))
+    _c="$(plugin_card)" || return 1
+    [ "$(attr_of "$_c" checked)" = true ] || return 1
+  fi
+  return 0
 }
 
 fin_plugin() {
@@ -657,8 +691,10 @@ fin_plugin() {
     [ "$(date +%s)" -ge "$end" ] && break
   done
   [ -n "$(ui_line content-desc 'Install from GitHub Release' "$D")" ] && key KEYCODE_BACK
-  key KEYCODE_BACK
-  [ -n "$got" ] && say "DONE finish plugin" || say "MANUAL finish plugin Decaid did not install it"
+  [ -n "$got" ] || { key KEYCODE_BACK; say "MANUAL finish plugin Decaid did not install it"; return 0; }
+  # Decaid adds a plugin switched off and not set to start with it (seen on a real tablet, 18 Nov 2026).
+  if plugin_on; then key KEYCODE_BACK; say "DONE finish plugin"
+  else key KEYCODE_BACK; say "MANUAL finish plugin it is installed but switched off"; fi
 }
 
 do_finish() {

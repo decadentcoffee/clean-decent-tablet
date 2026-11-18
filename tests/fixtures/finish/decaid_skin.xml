@@ -1,6 +1,11 @@
 <?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
 <hierarchy rotation="1">
 <node index="0" text="" resource-id="" class="android.widget.FrameLayout" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]" >
-<node index="0" text="" resource-id="" class="android.webkit.WebView" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]"/>
+<node index="0" text="" resource-id="" class="android.webkit.WebView" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]">
+<node index="0" text="Favorite profile 1" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[25,25][185,90]"/>
+<node index="1" text="Settings" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1108,38][1206,78]"/>
+<node index="2" text="Awake" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1219,38][1315,78]"/>
+<node index="3" text="Flush" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[25,595][119,624]"/>
+</node>
 </node>
 </hierarchy>

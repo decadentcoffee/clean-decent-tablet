@@ -35,4 +35,12 @@ decaid_pmenu	tap	Install plugin	decaid_source
 decaid_source	tap	GitHub Release	decaid_form
 decaid_form	text	decadentcoffee/plugin	decaid_form_typed
 decaid_form_typed	tap	Install	decaid_done	plugin
+# Decaid adds the plugin switched off (seen on a real tablet): its menu's Load, then the card's Auto-load switch.
+decaid_done	tap	Show menu	decaid_cardmenu_off
+decaid_cardmenu_off	tap	Load	decaid_loaded	pluginload
+decaid_loaded	tap	Decadent&#10;by Decadent • v0.43.0	decaid_on	pluginauto
+decaid_on	tap	Show menu	decaid_cardmenu_on
+decaid_cardmenu_on	key:KEYCODE_BACK	*	decaid_on
 decaid_done	key:KEYCODE_BACK	*	decaid_dash
+decaid_loaded	key:KEYCODE_BACK	*	decaid_dash
+decaid_on	key:KEYCODE_BACK	*	decaid_dash
