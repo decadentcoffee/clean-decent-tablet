@@ -581,7 +581,7 @@ fin_place() {
 # The Decadent plugin for Decaid, through Decaid's own installer: Plugins, the cog, Install plugin, GitHub Release.
 # Decaid then keeps it updated. Installing over a copy that is there keeps its settings and its link. Android's Back
 # key leaves Decaid's coffee screen for its menu and sends nothing to the espresso machine.
-PLUGIN_REPO=decadentcoffee/plugin; DECAID=net.tadel.reaprime
+PLUGIN_REPO=decadentcoffee/decadent-plugin; DECAID=net.tadel.reaprime
 # Where Decaid is, from the last screen read: dashboard (its menu shows), skin (the full-screen coffee screen, a web
 # view; a skin's own buttons show in the screen read, so buttons do not make it a question), scan (it is looking for
 # the machine), or asking (anything else: its first questions, or an Android dialog over it).
