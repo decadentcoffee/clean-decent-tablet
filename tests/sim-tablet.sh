@@ -111,7 +111,8 @@ cat > "$T/bin/dumpsys" <<'S'
 #!/bin/bash
 case "$1" in
  account) echo "Accounts: $(grep -c . "$SIM/accounts")"; while read -r a; do echo "    Account {name=$a, type=com.google}"; done < "$SIM/accounts" ;;
- package) echo "Packages:"; echo "  Package [$2]"; echo "    versionName=$(cat "$SIM/ver.$2" 2>/dev/null || echo 1.0)"; echo "    versionName=0.9-factory" ;;
+ package) echo "Packages:"; echo "  Package [$2]"; echo "    versionName=$(cat "$SIM/ver.$2" 2>/dev/null || echo 1.0)"; echo "    versionName=0.9-factory"
+   case "$2" in org.chromium.webapk.a5c1d2) echo '          Authority: "decadentcoffee.app": -1' ;; org.chromium.webapk.*) echo '          Authority: "example.test": -1' ;; esac ;;
 esac
 exit 0
 S
@@ -283,6 +284,12 @@ grep -qx 'SKIP finish place Decadent not wanted' "$T/o" && ! grep -q 'content-de
 grep -vx net.tadel.reaprime "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"; : > "$SIM/added"; echo home > "$SIM/screen"
 fin place
 grep -qx 'SKIP finish place Decaid not installed' "$T/o" && ! grep -q 'content-desc="Decaid"' "$SIM/added" && tail -n 1 "$T/o" | grep -qx 'OK finish place' && ok "finish place without Decaid skips its icon" || { bad "place no decaid"; cat "$T/o"; }
+# Another site's web app is not Decadent; and the Decadent steps do not need our launcher.
+grep -v '^org.chromium.webapk' "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"; echo org.chromium.webapk.zz99 >> "$SIM/installed"; fin status
+grep -qx 'STATUS decadent_app=none' "$T/o" && ok "another site's web app does not count as Decadent" || { bad "webapk identity"; cat "$T/o"; }
+grep -v '^org.chromium.webapk' "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"
+printf 'com.sec.android.app.launcher\n' > "$SIM/role.home"; cp "$FX/transitions.tsv" "$SIM/transitions"; echo home > "$SIM/screen"
+fin decadent; grep -qx 'DONE finish decadent' "$T/o" && ok "finish decadent with Samsung's Home as the Home app" || { bad "decadent on Samsung Home"; cat "$T/o"; }
 # Decent's other apps. The simulated app list does not show them, so each ends MANUAL and nothing lands on Home;
 # a tablet without them skips both.
 printf 'org.fossify.home\n' > "$SIM/role.home"; : > "$SIM/added"; echo home > "$SIM/screen"

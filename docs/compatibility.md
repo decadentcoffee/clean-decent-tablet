@@ -109,3 +109,15 @@ Not tested: the browser's own device chooser, Windows, joining Wi-Fi and the Goo
 
 | `finish more` (19 Nov 2026) | Home with one page | Second Home page | **Verified** by script over adb: SE Profiler, Coffee Flow and AZ Screen Recorder in the middle cells of a new second page, no third page; a second run skips all three. Its run from the webpage is **not tested** |
 | Empty strip above Decadent (Chrome 158) | | | Comes on some fresh opens, always the first after an install. No setup step prevents it (D-33); the Decadent app removes it at the first touch from 0.48.4 |
+
+## One installer, two ways in (D-34, 19 Nov 2026)
+
+| Run on the reference tablet, through the page | Result |
+|---|---|
+| Set-up tablet, read only | **Verified.** Offered: Check the Decadent plugin, and the two undo choices |
+| Check the Decadent plugin alone | **Verified.** No restart; plugin step found it loaded and changed nothing; both apps opened (85 s) |
+| Stock tablet with Decaid, Decadent ticked alone | **Verified.** No restart, nothing switched off, Samsung's Home kept. Plugin step, then the app installed as a WebAPK and opened (114 s). The app is in Samsung's app list, not on its Home; the page now says how to add it |
+| `?for=decadent`, Clean up and New Home screen with Decadent already there | **Verified.** Own heading; restart, icons, grid, the three icons, the second page with SE Profiler and Coffee Flow in cells 2 and 4, apps opened (5 min) |
+| Every combination of the ticks, in safe mode | `web/tests/safe-matrix.mjs`: ten cases, the commands sent compared with the expected order |
+
+Not tested on a real tablet: Decaid and Decadent ticked together on a tablet with no Decaid without the other two options; adding Decadent later to a tablet whose Home is already ours (safe mode only).

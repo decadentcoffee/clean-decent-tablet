@@ -105,8 +105,8 @@
 <ol class="dots" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
 
 <section data-step="start">
-  <h2>A cleaner experience for your Decent</h2>
-  <p class="lead">Less software in the background. More like part of the machine.</p>
+  <h2 id="start-h">A cleaner experience for your Decent</h2>
+  <p class="lead" id="start-lead">Less software in the background. More like part of the machine.</p>
   <section class="why" aria-labelledby="why-h">
     <h3 id="why-h">Why we made this</h3>
     <p>While we were making <a href="https://decadentcoffee.app" target="_top" rel="noopener">Decadent</a>, we wanted the cleanest overall experience for our coffee machine, so we decided to de-bloat the tablet and streamline the user interface.</p>
@@ -193,6 +193,9 @@
   <p id="already" class="note" hidden>All the listed apps are already off.</p>
   <div id="setup-part">
   <fieldset class="choices"><legend>Choose what to change</legend>
+    <label class="choice" id="row-decaid" hidden><input type="checkbox" id="opt-decaid" checked> <span><b>Decaid</b><br>Decent's newer app for the DE1. It isn't on this tablet yet: this installs Decent's latest release.</span></label>
+    <label class="choice" id="row-decadent" hidden><input type="checkbox" id="opt-decadent"> <span><b>Decadent</b><br>Our dial-in companion for the DE1: its plugin in Decaid, and the app as one icon on Home. Decadent needs an account, and early access is by invitation: <a href="https://decadentcoffee.app/" target="_blank" rel="noopener">join the list</a>.<span id="decadent-needs" class="muted" hidden><br>Decadent reaches the machine through Decaid, so tick Decaid as well.</span></span></label>
+    <label class="choice" id="row-plugin" hidden><input type="checkbox" id="opt-plugin"> <span><b>Check the Decadent plugin</b><br>Decadent is on this tablet. This looks in Decaid for its plugin, and adds it if it is missing.</span></label>
     <label class="choice" id="row-cleanup"><input type="checkbox" id="opt-cleanup" checked> <span><b>Clean up</b><br>Switch off <b id="count">0</b> more bundled <span id="count-apps">apps</span> and background services. Chrome becomes the browser. The screen sleeps after 10 minutes, with no stay-awake while charging.</span></label>
     <details id="pick" class="pick"><summary>Choose which apps to switch off <span id="picked" class="muted"></span></summary>
       <p class="note">All of these are ticked by default: that is the tested setup. Untick anything you want to keep. Switched-off apps stay installed, and you can turn any back on later in <b>Settings → Apps</b>.</p>
@@ -212,7 +215,7 @@
 </section>
 
 <section data-step="confirm" hidden>
-  <h2>Decaid installation</h2>
+  <h2 id="confirm-h">Decaid installation</h2>
   <p class="lead">Keep the cable plugged in until it finishes. It takes a few minutes.</p>
   <p id="decaid-have" class="note" hidden><b>Decaid is already on this tablet.</b> Nothing to install. Choose <b>Set up this tablet</b> to go on.</p>
   <fieldset id="decaid-choice" class="choices" hidden><legend>Decaid is Decent's newer app, and it isn't on this tablet yet.</legend>
@@ -256,7 +259,6 @@
         </div>
       </li>
     </ol>
-    <label class="choice" data-home><input type="checkbox" id="fin-decadent" checked> <span><b id="fin-decadent-h">Install Decadent on the tablet</b><br><span id="fin-decadent-p">Our app for the DE1, as one icon on Home. Leave this off if you don't use it.</span></span></label>
     <p id="fin-nowifi" class="note" hidden>Without Wi-Fi, the updates and Decadent are left for you to do later.</p>
     <div class="row"><span></span><button type="button" id="fin-go" class="primary">Finish for me</button></div>
   </div>

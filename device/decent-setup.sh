@@ -343,7 +343,14 @@ seek() {
 }
 
 wifi_up() { cmd wifi status 2>/dev/null | grep -qi 'is connected to'; }
-has_webapk() { pm list packages --user "$USER_ID" 2>/dev/null | grep -q 'org.chromium.webapk'; }
+# Decadent as an installed web app: a Chrome WebAPK whose package report names Decadent's address. Another site's
+# WebAPK does not count.
+has_webapk() {
+  for _w in $(pm list packages --user "$USER_ID" 2>/dev/null | sed -n 's/^package:\(org\.chromium\.webapk\..*\)$/\1/p'); do
+    dumpsys package "$_w" 2>/dev/null | grep -q 'decadentcoffee\.app' && return 0
+  done
+  return 1
+}
 is_fossify() { [ "$(role_holder android.app.role.HOME)" = "$FOSSIFY" ]; }
 ver_of() { dumpsys package "$1" 2>/dev/null | grep -m 1 versionName | sed 's/.*versionName=//'; }
 grid_box() { # Fossify's Home grid, else its largest view
