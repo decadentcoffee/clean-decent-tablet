@@ -48,6 +48,8 @@ async function connect() {
   try {
     if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", asks: qs.get("asks") ? +qs.get("asks") : DEMO_KIND === "nodecaid" && qs.get("decaid") === "add" ? 4 : 0, fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
     else {
+      // A second Connect in one visit (after Back to start): let go of the first connection, or the tablet never answers.
+      if (tablet) { const old = tablet; tablet = null; try { await old.close(); } catch {} }
       const device = await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
       if (!device) throw new Error("No device selected");
       $("connect-hint").hidden = false;
@@ -169,7 +171,7 @@ async function demoGoTo(to) {
 async function loadPlan() {
   const plan = (await tablet.setup(`plan${FORCE}`)).find((l) => l.startsWith("PLAN disable="));
   const n = plan ? plan.match(/disable=(\d+)/)[1] : "?";
-  $("count").textContent = n;
+  $("count").textContent = n; $("count-apps").textContent = +n === 1 ? "app" : "apps";
   const pkgs = async (flag) => new Set((await tablet.run(`pm list packages ${flag}`)).map((l) => l.replace(/^package:/, "").trim()).filter(Boolean));
   const [all, off] = await Promise.all([pkgs(""), pkgs("-d")]);
   appState = Object.fromEntries(APPS.map((a) => [a.pkg, !all.has(a.pkg) ? "absent" : off.has(a.pkg) ? "disabled" : "enabled"]));
@@ -225,7 +227,7 @@ function syncApps() {
     g.checked = boxes.length > 0 && on === boxes.length; g.indeterminate = on > 0 && on < boxes.length; g.disabled = boxes.length === 0;
   }
   const n = toSwitchOff().length, avail = APPS.filter((a) => appState[a.pkg] === "enabled").length;
-  $("count").textContent = n;
+  $("count").textContent = n; $("count-apps").textContent = +n === 1 ? "app" : "apps";
   $("picked").textContent = `(${n} of ${avail} ticked)`;
 }
 
@@ -248,6 +250,7 @@ async function installApk(a, bytes, onLine) {
 }
 
 let decaidHave = true;
+let changedAt = 0; // when the last change on the tablet finished: Android saves app states a little late
 async function isInstalled(pkg) { return (await tablet.run(`pm list packages ${pkg}`)).includes(`package:${pkg}`); }
 
 async function runSetup() {
@@ -297,6 +300,7 @@ async function runSetup() {
     const refused = (out.join("\n").match(/Refused by Android: (\d+)/) || [])[1];
     $("refused").textContent = refused && refused !== "0" ? `Android wouldn't switch off ${refused} of them, which is expected on some firmware.` : "";
     $("fin-done").textContent = wantClean ? "The clean-up is done." : "The new Home screen is in.";
+    changedAt = Date.now();
     busy = false; wantHomeDone = wantHome; show("finish"); startFinish();
   } catch (e) { busy = false; setError("run-error", plainError(e)); $("run-title").textContent = "Stopped"; $("run-back").hidden = false; }
 }
@@ -344,6 +348,8 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 // remembers this computer if "Always allow" was ticked.
 async function restartTablet() {
   if (DEMO) { await wait(1500); return; }
+  // A restart within 30 seconds of switching apps off brought some of them back (docs/compatibility.md), so wait it out.
+  const early = 30000 - (Date.now() - changedAt); if (early > 0) await wait(early);
   tablet.run("reboot").catch(() => {});
   await wait(4000);
   try { await tablet.close(); } catch {}
@@ -407,7 +413,7 @@ async function runFinish(afterRestart = false) {
   // The Decadent plugin goes into Decaid through Decaid's own installer, whenever Decadent is wanted and Decaid is there.
   const plugin = onHome && (decaidHave || $("decaid-add").checked);
   // The plugin goes first: it is the one step that may need the owner (Decaid's first questions), so they are free after it.
-  const plan = ["restart", ...(plugin ? ["plugin"] : []), ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(home ? ["place"] : []), "open"];
+  const plan = ["restart", ...(plugin ? ["plugin"] : []), ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(home ? ["place"] : []), ...(decaidHave || $("decaid-add").checked || onHome || decadentHad ? ["open"] : [])];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
   const icons = [...(decaidHave || $("decaid-add").checked ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");

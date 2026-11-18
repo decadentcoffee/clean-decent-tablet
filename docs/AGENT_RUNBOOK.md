@@ -116,7 +116,7 @@ Give these one at a time, and wait for each. The details are in `docs/installati
 1. Join Wi-Fi. Recommend a guest or IoT network: Decaid's web server has no password.
 2. Check for a Google account (`adb shell dumpsys account | grep -c "Account {"`). If there is none, recommend adding a new one made only for this tablet.
 3. Update Chrome and Android System WebView in the Play Store.
-4. Remove Chrome, Play Store and Camera from the Fossify Home screen.
+4. Remove the browser (Chrome, or Internet when Clean up did not run), Play Store and Camera from the Fossify Home screen.
 5. In **Launcher Settings**, set Row count 3 and Column count 5 before placing icons. Turn on **Close app drawer on opening an app**.
 6. If the person uses Decadent: in Chrome, open `https://decadentcoffee.app/app/`, tap the install icon, tap **Install** once, and log in. Otherwise skip it; the Home icons are their choice.
 7. Drag Decaid, Decadent and Settings to cells 2, 3 and 4 of the middle row. Put nothing else on Home.

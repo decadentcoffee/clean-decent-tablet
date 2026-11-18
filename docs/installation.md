@@ -152,7 +152,7 @@ Fossify Launcher is open source (GPLv3). This setup uses the GitHub build, becau
    adb install launcher-16-foss-release.apk
    adb shell cmd role add-role-holder --user 0 android.app.role.HOME org.fossify.home
    ```
-4. Press Home. You see Chrome, Play Store and Camera along the bottom.
+4. Press Home. You see the browser (Chrome, or Internet when Clean up did not run), Play Store and Camera along the bottom.
 5. Long-press each of those three and tap **Remove**. The apps stay installed.
 6. Long-press empty space, tap **Launcher Settings**, and set:
 

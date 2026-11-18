@@ -88,3 +88,22 @@ Labels: **Verified** = tested on a real device. **Documented** = from an officia
 | `finish` steps on the reference tablet (Fossify 1.10.0, One UI 8.5, Chrome 156) | 9 Nov 2026 | **Verified:** `status`; `icons` (Chrome dragged onto Home, then removed); `launcher` (rows 4 → 3, columns 3 → 5, drawer switch back on; a second run skips); `place` (Settings removed, then dragged back to its cell; the two in place skipped); `updates` (both up to date, read correctly). **Not run:** tapping **Update** in Play, installing Decadent from scratch (it was already installed), `wifi` and `account-open` on a real tablet |
 | `finish` steps on the simulator | `tests/sim-tablet.sh` | Pass |
 | Webpage last steps (Wi-Fi, account, Finish for me, fallbacks) | Chromium with a pretend tablet, including `?demo=manual` | Pass. Restart and reconnect over WebUSB **not run** on a real tablet |
+
+## The webpage on a real tablet (18 Nov 2026)
+
+Reference tablet (SM-X133, X133DXS5BZI3, One UI 8.5), driven through the page itself in headless Chrome 157 on macOS over WebUSB.
+The browser's device chooser was the one thing not clicked: headless Chrome cannot show it, so the test profile was given the tablet beforehand.
+The page ran from the local build, with the fixes of D-30 from run 3 on. The DE1 stayed asleep through every run.
+
+| Run | Start | Chosen | Result |
+|---|---|---|---|
+| Connect | Tablet fully set up | Connect tablet | **Verified.** Android's Allow prompt showed for the page's new key; with Always allow ticked, every later connection and the reconnect after a restart needed no tap |
+| 1 | Fully set up | Turn apps back on and the original Home screen | **Verified.** 99 apps on again, Samsung's Home with its own icons, bottom buttons, side panel, Samsung Internet as browser; Fossify, Olauncher and Decadent removed; 6 apps that were off before stayed off |
+| 2 | Stock, Decaid present | Clean up only, Gmail unticked | **Verified.** 98 off, Gmail left on (the per-app choice reaches the tablet), all still off after the restart. Finish for me: restart and reconnect by itself, Chrome updated through Play (157 to 158), Decaid opened |
+| 3 | After run 2 | Turn apps back on, then New Home screen, Decadent wanted | **Verified.** Undo ran, then the Home option without a second visit. Finish for me in 5 minutes: plugin step (plugin already there), icons, grid, Decadent installed from Chrome as a WebAPK, three icons placed, both apps opened. Found: Samsung Internet stayed on Home (fixed, D-30) |
+| 4 | Stock, no Decaid | Both options, Skip Decaid, Decadent unticked | **Verified** after the D-30 fix. First try: the icon and grid steps ran before Home was ready after the restart and were left for the person. Home ends with Settings alone |
+| 5 | Stock, no Decaid | Both options, install Decaid from the downloaded file, Decadent wanted | **Verified.** No file and a wrong file are refused with nothing installed. Decaid 0.9.2 installed (122 MB in about 80 s with everything else). The page paused at Decaid's first questions, went on by itself when they were answered, installed the plugin into the new Decaid (loaded and set to start), then Decadent. Decadent, still logged in from before, linked the new Decaid by itself. Home and the list of switched-off apps ended identical to the start of the day |
+
+Not tested: the browser's own device chooser, Windows, joining Wi-Fi and the Google sign-in from the page (the tablet had both), a tablet with no Google account.
+
+Seen and left: the first time Decadent opens after it is installed, a dark strip stays where the status bar was; it is gone the next time the app is opened.

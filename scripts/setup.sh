@@ -53,7 +53,7 @@ echo "Automatic part done. Now finish on the tablet (docs/installation.md has de
 echo " 1. Reboot it. Join Wi-Fi, on an IoT or guest network if you have one."
 echo " 2. If no Google account is signed in, we recommend adding one made only for this tablet (it has no lock). Update Chrome and WebView in Play."
 if [ $HOMESCR = 1 ]; then cat <<'T'
- 3. Fossify: long-press Chrome, Play Store and Camera on Home, and tap Remove each.
+ 3. Fossify: long-press the browser (Chrome or Internet), Play Store and Camera on Home, and tap Remove each.
  4. Fossify: long-press empty space, Launcher Settings: Row count 3, Column count 5, Close app drawer on opening an app On.
  5. In Chrome open https://decadentcoffee.app/app/, tap the install icon, tap Install once, and log in.
  6. Swipe up from mid-screen. Drag Decaid, Decadent and Settings to cells 2, 3 and 4 of the middle row.

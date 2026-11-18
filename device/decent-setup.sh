@@ -232,7 +232,8 @@ do_undo() {
       pm list packages --user "$USER_ID" | sed 's/^package://' | while read -r p; do
         case "$p" in "$FOSSIFY"|app.olauncher|org.chromium.webapk.*) ;; *) continue ;; esac
         if grep -qx "$p" "$DIR/original-installed.txt"; then say "SKIP $p was here before this project"; continue; fi
-        [ "$(role_holder android.app.role.HOME)" = "$p" ] && { say "SKIP $p is still the Home app"; continue; }
+        # A preview has not handed Home back yet, so the launcher is still Home there: list it all the same.
+        [ "$DRY" != 1 ] && [ "$(role_holder android.app.role.HOME)" = "$p" ] && { say "SKIP $p is still the Home app"; continue; }
         if [ "$DRY" = 1 ]; then say "PLAN uninstall $p"; continue; fi
         pm uninstall --user "$USER_ID" "$p" >/dev/null 2>&1; log_change uninstall "$p" - ok; say "DONE uninstalled $p"
       done
@@ -352,6 +353,20 @@ grid_box() { # Fossify's Home grid, else its largest view
     awk '{a=($3-$1)*($4-$2)} a>m{m=a; b=$0} END{if(m>0)print b}'
 }
 home_labels() { grep 'package="org.fossify.home"' "$UIN" | grep -qE '( text|content-desc)="[^"]'; }
+# home_wait [labels]: press Home until Fossify's own screen can be read (with its icon labels, when asked). A tablet
+# that has just restarted needs a while: straight after the restart the first read found no Home at all.
+home_wait() {
+  _hend=$(( $(date +%s) + $(tmo 60) ))
+  while :; do
+    wake; go_home
+    if ui_dump && grep -q 'package="org.fossify.home"' "$UIN"; then
+      [ "$1" = labels ] || return 0
+      home_labels && return 0
+    fi
+    [ "$(date +%s)" -ge "$_hend" ] && return 1
+    sleep 2
+  done
+}
 home_spot() { # label: centre of its icon on Home (grid or dock), if there is one. Call it on Home.
   _ln="$(ui_line 'text|content-desc' "$1" 'package="org.fossify.home"' 'EditText')"; [ -n "$_ln" ] && mid "$_ln"
 }
@@ -383,11 +398,10 @@ fin_account_open() {
 
 fin_icons() {
   is_fossify || { say "SKIP finish icons home screen option not used"; return 0; }
-  wake; go_home
-  ui_dump || { say "MANUAL finish icons cannot read the screen"; return 0; }
-  home_labels || { say "MANUAL finish icons cannot read the Home screen icons"; return 0; }
+  home_wait labels || { say "MANUAL finish icons cannot read the Home screen icons"; return 0; }
   n=0; seen=0; why=""
-  for lab in Chrome "Play Store" Camera; do
+  # Fossify fills Home with the browser, Play Store and Camera. Without Clean up the browser is Samsung Internet.
+  for lab in Chrome "Internet|Samsung Internet" "Play Store" Camera; do
     p="$(home_spot "$lab")"; [ -n "$p" ] || continue
     seen=$((seen+1))
     long_press $p
@@ -420,8 +434,7 @@ pick_count() {
 }
 fin_launcher() {
   is_fossify || { say "SKIP finish launcher home screen option not used"; return 0; }
-  wake; go_home
-  ui_dump || { say "MANUAL finish launcher cannot read the screen"; return 0; }
+  home_wait || { say "MANUAL finish launcher cannot find the Home screen"; return 0; }
   gb="$(grid_box)"; [ -n "$gb" ] || { say "MANUAL finish launcher cannot find the Home screen"; return 0; }
   set -- $gb; w=$(($3-$1)); h=$(($4-$2)); spot=""
   for f in "5 6" "5 2" "1 6" "9 6" "5 10"; do # tenths across, twelfths down: upper middle first
@@ -570,7 +583,7 @@ place_one() {
 }
 fin_place() {
   is_fossify || { say "SKIP finish place home screen option not used"; say "OK finish place"; return 0; }
-  wake
+  home_wait || :
   place_one Decaid 2
   # "finish place no-decadent": the owner left Decadent off, so its icon stays off Home even when it is installed.
   case " $ARGS " in *" no-decadent "*) say "SKIP finish place Decadent not wanted" ;; *) place_one Decadent 3 ;; esac
