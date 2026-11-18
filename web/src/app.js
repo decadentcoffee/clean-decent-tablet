@@ -134,7 +134,7 @@ function shown() {
 function choiceDefaults() {
   const v = shown();
   $("opt-cleanup").checked = v.cleanup; $("opt-home").checked = v.home;
-  $("opt-decaid").checked = v.decaid; $("opt-decadent").checked = v.decadent && FOR_DECADENT; $("opt-plugin").checked = false;
+  $("opt-decaid").checked = v.decaid; $("opt-decadent").checked = v.decadent && FOR_DECADENT; $("opt-plugin").checked = v.plugin && FOR_DECADENT;
   $("opt-undo-apps").checked = false; $("opt-undo-home").checked = false; $("keep-apps").checked = false;
 }
 // What the person has chosen, counting only the options on screen.
@@ -427,16 +427,17 @@ async function runFinish(afterRestart = false) {
   try { await finStatus(); } catch { /* keep the last reading */ }
   // The steps for this visit. Read from the tablet as it is now (an undo may have run since the choose screen):
   // the launcher steps arrange a launcher this visit installed, and never one the person has already arranged.
-  const newHome = wantHomeDone, ours = finHome === FOSSIFY;
+  const newHome = wantHomeDone, ours = finHome === FOSSIFY, samsung = finHome === "com.sec.android.app.launcher";
   const decaidThere = decaidHave || ($("decaid-add").checked && !!want.decaid);
   const wantD = want.decadent && decaidThere, decadent = wantD && !decadentHad;
   const onHome = wantD || decadentHad; // Decadent's icon belongs on Home
   const plugin = (wantD || want.plugin) && decaidThere;
   const plan = [...(ranChange ? ["restart"] : []), ...(plugin ? ["plugin"] : []), ...(newHome && ours ? ["icons", "launcher"] : []),
     ...(ranChange || (wantD && finAcct === "yes") ? ["updates"] : []), ...(decadent ? ["decadent"] : []),
-    ...(ours && (newHome || wantD) ? ["place"] : []), ...(newHome && ours ? ["more"] : []), ...(decaidThere || onHome ? ["open"] : [])];
+    // On Samsung's own Home only a Decadent installed in this visit is put on Home: a second run would add a second icon.
+    ...((ours && (newHome || wantD)) || (samsung && decadent) ? ["place"] : []), ...(newHome && ours ? ["more"] : []), ...(decaidThere || onHome ? ["open"] : [])];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
-  const icons = [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"];
+  const icons = ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
   const [w, h] = FIN("place").querySelectorAll(".place-list"); w.textContent = said(false); h.innerHTML = said(true);
   for (const li of $("fin-steps").children) li.hidden = !plan.includes(li.dataset.k);
@@ -476,7 +477,7 @@ function finishLeft() {
   const decadentIn = FIN("decadent") && !FIN("decadent").hidden && FIN("decadent").dataset.state !== "manual";
   if (decadentIn) { const item = document.createElement("li"); item.innerHTML = "<b>Log in to Decadent</b> on the tablet. It's open and waiting."; left.append(item); }
   // Samsung's own Home puts a new app in its app list only, and its menus cannot be driven from here.
-  if (decadentIn && finHome !== FOSSIFY) { const item = document.createElement("li"); item.innerHTML = "<b>Put Decadent on Home.</b> It is in the tablet's app list: on Home, swipe up, hold <b>Decadent</b> and tap <b>Add to Home</b>."; left.append(item); }
+  if (decadentIn && finHome !== FOSSIFY && FIN("place").dataset.state !== "done") { const item = document.createElement("li"); item.innerHTML = "<b>Put Decadent on Home.</b> It is in the tablet's app list: on Home, swipe up, hold <b>Decadent</b> and tap <b>Add to Home</b>."; left.append(item); }
   const none = left.children.length === 0;
   $("fin-left-h").textContent = none ? "All done" : "Left for you";
   if (none) { const item = document.createElement("li"); item.textContent = "Nothing. The tablet is ready."; left.append(item); }

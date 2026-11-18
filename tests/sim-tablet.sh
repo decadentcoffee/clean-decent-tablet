@@ -290,6 +290,10 @@ grep -qx 'STATUS decadent_app=none' "$T/o" && ok "another site's web app does no
 grep -v '^org.chromium.webapk' "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"
 printf 'com.sec.android.app.launcher\n' > "$SIM/role.home"; cp "$FX/transitions.tsv" "$SIM/transitions"; echo home > "$SIM/screen"
 fin decadent; grep -qx 'DONE finish decadent' "$T/o" && ok "finish decadent with Samsung's Home as the Home app" || { bad "decadent on Samsung Home"; cat "$T/o"; }
+# Samsung's own Home: with no Decadent on the tablet there is nothing to put on Home.
+grep -v '^org.chromium.webapk' "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"; printf 'com.sec.android.app.launcher\n' > "$SIM/role.home"
+fin place; grep -qx 'SKIP finish place Decadent not installed' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish place' && ok "finish place on Samsung's Home skips when Decadent is not installed" || { bad "place samsung"; cat "$T/o"; }
+fin place no-decadent; grep -qx 'SKIP finish place Decadent not wanted' "$T/o" && ok "finish place on Samsung's Home leaves Decadent off when not wanted" || { bad "place samsung no-decadent"; cat "$T/o"; }
 # Decent's other apps. The simulated app list does not show them, so each ends MANUAL and nothing lands on Home;
 # a tablet without them skips both.
 printf 'org.fossify.home\n' > "$SIM/role.home"; : > "$SIM/added"; echo home > "$SIM/screen"

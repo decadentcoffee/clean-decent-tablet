@@ -661,7 +661,35 @@ fin_more() {
   go_home; say "OK finish more"
 }
 
+# Samsung's own Home puts a new app in its app list only. Its long-press menu cannot be read from here, but an icon
+# dragged from the app list to the bottom edge of the screen lands on Home (reference tablet, One UI 8.5, 19 Nov 2026).
+# Decadent's own icon is told from an older Chrome shortcut of the same name by counting: one more after the drag.
+SAMSUNG=com.sec.android.app.launcher
+sam_count() { grep "package=\"$SAMSUNG\"" "$UIN" | grep -cE "(text|content-desc)=\"$1\""; }
+place_samsung() { # label
+  lab="$1"
+  has_webapk || { say "SKIP finish place $lab not installed"; return 0; }
+  wake; go_home; ui_dump || { say "MANUAL finish place $lab cannot read the screen"; return 0; }
+  _wh="$(screen_wh)"; _w="${_wh% *}"; _h="${_wh#* }"; [ -n "$_h" ] || { say "MANUAL finish place $lab cannot read the screen"; return 0; }
+  before="$(sam_count "$lab")"
+  input swipe $((_w/2)) $((_h*3/4)) $((_w/2)) $((_h/4)) 300; pause
+  F="package=\"$SAMSUNG\""; p=""; _n=0
+  while [ $_n -lt 5 ]; do # the app list is pages side by side
+    ui_dump; p="$(ui_find 'text|content-desc' "$lab" "$F")"
+    [ -n "$p" ] && break
+    input swipe $((_w*3/4)) $((_h/2)) $((_w/4)) $((_h/2)) 200; pause; _n=$((_n+1))
+  done
+  [ -n "$p" ] || { go_home; say "MANUAL finish place $lab could not find it in the app list"; return 0; }
+  drag $p $((_w/2)) $((_h-5)) 5000
+  go_home; ui_dump
+  [ "$(sam_count "$lab")" -gt "$before" ] || { say "MANUAL finish place $lab not on Home after the drag"; return 0; }
+  log_change finish "place:$lab" - samsung; say "DONE finish place $lab"
+}
 fin_place() {
+  if [ "$(role_holder android.app.role.HOME)" = "$SAMSUNG" ]; then
+    case " $ARGS " in *" no-decadent "*) say "SKIP finish place Decadent not wanted" ;; *) place_samsung Decadent ;; esac
+    go_home; say "OK finish place"; return 0
+  fi
   is_fossify || { say "SKIP finish place home screen option not used"; say "OK finish place"; return 0; }
   home_wait || :
   place_one Decaid 2

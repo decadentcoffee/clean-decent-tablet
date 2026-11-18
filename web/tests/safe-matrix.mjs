@@ -8,13 +8,14 @@ const CASES = [
   // [name, query, ticks shown on the choose screen, finish steps in order, or null when the page must refuse]
   ["clean-tablet way in, defaults", "?safe", "decadent,cleanup,home", ["icons", "launcher", "updates", "place no-decadent", "more"]],
   ["sign-up way in, defaults", "?safe&for=decadent", "decadent,cleanup,home", ["decaid open", "plugin", "icons", "launcher", "updates", "decadent", "place", "more"]],
-  ["Decadent only, Samsung's Home", "?safe&on=decadent", "decadent,cleanup,home", ["decaid open", "plugin", "updates", "decadent"]],
+  ["Decadent only, Samsung's Home", "?safe&on=decadent", "decadent,cleanup,home", ["decaid open", "plugin", "updates", "decadent", "place"]],
   ["Clean up only", "?safe&on=cleanup", "decadent,cleanup,home", ["updates"]],
   ["Home only, with Decadent", "?safe&on=home,decadent", "decadent,cleanup,home", ["decaid open", "plugin", "icons", "launcher", "updates", "decadent", "place", "more"]],
-  ["no Decaid: Decaid and Decadent", "?safe=nodecaid&on=decaid,decadent&decaid=add", "decaid,decadent,cleanup,home", ["decaid open", "plugin", "updates", "decadent"]],
+  ["no Decaid: Decaid and Decadent", "?safe=nodecaid&on=decaid,decadent&decaid=add", "decaid,decadent,cleanup,home", ["decaid open", "plugin", "updates", "decadent", "place"]],
   ["no Decaid: Decadent without Decaid is refused", "?safe=nodecaid&on=decadent", "decaid,decadent,cleanup,home", null],
   ["nothing ticked is refused", "?safe&on=", "decadent,cleanup,home", null],
   ["set-up tablet: add Decadent later", "?safe=done&on=decadent", "decadent,undo-apps,undo-home", ["decaid open", "plugin", "updates", "decadent", "place"]],
+  ["sign-up way in, app already there: the plugin check is ticked", "?safe=done&decadent=installed&for=decadent", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
   ["Decadent already there: check the plugin", "?safe=done&decadent=installed&on=plugin", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
 ];
 const browser = await Browser.launch();

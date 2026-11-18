@@ -121,3 +121,5 @@ Not tested: the browser's own device chooser, Windows, joining Wi-Fi and the Goo
 | Every combination of the ticks, in safe mode | `web/tests/safe-matrix.mjs`: ten cases, the commands sent compared with the expected order |
 
 Not tested on a real tablet: Decaid and Decadent ticked together on a tablet with no Decaid without the other two options; adding Decadent later to a tablet whose Home is already ours (safe mode only).
+| Plugin deleted in Decaid, then **Check the Decadent plugin** from `decadentcoffee.app/setup` (D-35) | **Verified.** Plugin installed again from the release, loaded, set to start, still linked (83 s) |
+| `finish place` with Samsung's launcher as Home (D-35) | **Verified** by script over adb: Decadent dragged from the app list onto Home (20 s). Its run from the webpage is safe mode only |
