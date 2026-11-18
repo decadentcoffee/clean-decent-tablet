@@ -284,12 +284,12 @@ grep -vx net.tadel.reaprime "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed
 fin place
 grep -qx 'SKIP finish place Decaid not installed' "$T/o" && ! grep -q 'content-desc="Decaid"' "$SIM/added" && tail -n 1 "$T/o" | grep -qx 'OK finish place' && ok "finish place without Decaid skips its icon" || { bad "place no decaid"; cat "$T/o"; }
 # Decent's other apps. The simulated app list does not show them, so each ends MANUAL and nothing lands on Home;
-# a tablet without them skips all three.
+# a tablet without them skips both.
 printf 'org.fossify.home\n' > "$SIM/role.home"; : > "$SIM/added"; echo home > "$SIM/screen"
 fin more
-[ "$(grep -c '^MANUAL finish more .* could not find it in the app list$' "$T/o")" = 3 ] && [ ! -s "$SIM/added" ] && tail -n 1 "$T/o" | grep -qx 'OK finish more' && ok "finish more ends MANUAL for an app the app list does not show" || { bad "more"; cat "$T/o"; }
+[ "$(grep -c '^MANUAL finish more .* could not find it in the app list$' "$T/o")" = 2 ] && [ ! -s "$SIM/added" ] && tail -n 1 "$T/o" | grep -qx 'OK finish more' && ok "finish more ends MANUAL for an app the app list does not show" || { bad "more"; cat "$T/o"; }
 grep -vxE 'hu.kavekalmar.sep|com.pressensor.coffeeflow|com.hecorat.screenrecorder.free' "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"; echo home > "$SIM/screen"
 fin more
-[ "$(grep -c '^SKIP finish more .* not on this tablet$' "$T/o")" = 3 ] && tail -n 1 "$T/o" | grep -qx 'OK finish more' && ok "finish more skips apps the tablet does not have" || { bad "more absent"; cat "$T/o"; }
+[ "$(grep -c '^SKIP finish more .* not on this tablet$' "$T/o")" = 2 ] && tail -n 1 "$T/o" | grep -qx 'OK finish more' && ok "finish more skips apps the tablet does not have" || { bad "more absent"; cat "$T/o"; }
 printf 'com.sec.android.app.launcher\n' > "$SIM/role.home"; fin more; grep -qx 'SKIP finish more home screen option not used' "$T/o" && ok "finish more skips without the Home option" || bad "more without home"
 echo; [ $fails = 0 ] && echo "ALL SIM CHECKS PASSED" || { echo "$fails SIM CHECK(S) FAILED"; exit 1; }

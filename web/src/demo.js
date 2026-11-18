@@ -46,7 +46,7 @@ export class DemoTablet {
       if (k === "decadent") { this.webapk = true; await say("DONE finish decadent", 1200); }
       if (k === "decaid") { await say(`STATUS decaid=${this.asks-- > 0 ? "asking" : "ready"}`, 600); await say("OK finish decaid"); }
       if (k === "plugin") await say(this.manual ? "MANUAL finish plugin Decaid's menu did not show" : "DONE finish plugin", 1200);
-      if (k === "more") { for (const l of ["SE Profiler", "Coffee Flow", "AZ Screen Recorder"]) await say(`DONE finish more ${l}`, 300); await say("OK finish more"); }
+      if (k === "more") { for (const l of ["SE Profiler", "Coffee Flow"]) await say(`DONE finish more ${l}`, 300); await say("OK finish more"); }
       if (k === "place") {
         for (const l of ["Decaid", "Decadent", "Settings"]) {
           if (l === "Decaid" && this.noDecaid && !this.pushed.some((p) => p.endsWith("decaid.apk"))) { await say("SKIP finish place Decaid not installed", 200); continue; }

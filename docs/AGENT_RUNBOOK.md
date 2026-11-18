@@ -120,7 +120,7 @@ Give these one at a time, and wait for each. The details are in `docs/installati
 5. In **Launcher Settings**, set Row count 3 and Column count 5 before placing icons. Turn on **Close app drawer on opening an app**.
 6. If the person uses Decadent: in Chrome, open `https://decadentcoffee.app/app/`, tap the install icon, tap **Install** once, and log in. Otherwise skip it; the Home icons are their choice.
 7. Drag Decaid, Decadent and Settings to cells 2, 3 and 4 of the middle row. Put nothing else on that page.
-8. Put SE Profiler, Coffee Flow and AZ Screen Recorder on a second Home page, in the same three cells: drag the first to the right edge until a new page shows.
+8. Put SE Profiler and Coffee Flow on a second Home page, in cells 2 and 4 of the middle row: drag the first to the right edge until a new page shows.
 
 An agent can do steps 4, 5, 7 and 8 with `adb shell input` and `uiautomator dump`. Read the screen before each tap: positions move. Do not type passwords for the person. Do not do this while the person is using the tablet.
 

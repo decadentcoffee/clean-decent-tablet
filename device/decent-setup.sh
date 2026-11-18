@@ -582,11 +582,10 @@ place_one() {
   log_change finish "place:$lab" - ok; say "DONE finish place $lab"
 }
 # Decent ships a few more apps a person opens by hand. They go on a second Home page, in the same middle cells.
-# (AndroWish is not one of them: it only runs the original Decent app.) Fossify makes the second page when an icon is
+# (AndroWish is not one of them: it only runs the original Decent app. Nor is the screen recorder: owner, 19 Nov 2026.) Fossify makes the second page when an icon is
 # held at the right edge, and one slow drag does that: the icon then sits in the last column of the new page.
 MORE_APPS="hu.kavekalmar.sep:SE Profiler
-com.pressensor.coffeeflow:Coffee Flow
-com.hecorat.screenrecorder.free:AZ Screen Recorder"
+com.pressensor.coffeeflow:Coffee Flow"
 home_sig() { grep 'package="org.fossify.home"' "$UIN" | grep -oE '(text|content-desc)="[^"]+"' | tr -d '\n'; }
 page_two() { go_home; _wh="$(screen_wh)"; _w="${_wh% *}"; _h="${_wh#* }"; input swipe $((_w*3/4)) $((_h*4/5)) $((_w/4)) $((_h*4/5)) 150; pause; ui_dump; }
 # drawer_spot <label>: open the app list and print where the app's icon is. Call it on Home.
@@ -650,7 +649,7 @@ fin_more() {
   home_wait || :
   _c=2
   echo "$MORE_APPS" > "$DIR/more.tmp"
-  while IFS=: read -r _pk _lb <&3; do place_two "$_pk" "$_lb" $_c; _c=$((_c+1)); done 3< "$DIR/more.tmp"
+  while IFS=: read -r _pk _lb <&3; do place_two "$_pk" "$_lb" $_c; _c=$((_c+2)); done 3< "$DIR/more.tmp" # two apps: cells 2 and 4, either side of the middle
   rm -f "$DIR/more.tmp"
   go_home; say "OK finish more"
 }
