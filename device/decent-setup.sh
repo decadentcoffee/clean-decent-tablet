@@ -498,7 +498,14 @@ fin_updates() {
   go_home; say "OK finish updates"
 }
 
+# Chrome sometimes shows no Install button the first time (seen once on the reference tablet, straight after an undo;
+# the second try installed it). So one failed try is followed by one more.
 fin_decadent() {
+  _o="$(fin_decadent_once)"
+  case "$_o" in MANUAL*) has_webapk || { go_home; _o="$(fin_decadent_once)"; } ;; esac
+  echo "$_o"
+}
+fin_decadent_once() {
   has_webapk && { say "SKIP finish decadent already installed"; return 0; }
   wake
   out="$(am start -a android.intent.action.VIEW -d "$URL" -p "$CHROME" 2>&1)"
@@ -777,7 +784,18 @@ plugin_on() {
   return 0
 }
 
+# With Android's bottom buttons showing, Decaid draws the end of its Plugins list under the button bar, and the last
+# card's Auto-load switch cannot be tapped (reference tablet, Decaid 0.9.2, 19 Nov 2026). So the step runs with swipe
+# gestures and puts the buttons back when it ends. This is not recorded as a change: undo has nothing to do with it.
+nav_overlay() { cmd overlay enable-exclusive --category "com.android.internal.systemui.navbar.$1" >/dev/null 2>&1; settings put secure navigation_mode "$2"; sleep "${UI_PAUSE_S:-3}"; }
 fin_plugin() {
+  _nav="$(settings get secure navigation_mode 2>/dev/null)"
+  case "$_nav" in 2|'') fin_plugin_do; return 0 ;; esac
+  nav_overlay gestural 2
+  fin_plugin_do
+  nav_overlay threebutton "$_nav"
+}
+fin_plugin_do() {
   installed "$DECAID" || { say "SKIP finish plugin Decaid is not installed"; return 0; }
   # Straight after a restart Wi-Fi can take a moment.
   _n=0; while ! wifi_up && [ $_n -lt "$(tmo 30)" ]; do sleep 1; _n=$((_n+1)); done

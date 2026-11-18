@@ -124,7 +124,7 @@ function shown() {
   return {
     decaid: doAllowed && !decaidHave,
     decadent: doAllowed && !!status && status.decadent_app !== "installed",
-    plugin: doAllowed && !!status && status.decadent_app === "installed" && decaidHave,
+    plugin: doAllowed && !!status && status.decadent_app === "installed",
     cleanup: doAllowed && avail > 0,
     home: doAllowed && status && status.home !== FOSSIFY,
     undoApps: undoPlan.apps.length + undoPlan.appSettings.length > 0,
@@ -141,18 +141,23 @@ function choiceDefaults() {
 function chosen() {
   const v = shown();
   const decaid = v.decaid && $("opt-decaid").checked;
-  return { decaid, decadent: v.decadent && $("opt-decadent").checked && (decaidHave || decaid), plugin: v.plugin && $("opt-plugin").checked,
+  return { decaid, decadent: v.decadent && $("opt-decadent").checked && (decaidHave || decaid), plugin: v.plugin && $("opt-plugin").checked && (decaidHave || decaid),
     cleanup: v.cleanup && $("opt-cleanup").checked, home: v.home && $("opt-home").checked,
     undoApps: v.undoApps && $("opt-undo-apps").checked, undoHome: v.undoHome && $("opt-undo-home").checked };
 }
 function syncChoices() {
   const v = shown();
   // Decadent reaches the machine through Decaid: without Decaid on the tablet or ticked, its tick is off and says why.
-  const noDecaid = v.decadent && !decaidHave && !(v.decaid && $("opt-decaid").checked);
-  if (noDecaid) $("opt-decadent").checked = false;
+  const noDecaid = !FOR_DECADENT && v.decadent && !decaidHave && !(v.decaid && $("opt-decaid").checked);
+  if (FOR_DECADENT) { // Decaid, the plugin and the app are what this way in is for: they are not choices
+    $("opt-decaid").checked = v.decaid; $("opt-decadent").checked = v.decadent; $("opt-plugin").checked = v.plugin;
+    const fixed = $("row-decadent-fixed"); fixed.hidden = !(v.decaid || v.decadent || v.plugin);
+    fixed.innerHTML = `<b>Decadent.</b> ${v.decaid ? "Decaid, Decent's app for the machine, goes on first. " : ""}${v.decadent ? "Then the Decadent plugin and the app." : "The Decadent plugin is checked, and added if it is missing."}`;
+  }
+  if (noDecaid && !FOR_DECADENT) $("opt-decadent").checked = false;
   $("opt-decadent").disabled = noDecaid; $("decadent-needs").hidden = !noDecaid;
   const c = chosen();
-  $("row-decaid").hidden = !v.decaid; $("row-decadent").hidden = !v.decadent; $("row-plugin").hidden = !v.plugin;
+  $("row-decaid").hidden = !v.decaid || FOR_DECADENT; $("row-decadent").hidden = !v.decadent || FOR_DECADENT; $("row-plugin").hidden = !v.plugin || FOR_DECADENT;
   $("row-cleanup").hidden = !v.cleanup; $("pick").hidden = !c.cleanup;
   $("row-home").hidden = !v.home;
   $("row-undo-apps").hidden = !v.undoApps; $("undo-pick").hidden = !c.undoApps || undoPlan.apps.length === 0;
@@ -176,7 +181,9 @@ async function demoGoTo(to) {
     for (const [id, on] of [["opt-cleanup", false], ["opt-home", false], ["opt-undo-apps", true], ["opt-undo-home", true]]) $(id).checked = on;
     syncChoices(); await $("do-setup").onclick(); if (to === "undone") await runUndo(); return;
   }
-  await $("do-setup").onclick(); if (to === "confirm" || current !== "confirm") return;
+  await $("do-setup").onclick();
+  if (FOR_DECADENT) { if (to === "finished") await until(() => !$("fin-after").hidden || !$("opt-none").hidden, 60000); return; } // no Decaid screen, and the end runs by itself
+  if (to === "confirm" || current !== "confirm") return;
   if (!decaidHave) { const d = qs.get("decaid") || (want.decaid ? "add" : "skip"); $(d === "add" ? "decaid-add" : "decaid-skip").checked = true; $("decaid-get").hidden = d !== "add"; }
   const go = runSetup(); if (to === "running") return;
   await go; if (to === "finish") return;
@@ -279,9 +286,17 @@ async function runSetup() {
     // Decaid is checked before anything is installed: the chosen file must be Decent's latest release.
     const decaid = APKS.find((a) => a.name === "decaid");
     let decaidBytes = null;
-    if (!decaidHave && $("decaid-add").checked && $("decaid-file").files[0]) {
-      $("run-title").textContent = "Checking the Decaid file…";
-      decaidBytes = new Uint8Array(await $("decaid-file").files[0].arrayBuffer());
+    const decaidFile = $("decaid-file").files[0];
+    if (!decaidHave && $("decaid-add").checked && (decaidFile || (FOR_DECADENT && want.decaid && !DEMO))) {
+      // From Decadent's way in the page fetches Decent's latest release itself (this site passes it on unchanged);
+      // either way the bytes are checked against the checksum GitHub lists before anything is installed.
+      $("run-title").textContent = decaidFile ? "Checking the Decaid file…" : "Downloading Decaid…";
+      if (decaidFile) decaidBytes = new Uint8Array(await decaidFile.arrayBuffer());
+      else {
+        const res = await fetch("decaid-latest.apk").catch(() => null);
+        if (!res || !res.ok) throw new Error("Decaid could not be downloaded. Check this computer's internet connection and try again. Nothing was installed.");
+        decaidBytes = new Uint8Array(await res.arrayBuffer());
+      }
       if (!DEMO) {
         const latest = await latestApk(decaid.url).catch(() => { throw new Error("The Decaid file could not be checked with GitHub. Check this computer's internet connection and try again. Nothing was installed."); });
         if ((await sha256(decaidBytes)) !== latest.sha) throw new Error(`That file isn't the latest Decaid${latest.version ? ` (${latest.version})` : ""}. Download it again with the link on the Decaid step. Nothing was installed.`);
@@ -318,7 +333,7 @@ async function runSetup() {
     $("refused").textContent = refused && refused !== "0" ? `Android wouldn't switch off ${refused} of them, which is expected on some firmware.` : "";
     $("fin-done").textContent = wantClean ? "The clean-up is done." : wantHome ? "The new Home screen is in." : decaidBytes ? "Decaid is installed." : "";
     if (wantClean || wantHome) changedAt = Date.now();
-    busy = false; wantHomeDone = wantHome; ranChange = wantClean || wantHome; show("finish"); startFinish();
+    busy = false; wantHomeDone = wantHome; ranChange = wantClean || wantHome || undid; show("finish"); startFinish();
   } catch (e) { busy = false; setError("run-error", plainError(e)); $("run-title").textContent = "Stopped"; $("run-back").hidden = false; }
 }
 
@@ -351,11 +366,20 @@ async function finStatus() {
 }
 function stopPoll() { clearInterval(finPoll); finPoll = null; }
 async function startFinish() {
-  $("fin-you").hidden = false; $("fin-run").hidden = true; $("fin-after").hidden = true; shareBox(false);
+  $("fin-you").hidden = FOR_DECADENT; $("fin-run").hidden = true; $("fin-after").hidden = true; shareBox(false);
   for (const li of $("fin-steps").children) { delete li.dataset.state; li.querySelector(".st").textContent = ""; }
   try { await finStatus(); } catch (e) { setError("fin-error", plainError(e)); }
   stopPoll();
-  finPoll = setInterval(() => { if (current !== "finish" || !$("fin-run").hidden || !tablet) return stopPoll(); finStatus().catch(() => {}); }, 4000);
+  if (autoFinish()) return;
+  finPoll = setInterval(() => { if (current !== "finish" || !$("fin-run").hidden || !tablet) return stopPoll(); finStatus().then(autoFinish).catch(() => {}); }, 4000);
+}
+// From Decadent's way in nobody presses Finish for me: with Wi-Fi the last steps start by themselves. A Google
+// account is used when the tablet has one and never asked for. Without Wi-Fi the page waits and says so.
+function autoFinish() {
+  if (!FOR_DECADENT || current !== "finish" || !$("fin-run").hidden || busy) return false;
+  if (!finWifi) { $("fin-you").hidden = false; $("fin-lead").textContent = "The tablet needs Wi-Fi for the next part. Join a network on the tablet, and this page carries on."; $("fin-you-h").textContent = "One thing first"; return false; }
+  if (finAcct !== "yes") finAcct = "skip";
+  runFinish(); return true;
 }
 function shareBox(on) { document.querySelector('[data-step="finish"] .share').hidden = !on; }
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -429,11 +453,12 @@ async function runFinish(afterRestart = false) {
   // the launcher steps arrange a launcher this visit installed, and never one the person has already arranged.
   const newHome = wantHomeDone, ours = finHome === FOSSIFY, samsung = finHome === "com.sec.android.app.launcher";
   const decaidThere = decaidHave || ($("decaid-add").checked && !!want.decaid);
-  const wantD = want.decadent && decaidThere, decadent = wantD && !decadentHad;
+  // From Decadent's way in the app is always wanted, also when an undo in this visit has just removed it.
+  const wantD = (FOR_DECADENT || want.decadent) && decaidThere, decadent = wantD && !decadentHad;
   const onHome = wantD || decadentHad; // Decadent's icon belongs on Home
   const plugin = (wantD || want.plugin) && decaidThere;
   const plan = [...(ranChange ? ["restart"] : []), ...(plugin ? ["plugin"] : []), ...(newHome && ours ? ["icons", "launcher"] : []),
-    ...(ranChange || (wantD && finAcct === "yes") ? ["updates"] : []), ...(decadent ? ["decadent"] : []),
+    ...(ranChange || (decadent && finAcct === "yes") ? ["updates"] : []), ...(decadent ? ["decadent"] : []),
     // On Samsung's own Home only a Decadent installed in this visit is put on Home: a second run would add a second icon.
     ...((ours && (newHome || wantD)) || (samsung && decadent) ? ["place"] : []), ...(newHome && ours ? ["more"] : []), ...(decaidThere || onHome ? ["open"] : [])];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
@@ -479,11 +504,12 @@ function finishLeft() {
   // Samsung's own Home puts a new app in its app list only, and its menus cannot be driven from here.
   if (decadentIn && finHome !== FOSSIFY && FIN("place").dataset.state !== "done") { const item = document.createElement("li"); item.innerHTML = "<b>Put Decadent on Home.</b> It is in the tablet's app list: on Home, swipe up, hold <b>Decadent</b> and tap <b>Add to Home</b>."; left.append(item); }
   const none = left.children.length === 0;
-  $("fin-left-h").textContent = none ? "All done" : "Left for you";
+  $("fin-left-h").textContent = none ? "All done" : FOR_DECADENT && left.children.length === 1 ? "One thing left" : "Left for you";
   if (none) { const item = document.createElement("li"); item.textContent = "Nothing. The tablet is ready."; left.append(item); }
   $("fin-run-h").textContent = "Finished"; $("fin-keep").hidden = true;
-  $("fin-lead").textContent = none ? "The tablet is ready." : "Nearly ready: a few things are left for you, below.";
-  $("fin-after").hidden = false; shareBox(true);
+  if (FOR_DECADENT) { $("fin-h").textContent = none ? "Your machine is Decadent" : "Nearly there"; $("fin-done").textContent = ""; $("refused").textContent = ""; }
+  $("fin-lead").textContent = none ? "The tablet is ready." : FOR_DECADENT && left.children.length === 1 ? "One thing is left for you, below." : "Nearly ready: a few things are left for you, below.";
+  $("fin-after").hidden = false; shareBox(!FOR_DECADENT);
 }
 
 const undoOff = new Set(); // apps the person chose to leave off
@@ -541,7 +567,7 @@ async function runUndo() {
       const pkgs = picked.length === undoPlan.apps.length ? "" : ` --pkgs=${picked.join(",") || "none"}`;
       check(await tablet.setup(`undo --apps${pkgs}`, on));
     }
-    busy = false;
+    busy = false; undid = true; changedAt = Date.now();
     // Undo first, then any new change chosen with it (say, the original Home screen back and Clean up).
     if (want.decaid || want.decadent || want.plugin || want.cleanup || want.home) { $("opt-undo-apps").checked = false; $("opt-undo-home").checked = false; await toConfirm(); return; }
     show("undone");
@@ -678,9 +704,11 @@ function nameDecaid() {
 
 // What this visit adds, fixed when the person leaves the choose screen: an undo that runs first must not change it.
 let want = { decaid: false, decadent: false, plugin: false, cleanup: false, home: false };
+let undid = false; // an undo ran in this visit: the tablet restarts before the last steps, as after any change
 async function toConfirm() {
   decaidHave = await isInstalled(APKS.find((a) => a.name === "decaid").pkg);
   $("decaid-add").checked = want.decaid; $("decaid-skip").checked = !want.decaid; $("decaid-get").hidden = !want.decaid;
+  if (FOR_DECADENT) { runSetup(); return; }
   $("decaid-have").hidden = !decaidHave; $("decaid-choice").hidden = decaidHave; $("decaid-missing").hidden = true;
   $("confirm-h").textContent = decaidHave ? "Ready to start" : "Decaid installation";
   nameDecaid();
@@ -689,7 +717,22 @@ async function toConfirm() {
 
 function init() {
   if (!supported()) { $("unsupported").hidden = false; $("start").disabled = true; }
-  if (FOR_DECADENT) { $("start-h").textContent = "Set up your tablet for Decadent"; $("start-lead").textContent = "Decaid, the Decadent plugin and the app, put on the tablet for you. A cleaner tablet too, if you want it."; }
+  if (FOR_DECADENT) {
+    // The way in from Decadent: one short first screen, then straight to the cable. The by-hand way stays on offer.
+    $("start-decadent").hidden = false; $("start-clean").hidden = true;
+    $("byhand-d").append(document.querySelector('[data-step="about"] details.byhand'));
+    document.querySelector('[data-step="usb"] [data-back]').dataset.back = "start";
+    $("start-d").onclick = () => show("usb");
+    if (!supported()) { $("unsupported-d").hidden = false; $("start-d").disabled = true; }
+    // The Home screen comes before the clean-up here, and Wi-Fi is the only thing asked of the person at the end.
+    $("row-cleanup").before($("row-home")); $("fin-acct").hidden = true; $("fin-go").hidden = true; $("fin-h").textContent = "Setting up";
+    document.querySelector("#setup-part legend").textContent = "What happens";
+    document.querySelector("header .mark").textContent = "Tablet setup for Decadent";
+    // Shorter words for the two choices: the details are one click away under each.
+    $("row-home").querySelector("span").innerHTML = "<b>The Home screen</b><br>Decadent, Decaid and Settings as three large icons, and swipes in place of the bottom buttons.";
+    const cu = $("row-cleanup").querySelector("span"); cu.innerHTML = `<b>The clean-up</b><br>Switches off <b id="count">0</b> bundled <span id="count-apps">apps</span>. Nothing is deleted, and any can be turned back on.`;
+    document.querySelector('[data-step="connect"] .reassure').hidden = true;
+  }
   $("more").onclick = () => show("about");
   $("start").onclick = () => show("usb");
   $("usb-next").onclick = () => show("connect");

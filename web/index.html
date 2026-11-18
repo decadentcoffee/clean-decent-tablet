@@ -105,6 +105,20 @@
 <ol class="dots" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li></ol>
 
 <section data-step="start">
+  <div id="start-decadent" hidden>
+    <h2>Make your Decent espresso machine Decadent</h2>
+    <p class="lead">Plug the tablet into this computer. This page does the rest.</p>
+    <ol class="big toc">
+      <li><b>The plugin.</b> It lets Decadent talk to your machine, through Decaid on the tablet. The Decadent app goes on the tablet with it.</li>
+      <li><b>The Home screen.</b> Decadent, Decaid and Settings, one tap each. Yours to keep or skip.</li>
+      <li><b>The clean-up.</b> The tablet's bundled apps are switched off, so it stays quiet. Yours to keep or skip.</li>
+    </ol>
+    <p class="reassure">You need Chrome or Edge on a computer and a USB cable. About ten minutes, and all of it can be undone.</p>
+    <p id="unsupported-d" class="alert" hidden>This browser can't connect to a tablet. Open this page in Chrome or Edge on a computer.</p>
+    <div class="row"><span></span><button id="start-d" class="primary">Get started</button></div>
+    <div id="byhand-d"></div>
+  </div>
+  <div id="start-clean">
   <h2 id="start-h">A cleaner experience for your Decent</h2>
   <p class="lead" id="start-lead">Less software in the background. More like part of the machine.</p>
   <section class="why" aria-labelledby="why-h">
@@ -129,6 +143,7 @@
       <li><b>New Home screen:</b> three large icons, Decaid, Decadent and Settings, and swipe gestures so apps get the whole screen.</li>
   </ul></div>
   <div class="row"><button id="more" class="primary">More information</button></div>
+  </div>
 </section>
 
 <section data-step="about" hidden>
@@ -193,6 +208,7 @@
   <p id="already" class="note" hidden>All the listed apps are already off.</p>
   <div id="setup-part">
   <fieldset class="choices"><legend>Choose what to change</legend>
+    <p class="note" id="row-decadent-fixed" hidden></p>
     <label class="choice" id="row-decaid" hidden><input type="checkbox" id="opt-decaid" checked> <span><b>Decaid</b><br>Decent's newer app for the DE1. It isn't on this tablet yet: this installs Decent's latest release.</span></label>
     <label class="choice" id="row-decadent" hidden><input type="checkbox" id="opt-decadent"> <span><b>Decadent</b><br>Our dial-in companion for the DE1: its plugin in Decaid, and the app as one icon on Home. Decadent needs an account, and early access is by invitation: <a href="https://decadentcoffee.app/" target="_blank" rel="noopener">join the list</a>.<span id="decadent-needs" class="muted" hidden><br>Decadent reaches the machine through Decaid, so tick Decaid as well.</span></span></label>
     <label class="choice" id="row-plugin" hidden><input type="checkbox" id="opt-plugin"> <span><b>Check the Decadent plugin</b><br>Decadent is on this tablet. This looks in Decaid for its plugin, and adds it if it is missing.</span></label>
@@ -238,7 +254,7 @@
 </section>
 
 <section data-step="finish" hidden>
-  <h2>Last steps</h2>
+  <h2 id="fin-h">Last steps</h2>
   <p class="lead"><span id="fin-done">The clean-up is done.</span> <span id="refused"></span> <span id="fin-lead">Two things need you. This page does the rest.</span></p>
 
   <div id="fin-you">
