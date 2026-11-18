@@ -413,7 +413,7 @@ async function runFinish(afterRestart = false) {
   // The Decadent plugin goes into Decaid through Decaid's own installer, whenever Decadent is wanted and Decaid is there.
   const plugin = onHome && (decaidHave || $("decaid-add").checked);
   // The plugin goes first: it is the one step that may need the owner (Decaid's first questions), so they are free after it.
-  const plan = ["restart", ...(plugin ? ["plugin"] : []), ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(home ? ["place"] : []), ...(decaidHave || $("decaid-add").checked || onHome || decadentHad ? ["open"] : [])];
+  const plan = ["restart", ...(plugin ? ["plugin"] : []), ...(home ? ["icons", "launcher"] : []), "updates", ...(decadent ? ["decadent"] : []), ...(home ? ["place", "more"] : []), ...(decaidHave || $("decaid-add").checked || onHome || decadentHad ? ["open"] : [])];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
   const icons = [...(decaidHave || $("decaid-add").checked ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
@@ -443,7 +443,12 @@ async function openApps() {
   const pkgs = (await tablet.run("pm list packages")).map((l) => l.replace(/^package:/, "").trim());
   if (pkgs.includes("net.tadel.reaprime")) { await tablet.run("monkey -p net.tadel.reaprime -c android.intent.category.LAUNCHER 1"); await wait(6000); }
   const webapk = pkgs.find((p) => p.startsWith("org.chromium.webapk"));
-  if (webapk) await tablet.run(`monkey -p ${webapk} -c android.intent.category.LAUNCHER 1`);
+  if (!webapk) return;
+  const open = `monkey -p ${webapk} -c android.intent.category.LAUNCHER 1`;
+  await tablet.run(open);
+  // Chrome has opened Decadent with the status bar's space left empty across the top (seen on the reference tablet,
+  // 18 Nov 2026); going Home and back gave the app the whole screen each time.
+  await wait(6000); await tablet.run("input keyevent KEYCODE_HOME"); await wait(1500); await tablet.run(open);
 }
 function finishLeft() {
   const left = $("fin-left"); left.textContent = "";

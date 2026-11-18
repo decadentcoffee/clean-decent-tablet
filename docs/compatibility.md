@@ -107,3 +107,6 @@ The page ran from the local build, with the fixes of D-30 from run 3 on. The DE1
 Not tested: the browser's own device chooser, Windows, joining Wi-Fi and the Google sign-in from the page (the tablet had both), a tablet with no Google account.
 
 Seen and left: the first time Decadent opens after it is installed, a dark strip stays where the status bar was; it is gone the next time the app is opened.
+
+| `finish more` (19 Nov 2026) | Home with one page | Second Home page | **Verified** by script over adb: SE Profiler, Coffee Flow and AZ Screen Recorder in the middle cells of a new second page, no third page; a second run skips all three. Its run from the webpage is **not tested** |
+| Open step: Decadent, Home, Decadent again | | | **Not tested** as a step. By hand on the reference tablet, Home and back removed the empty strip above Decadent both times it was seen |

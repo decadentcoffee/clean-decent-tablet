@@ -317,9 +317,9 @@ long_press() { input swipe "$1" "$2" "$1" "$2" 900; pause; }
 key() { input keyevent "$@"; pause; }
 go_home() { key KEYCODE_HOME; }
 wake() { input keyevent KEYCODE_WAKEUP; wm dismiss-keyguard >/dev/null 2>&1; pause; }
-drag() { # x1 y1 x2 y2. `input draganddrop` holds, then moves (Android 12+). Separate motionevent calls did not
+drag() { # x1 y1 x2 y2 [milliseconds]. `input draganddrop` holds, then moves (Android 12+). Separate motionevent calls did not
   # make Fossify start a drag on the reference tablet, so they are only the fallback.
-  if input draganddrop "$1" "$2" "$3" "$4" 1500 2>/dev/null; then pause; return 0; fi
+  if input draganddrop "$1" "$2" "$3" "$4" "${5:-1500}" 2>/dev/null; then pause; return 0; fi
   input motionevent DOWN "$1" "$2"; sleep "${UI_HOLD_S:-1.0}"
   _i=1
   while [ $_i -le 8 ]; do
@@ -581,6 +581,80 @@ place_one() {
   fi
   log_change finish "place:$lab" - ok; say "DONE finish place $lab"
 }
+# Decent ships a few more apps a person opens by hand. They go on a second Home page, in the same middle cells.
+# (AndroWish is not one of them: it only runs the original Decent app.) Fossify makes the second page when an icon is
+# held at the right edge, and one slow drag does that: the icon then sits in the last column of the new page.
+MORE_APPS="hu.kavekalmar.sep:SE Profiler
+com.pressensor.coffeeflow:Coffee Flow
+com.hecorat.screenrecorder.free:AZ Screen Recorder"
+home_sig() { grep 'package="org.fossify.home"' "$UIN" | grep -oE '(text|content-desc)="[^"]+"' | tr -d '\n'; }
+page_two() { go_home; _wh="$(screen_wh)"; _w="${_wh% *}"; _h="${_wh#* }"; input swipe $((_w*3/4)) $((_h*4/5)) $((_w/4)) $((_h*4/5)) 150; pause; ui_dump; }
+# drawer_spot <label>: open the app list and print where the app's icon is. Call it on Home.
+drawer_spot() {
+  _gb="$(grid_box)"; [ -n "$_gb" ] || return 1
+  set -- $_gb; _gx=$(( ($1 + $3) / 2 ))
+  input swipe $_gx $(( $2 + ($4 - $2) * 3 / 4 )) $_gx $(( $2 + ($4 - $2) / 4 )) 300; pause
+  F='package="org.fossify.home"'
+  ui_wait 'text|content-desc|class' "$lab|android.widget.EditText" 5 "$F" >/dev/null || return 1
+  _p="$(ui_find 'text|content-desc' "$lab" "$F" 'EditText')"
+  if [ -z "$_p" ]; then
+    _s="$(ui_find class 'android.widget.EditText' "$F")"; [ -n "$_s" ] || return 1
+    tap $_s
+    _d=""; _i=0; while [ $_i -lt 30 ]; do _d="$_d KEYCODE_DEL"; _i=$((_i+1)); done
+    key KEYCODE_MOVE_END $_d
+    input text "$(echo "$lab" | sed 's/ /%s/g')"; pause
+    _p="$(ui_wait 'text|content-desc' "$lab" 5 "$F" 'EditText')" || return 1
+  fi
+  echo "$_p"
+}
+place_two() { # package label column
+  lab="$2"; col="$3"
+  [ "$(state_of "$1")" = enabled ] || { say "SKIP finish more $lab not on this tablet"; return 0; }
+  go_home; ui_dump
+  gb="$(grid_box)"; [ -n "$gb" ] || { say "MANUAL finish more $lab cannot find the Home screen"; return 0; }
+  set -- $gb; cw=$(( ($3 - $1) / 5 )); rh=$(( ($4 - $2) / 3 ))
+  cell="$(( $1 + cw * (col - 1) )) $(( $2 + rh )) $(( $1 + cw * col )) $(( $2 + 2 * rh ))"
+  tx=$(( $1 + cw * (col - 1) + cw / 2 )); ty=$(( $2 + rh + rh / 2 ))
+  sx=$(( $1 + cw * 4 + cw / 2 )); ex=$(( $3 - 3 ))
+  # Is there a second page yet? Without one a swipe shows the first page again.
+  one="$(home_sig)"; page_two; two="$(home_sig)"
+  if [ "$one" != "$two" ]; then
+    q="$(home_spot "$lab")"
+    if [ -n "$q" ] && in_box $q $cell; then say "SKIP finish more $lab already there"; return 0; fi
+    if [ -z "$q" ]; then # the app list opens over the page that is showing, so the icon drops on this page
+      q="$(drawer_spot)" || { go_home; say "MANUAL finish more $lab could not find it in the app list"; return 0; }
+    fi
+    drag $q $tx $ty
+  else
+    go_home; ui_dump; p="$(home_spot "$lab")"
+    if [ -z "$p" ]; then # from the app list onto the first page's last column, which the standard Home leaves empty
+      [ -z "$(node_at $sx $ty)" ] || { say "MANUAL finish more $lab no empty space on Home"; return 0; }
+      p="$(drawer_spot)" || { go_home; say "MANUAL finish more $lab could not find it in the app list"; return 0; }
+      drag $p $sx $ty
+      go_home; ui_dump; p="$(home_spot "$lab")"
+      [ -n "$p" ] || { say "MANUAL finish more $lab not on Home after the drag"; return 0; }
+    fi
+    # Slowly to the right edge: Fossify makes the second page and the icon drops in its last column. Only the first
+    # icon goes this way: with a second page already there, the same hold turns two pages.
+    drag $p $ex $ty 6000
+    page_two; q="$(home_spot "$lab")"
+    [ -n "$q" ] || { go_home; say "MANUAL finish more $lab did not reach the second page"; return 0; }
+    in_box $q $cell || drag $q $tx $ty
+  fi
+  page_two; q="$(home_spot "$lab")"
+  { [ -n "$q" ] && in_box $q $cell; } || { go_home; say "MANUAL finish more $lab landed in another cell"; return 0; }
+  log_change finish "more:$lab" - ok; say "DONE finish more $lab"
+}
+fin_more() {
+  is_fossify || { say "SKIP finish more home screen option not used"; say "OK finish more"; return 0; }
+  home_wait || :
+  _c=2
+  echo "$MORE_APPS" > "$DIR/more.tmp"
+  while IFS=: read -r _pk _lb <&3; do place_two "$_pk" "$_lb" $_c; _c=$((_c+1)); done 3< "$DIR/more.tmp"
+  rm -f "$DIR/more.tmp"
+  go_home; say "OK finish more"
+}
+
 fin_place() {
   is_fossify || { say "SKIP finish place home screen option not used"; say "OK finish place"; return 0; }
   home_wait || :
@@ -712,13 +786,13 @@ fin_plugin() {
 
 do_finish() {
   step="${ARGS# }"; step="${step%% *}"
-  case "$step" in status|wifi-open|account-open|icons|launcher|updates|decadent|decaid|plugin|place) ;;
-    *) die "unknown finish step '$step'. Steps: status wifi-open account-open icons launcher updates decadent decaid plugin place" ;; esac
+  case "$step" in status|wifi-open|account-open|icons|launcher|updates|decadent|decaid|plugin|place|more) ;;
+    *) die "unknown finish step '$step'. Steps: status wifi-open account-open icons launcher updates decadent decaid plugin place more" ;; esac
   mkdir -p "$DIR" || die "cannot write $DIR"
   if [ "$DRY" = 1 ]; then say "PLAN finish $step"; return 0; fi
   case "$step" in
     status) fin_status ;; wifi-open) fin_wifi_open ;; account-open) fin_account_open ;; icons) fin_icons ;;
-    launcher) fin_launcher ;; updates) fin_updates ;; decadent) fin_decadent ;; decaid) fin_decaid ;; plugin) fin_plugin ;; place) fin_place ;;
+    launcher) fin_launcher ;; updates) fin_updates ;; decadent) fin_decadent ;; decaid) fin_decaid ;; plugin) fin_plugin ;; place) fin_place ;; more) fin_more ;;
   esac
   rm -f "$UIX" "$UIN" # screen dumps can hold names and addresses
 }

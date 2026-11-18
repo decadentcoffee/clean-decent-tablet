@@ -111,7 +111,7 @@ Wait until `setup.sh` has finished, then run `adb reboot` and wait for `sys.boot
 
 ### 6. Steps only a person can do
 
-Give these one at a time, and wait for each. The details are in `docs/installation.md`. Steps 4, 5, 6 and 7 are only for the Home option.
+Give these one at a time, and wait for each. The details are in `docs/installation.md`. Steps 4 to 8 are only for the Home option.
 
 1. Join Wi-Fi. Recommend a guest or IoT network: Decaid's web server has no password.
 2. Check for a Google account (`adb shell dumpsys account | grep -c "Account {"`). If there is none, recommend adding a new one made only for this tablet.
@@ -119,9 +119,10 @@ Give these one at a time, and wait for each. The details are in `docs/installati
 4. Remove the browser (Chrome, or Internet when Clean up did not run), Play Store and Camera from the Fossify Home screen.
 5. In **Launcher Settings**, set Row count 3 and Column count 5 before placing icons. Turn on **Close app drawer on opening an app**.
 6. If the person uses Decadent: in Chrome, open `https://decadentcoffee.app/app/`, tap the install icon, tap **Install** once, and log in. Otherwise skip it; the Home icons are their choice.
-7. Drag Decaid, Decadent and Settings to cells 2, 3 and 4 of the middle row. Put nothing else on Home.
+7. Drag Decaid, Decadent and Settings to cells 2, 3 and 4 of the middle row. Put nothing else on that page.
+8. Put SE Profiler, Coffee Flow and AZ Screen Recorder on a second Home page, in the same three cells: drag the first to the right edge until a new page shows.
 
-An agent can do steps 4, 5 and 7 with `adb shell input` and `uiautomator dump`. Read the screen before each tap: positions move. Do not type passwords for the person. Do not do this while the person is using the tablet.
+An agent can do steps 4, 5, 7 and 8 with `adb shell input` and `uiautomator dump`. Read the screen before each tap: positions move. Do not type passwords for the person. Do not do this while the person is using the tablet.
 
 ### 7. Finish
 
