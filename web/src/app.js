@@ -443,12 +443,7 @@ async function openApps() {
   const pkgs = (await tablet.run("pm list packages")).map((l) => l.replace(/^package:/, "").trim());
   if (pkgs.includes("net.tadel.reaprime")) { await tablet.run("monkey -p net.tadel.reaprime -c android.intent.category.LAUNCHER 1"); await wait(6000); }
   const webapk = pkgs.find((p) => p.startsWith("org.chromium.webapk"));
-  if (!webapk) return;
-  const open = `monkey -p ${webapk} -c android.intent.category.LAUNCHER 1`;
-  await tablet.run(open);
-  // Chrome has opened Decadent with the status bar's space left empty across the top (seen on the reference tablet,
-  // 18 Nov 2026); going Home and back gave the app the whole screen each time.
-  await wait(6000); await tablet.run("input keyevent KEYCODE_HOME"); await wait(1500); await tablet.run(open);
+  if (webapk) await tablet.run(`monkey -p ${webapk} -c android.intent.category.LAUNCHER 1`);
 }
 function finishLeft() {
   const left = $("fin-left"); left.textContent = "";
