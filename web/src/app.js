@@ -459,8 +459,8 @@ async function runFinish(afterRestart = false) {
   const plugin = (wantD || want.plugin) && decaidThere;
   const plan = [...(ranChange ? ["restart"] : []), ...(plugin ? ["plugin"] : []), ...(newHome && ours ? ["icons", "launcher"] : []),
     ...(ranChange || (decadent && finAcct === "yes") ? ["updates"] : []), ...(decadent ? ["decadent"] : []),
-    // On Samsung's own Home only a Decadent installed in this visit is put on Home: a second run would add a second icon.
-    ...((ours && (newHome || wantD)) || (samsung && decadent) ? ["place"] : []), ...(newHome && ours ? ["more"] : []), ...(decaidThere || onHome ? ["open"] : [])];
+    // On Samsung's own Home a Decadent that was already installed gets its icon only when Home shows none (place if-missing).
+    ...((ours && (newHome || wantD)) || (samsung && wantD) ? ["place"] : []), ...(newHome && ours ? ["more"] : []), ...(decaidThere || onHome ? ["open"] : [])];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
   const icons = ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
@@ -485,7 +485,7 @@ async function runFinish(afterRestart = false) {
       if (k === "plugin" && !(await decaidReady())) { finState(k, "manual", decaidPass ? "skipped" : "Decaid's first questions were not answered"); continue; }
       if (k === "plugin") finState(k, "run");
       let lines;
-      try { lines = await tablet.setup(`finish ${k}${k === "place" && !onHome ? " no-decadent" : ""}`); } catch (e) { lines = [`MANUAL finish ${k} ${e.message}`]; }
+      try { lines = await tablet.setup(`finish ${k}${k === "place" && !onHome ? " no-decadent" : ""}${k === "place" && samsung && decadentHad ? " if-missing" : ""}`); } catch (e) { lines = [`MANUAL finish ${k} ${e.message}`]; }
       finState(k, outcome(lines, k), (lines.find((l) => /^(MANUAL|FAIL)/.test(l)) || "").replace(/^\S+ (finish \S+ )?/, ""));
     }
   } finally { busy = false; }

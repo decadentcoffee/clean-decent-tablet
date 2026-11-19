@@ -14,6 +14,7 @@
 #   wifi-open launcher updates decadent decaid plugin place. wifi-open only opens Wi-Fi settings: the owner joins on the tablet,
 #   and no network name or password ever passes through this script or the page.
 #   place no-decadent leaves the Decadent icon off Home.
+#   place if-missing (Samsung's Home) adds the Decadent icon only when Home shows none.
 #   decaid [open] reports STATUS decaid=ready|asking|absent: asking means Decaid shows its first questions, which
 #   only the owner answers. The front end waits and asks again; plugin runs once it is ready.
 #   A step it cannot do prints MANUAL; the front end then shows the written instructions for it
@@ -679,6 +680,8 @@ place_samsung() { # label
   wake; go_home; ui_dump || { say "MANUAL finish place $lab cannot read the screen"; return 0; }
   _wh="$(screen_wh)"; _w="${_wh% *}"; _h="${_wh#* }"; [ -n "$_h" ] || { say "MANUAL finish place $lab cannot read the screen"; return 0; }
   before="$(sam_count "$lab")"
+  # "finish place if-missing": the app was here before this visit, so an icon already on Home is left alone.
+  case " $ARGS " in *" if-missing "*) [ "$before" -gt 0 ] && { say "SKIP finish place $lab already on Home"; return 0; } ;; esac
   input swipe $((_w/2)) $((_h*3/4)) $((_w/2)) $((_h/4)) 300; pause
   F="package=\"$SAMSUNG\""; p=""; _n=0
   while [ $_n -lt 5 ]; do # the app list is pages side by side
