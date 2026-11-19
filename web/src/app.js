@@ -504,7 +504,7 @@ function finishLeft() {
     const item = document.createElement("li"); item.innerHTML = li.querySelector(".by-hand").innerHTML; left.append(item);
   }
   const decadentIn = FIN("decadent") && !FIN("decadent").hidden && FIN("decadent").dataset.state !== "manual";
-  if (decadentIn) { const item = document.createElement("li"); item.innerHTML = "<b>Log in to Decadent</b> on the tablet. It's open and waiting."; left.append(item); }
+  if (decadentIn) { const item = document.createElement("li"); item.innerHTML = "<b>Log in to Decadent</b> on the tablet. It's open and waiting: type your email and password, or tap <b>Show a QR code</b> there and scan it with your phone."; left.append(item); }
   // Samsung's own Home puts a new app in its app list only, and its menus cannot be driven from here.
   if (decadentIn && finHome !== FOSSIFY && FIN("place").dataset.state !== "done") { const item = document.createElement("li"); item.innerHTML = "<b>Put Decadent on Home.</b> It is in the tablet's app list: on Home, swipe up, hold <b>Decadent</b> and tap <b>Add to Home</b>."; left.append(item); }
   const none = left.children.length === 0;
