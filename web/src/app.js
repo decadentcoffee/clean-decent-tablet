@@ -359,7 +359,7 @@ async function finStatus() {
   $("acct-form").hidden = finAcct !== "no";
   $("fin-nowifi").hidden = finWifi;
   const ready = finWifi && finAcct !== "no";
-  $("fin-lead").textContent = ready ? "The tablet is on Wi-Fi and ready. Choose Finish for me and this page does the rest." : `${finWifi || finAcct !== "no" ? "One thing needs" : "Two things need"} you. This page does the rest.`;
+  $("fin-lead").textContent = ready ? (FOR_DECADENT ? "The tablet is on Wi-Fi and ready. This page does the rest." : "The tablet is on Wi-Fi and ready. Choose Finish for me and this page does the rest.") : `${finWifi || finAcct !== "no" ? "One thing needs" : "Two things need"} you. This page does the rest.`;
   $("fin-you-h").textContent = ready ? "Ready" : "Only you can do these";
   if (finWifi && finAcct !== "no") stopPoll();
   return st;
@@ -465,6 +465,10 @@ async function runFinish(afterRestart = false) {
   const icons = ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
   const [w, h] = FIN("place").querySelectorAll(".place-list"); w.textContent = said(false); h.innerHTML = said(true);
+  // The last step names only the apps it opens: Decadent when it is, or will be, on the tablet.
+  const opens = [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : [])];
+  FIN("open").querySelector(".what").textContent = "Open " + opens.join(", then ");
+  FIN("open").querySelector(".by-hand").innerHTML = "Open " + opens.map((n) => `<b>${n}</b>`).join(" once, then ") + ".";
   for (const li of $("fin-steps").children) li.hidden = !plan.includes(li.dataset.k);
   try {
     if (plan[0] === "restart" && !afterRestart) {
