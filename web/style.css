@@ -295,6 +295,14 @@ footer { padding: 1.5rem 2.5rem 2.5rem; color: var(--ink-2); font-size: 0.84rem;
 /* Clean Home icons */
 .device .big { opacity: 0; transition: opacity 0.3s ease; }
 .device[data-screen="clean"] .big { opacity: 1; }
+/* The Home in the picture follows the choices (app.js sets data-home): Decaid and Settings, Settings alone, or the
+   original Decent app with Coffee Flow and SE Profiler (Settings is then on page two, hence the page dots). */
+.device .og, .device .pg, .device[data-home="original"] .big[data-ic], .device[data-home="decaid"] [data-ic="decadent"],
+.device[data-home="settings"] [data-ic="decaid"], .device[data-home="settings"] [data-ic="decadent"] { display: none; }
+.device[data-home="original"] .og, .device[data-home="original"] .pg { display: inline; }
+.device[data-home="decaid"] [data-ic="decaid"] { translate: 54.2px 0; }
+.device[data-home="decaid"] [data-ic="settings"] { translate: -54.2px 0; }
+.device[data-home="settings"] [data-ic="settings"] { translate: -108.4px 0; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Step change: content slides along the direction of travel, never blocking input */

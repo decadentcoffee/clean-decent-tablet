@@ -171,6 +171,14 @@ function chosen() {
     cleanup: v.cleanup && $("opt-cleanup").checked, home: v.home && $("opt-home").checked,
     undoApps: v.undoApps && $("opt-undo-apps").checked, undoHome: v.undoHome && $("opt-undo-home").checked };
 }
+// The picture's Home and the Home row's words follow what this tablet will get (the picture reads data-home).
+const HOME_WORDS = { both: "large Decaid, Decadent and Settings icons", decaid: "large Decaid and Settings icons", settings: "a large Settings icon",
+  original: "large Decent, Coffee Flow and SE Profiler icons, with Update Decent and Settings on a second page" };
+function paintHome(kind) {
+  const fig = document.querySelector(".device"); if (fig) fig.dataset.home = kind;
+  const el = $("home-icons"); if (el) el.textContent = HOME_WORDS[kind];
+}
+const homeKind = (decaidThere, decadentOn, original) => (original && !decaidThere ? "original" : !decaidThere ? "settings" : decadentOn ? "both" : "decaid");
 function syncChoices() {
   const v = shown();
   // Decadent reaches the machine through Decaid: without Decaid on the tablet or ticked, its tick is off and says why.
@@ -186,6 +194,9 @@ function syncChoices() {
   $("row-decaid").hidden = !v.decaid || FOR_DECADENT; $("row-decadent").hidden = !v.decadent || FOR_DECADENT; $("row-plugin").hidden = !v.plugin || FOR_DECADENT;
   $("row-cleanup").hidden = !v.cleanup; $("pick").hidden = !c.cleanup;
   $("row-home").hidden = !v.home;
+  const hasOriginal = !!status && status.original_app === "yes";
+  $("decaid-stay").hidden = !hasOriginal;
+  paintHome(homeKind(decaidHave || c.decaid, c.decadent || (!!status && status.decadent_app === "installed"), hasOriginal));
   $("row-undo-apps").hidden = !v.undoApps; $("undo-pick").hidden = !c.undoApps || undoPlan.apps.length === 0;
   $("row-undo-home").hidden = !v.undoHome; $("row-keep-apps").hidden = !c.undoHome;
   const any = v.decaid || v.decadent || v.plugin || v.cleanup || v.home || v.undoApps || v.undoHome;
@@ -528,8 +539,9 @@ async function runFinish(afterRestart = false) {
   // Settings goes to the second page (D-38). The Decent icon is a shortcut only the tablet step can add.
   const original = ours && finOriginal && !decaidThere;
   const icons = original ? ["Decent", "Coffee Flow", "SE Profiler"] : ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
+  if (ours) paintHome(homeKind(decaidThere, onHome, original));
   FIN("place").querySelector(".place-note").hidden = !original;
-  FIN("more").querySelector(".what").textContent = original ? "Put Settings on a second Home page" : "Put Decent's other apps on a second Home page";
+  FIN("more").querySelector(".what").textContent = original ? "Put Update Decent and Settings on a second Home page" : "Put Decent's other apps on a second Home page";
   for (const n of FIN("more").querySelectorAll("[data-more]")) n.hidden = (n.dataset.more === "original") !== original;
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
   const [w, h] = FIN("place").querySelectorAll(".place-list"); w.textContent = said(false); h.innerHTML = said(true);

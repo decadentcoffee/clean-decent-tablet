@@ -38,7 +38,7 @@
     allow: "Tap Allow on the tablet.",
     list: "Chosen apps switch off. Nothing is deleted.",
     run: "Switching off, one at a time.",
-    clean: "After: three large icons on a quiet Home.",
+    clean: "After: large icons on a quiet Home.",
     off: "Switched off, still installed.",
     restore: "Turning apps back on.",
     undone: "As it shipped.",

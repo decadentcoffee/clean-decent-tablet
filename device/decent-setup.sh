@@ -216,6 +216,7 @@ do_status() {
     say "STATUS app $p $(state_of "$p")"
   done
   pm list packages --user "$USER_ID" | grep -q 'org.chromium.webapk' && say "STATUS decadent_app=installed" || say "STATUS decadent_app=none"
+  if has_original; then say "STATUS original_app=yes"; else say "STATUS original_app=no"; fi
 }
 
 do_undo() {
@@ -388,24 +389,33 @@ original_mode() { has_original && ! installed net.tadel.reaprime; }
 # AndroWish pins the shortcut again, to the Home app now in charge, when a script asks it to. The script here asks for
 # that and nothing else: it loads none of the Decent app, so nothing reaches the machine. Fossify takes the icon without
 # a question and puts it in the first free cell of the page that is showing (reference tablet, 20 Nov 2026).
-pin_original() {
-  go_home; ui_dump
-  [ -n "$(home_spot Decent)" ] && return 0
-  # Fossify 1.10.0 crashes when a shortcut arrives on a Home with no icon at all, and Android then forgets which Home
-  # app was chosen (reference tablet, 20 Nov 2026). So the other icons go first, and an empty Home is left alone.
-  home_labels || return 1
+pin_ask() { # label script icon: AndroWish asks the Home app for one shortcut of the Decent app. pin_end follows it.
+  # AndroWish names a new shortcut "pinned-<how many it has>". When one was removed from the middle, that name is
+  # taken: Android then pins the older shortcut again, under its own label, and the wanted icon never comes
+  # (reference tablet, 21 Nov 2026: Decent's two with a third named pinned-3 gave a second Decent). So no request then.
+  _n="$(cmd shortcut get-shortcuts --user "$USER_ID" --flags 15 "$WISH" 2>/dev/null | grep -c 'ShortcutInfo {')"
+  dumpsys shortcut 2>/dev/null | grep -q "Pinned: pinned-$_n\$" && return 1
   _t="${PIN_DIR:-/sdcard/Download}/decent-setup-pin.tcl"
   cat > "$_t" <<PIN_EOF || return 1
 catch {
   package require base64
-  set f [open "$DE1PLUS/de1plus_icon_v2.png" rb]; set d [read \$f]; close \$f
-  borg shortcut add "Decent" "file://$DE1PLUS/de1plus.tcl" [::base64::encode -maxlen 0 \$d]
+  set f [open "$DE1PLUS/$3" rb]; set d [read \$f]; close \$f
+  borg shortcut add "$1" "file://$DE1PLUS/$2" [::base64::encode -maxlen 0 \$d]
 }
 after 3000 exit
 PIN_EOF
   am force-stop "$WISH" 2>/dev/null
   am start -a android.intent.action.VIEW -t application/x-tcl -d "file://$_t" -n "$WISH/.AndroWishLauncher" >/dev/null 2>&1
   sleep "${PIN_WAIT_S:-6}" # Android takes the request only while AndroWish is on the screen: no Home press before it has asked
+}
+pin_end() { am force-stop "$WISH" 2>/dev/null; rm -f "${PIN_DIR:-/sdcard/Download}/decent-setup-pin.tcl"; }
+pin_original() {
+  go_home; ui_dump
+  [ -n "$(home_spot Decent)" ] && return 0
+  # Fossify 1.10.0 crashes when a shortcut arrives on a Home with no icon at all, and Android then forgets which Home
+  # app was chosen (reference tablet, 20 Nov 2026). So the other icons go first, and an empty Home is left alone.
+  home_labels || return 1
+  pin_ask Decent de1plus.tcl de1plus_icon_v2.png || return 1
   # With one Home page Fossify puts the new icon on a second page it makes for it; with two it lands on the first.
   # From the second page, a slow drag to the left edge turns the page and drops it in the first column.
   _pe=$(( $(date +%s) + $(tmo 20) )); _ok=1
@@ -423,8 +433,40 @@ PIN_EOF
     fi
     [ "$(date +%s)" -ge "$_pe" ] && break
   done
-  am force-stop "$WISH" 2>/dev/null; rm -f "$_t"
+  pin_end
   return $_ok
+}
+# "Update Decent" is the Decent app's own updater: a second shortcut, to appupdate.tcl (install_update_app_icon in the
+# app's gui.tcl). It goes on the second page, where Settings joins it (owner, 20 Nov 2026). With one Home page Fossify
+# makes the second page for it; an icon that is already on Home, on either page, is left where the person has it.
+pin_update() {
+  lab="Update Decent"
+  [ -f "$DE1PLUS/appupdate.tcl" ] && [ -f "$DE1PLUS/cloud_download_icon.png" ] || { say "SKIP finish more $lab not on this tablet"; return 0; }
+  go_home; ui_dump
+  home_labels || { say "MANUAL finish more $lab Home has no icons yet"; return 0; }
+  _u="$(home_spot "$lab")"; _one="$(home_sig)"
+  if [ -z "$_u" ]; then page_two; [ "$_one" != "$(home_sig)" ] && _u="$(home_spot "$lab")"; fi
+  [ -n "$_u" ] && { go_home; say "SKIP finish more $lab already on Home"; return 0; }
+  pin_ask "$lab" appupdate.tcl cloud_download_icon.png || { say "MANUAL finish more $lab could not add its icon"; return 0; }
+  _pe=$(( $(date +%s) + $(tmo 20) )); _on=0; _q=""
+  while :; do
+    pause; go_home
+    if ui_dump && [ -n "$(home_spot "$lab")" ]; then _on=1; break; fi
+    _one="$(home_sig)"; page_two; _q="$(home_spot "$lab")"
+    if [ -n "$_q" ] && [ "$_one" != "$(home_sig)" ]; then _on=2; break; fi
+    [ "$(date +%s)" -ge "$_pe" ] && break
+  done
+  pin_end
+  [ "$_on" = 0 ] && { go_home; say "MANUAL finish more $lab could not add its icon"; return 0; }
+  if [ "$_on" = 2 ]; then # to the second cell of the middle row, the place of the first of two icons
+    gb="$(grid_box)"
+    if [ -n "$gb" ]; then
+      set -- $gb; cw=$(( ($3 - $1) / 5 )); rh=$(( ($4 - $2) / 3 ))
+      cell="$(( $1 + cw )) $(( $2 + rh )) $(( $1 + cw * 2 )) $(( $2 + 2 * rh ))"
+      in_box $_q $cell || { drag $_q $(( $1 + cw + cw / 2 )) $(( $2 + rh + rh / 2 )); pause; }
+    fi
+  fi
+  go_home; log_change finish "more:$lab" - ok; say "DONE finish more $lab"
 }
 
 fin_status() {
@@ -714,7 +756,7 @@ place_two() { # package label column
 fin_more() {
   is_fossify || { say "SKIP finish more home screen option not used"; say "OK finish more"; return 0; }
   home_wait || :
-  if original_mode; then place_two com.android.settings Settings 3; go_home; say "OK finish more"; return 0; fi
+  if original_mode; then pin_update; place_two com.android.settings Settings 4; go_home; say "OK finish more"; return 0; fi
   _c=2
   echo "$MORE_APPS" > "$DIR/more.tmp"
   while IFS=: read -r _pk _lb <&3; do place_two "$_pk" "$_lb" $_c; _c=$((_c+2)); done 3< "$DIR/more.tmp" # two apps: cells 2 and 4, either side of the middle
