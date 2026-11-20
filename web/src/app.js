@@ -388,7 +388,10 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 // The tablet drops off USB while it restarts. Find it again: the browser keeps the permission, and the tablet
 // remembers this computer if "Always allow" was ticked.
 async function restartTablet() {
-  if (DEMO) { await wait(1500); return; }
+  if (DEMO) {
+    if (qs.get("allow")) { $("allow-ask").hidden = false; finState("restart", "you"); await wait(+qs.get("allow") || 3000); $("allow-ask").hidden = true; finState("restart", "run"); }
+    await wait(1500); return;
+  }
   // A restart within 30 seconds of switching apps off brought some of them back (docs/compatibility.md), so wait it out.
   const early = 30000 - (Date.now() - changedAt); if (early > 0) await wait(early);
   tablet.run("reboot").catch(() => {});
@@ -401,7 +404,11 @@ async function restartTablet() {
     try {
       const [device] = await AdbDaemonWebUsbDeviceManager.BROWSER.getDevices();
       if (!device) continue;
-      tablet = await connectTablet(device, new AdbWebCredentialStore("Decent tablet setup"));
+      // No answer within a few seconds means the tablet is asking to allow this computer again ("Always allow" was not
+      // ticked): say so, and wait for the tap however long it takes.
+      const ask = setTimeout(() => { $("allow-ask").hidden = false; finState("restart", "you"); }, 6000);
+      try { tablet = await connectTablet(device, new AdbWebCredentialStore("Decent tablet setup")); }
+      finally { clearTimeout(ask); $("allow-ask").hidden = true; finState("restart", "run"); }
       for (let i = 0; i < 40; i++) { if ((await tablet.run("getprop sys.boot_completed")).join("").trim() === "1") break; await wait(3000); }
       await wait(15000); // let Home and Play services settle
       await tablet.prepare(FILES);

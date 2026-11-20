@@ -186,7 +186,7 @@
     <li>On the tablet, tick <b>Always allow from this computer</b>, then tap <b>Allow</b>.</li>
   </ol>
   <p class="reassure">Nothing is changed without your OK, see what to disable and pick options next.</p>
-  <p id="connect-hint" class="note" hidden>Waiting for you to tap <b>Allow</b> on the tablet…</p>
+  <p id="connect-hint" class="note" hidden>Look at the tablet: tick <b>Always allow from this computer</b>, then tap <b>Allow</b>. Without the tick it asks again when it restarts. Waiting for you…</p>
   <p id="connect-error" class="alert" role="alert" hidden></p>
   <div class="row"><button class="ghost" data-back="usb">Back</button><button id="connect" class="primary">Connect tablet</button></div>
 </section>
@@ -277,7 +277,7 @@
     <h3 id="fin-run-h">Finishing the tablet…</h3>
     <p id="fin-keep" class="muted">Keep the cable plugged in, and leave the tablet alone until this is done. It takes about five minutes. A Decaid that has never been opened asks you a few questions first.</p>
     <ol class="fin-steps" id="fin-steps">
-      <li data-k="restart"><span class="st" aria-hidden="true"></span><span class="what">Restart the tablet</span><p class="by-hand">Restart the tablet: hold the power key, then tap <b>Restart</b>.</p></li>
+      <li data-k="restart"><span class="st" aria-hidden="true"></span><span class="what">Restart the tablet</span><span class="needs-you" id="allow-ask" role="status" hidden><b>The tablet needs you.</b> It restarted and is asking to allow USB debugging again. On the tablet, tick <b>Always allow from this computer</b>, then tap <b>Allow</b>. This page carries on by itself.</span><p class="by-hand">Restart the tablet: hold the power key, then tap <b>Restart</b>.</p></li>
       <li data-k="plugin" data-home><span class="st" aria-hidden="true"></span><span class="what">Add the Decadent plugin to Decaid</span><span class="needs-you" id="decaid-ask" role="status" hidden><b>Decaid needs you on the tablet.</b> It is open and asking its first questions: a Decent account or skip, what it may use, and whether to bring over old data. Answer them there. This page carries on by itself. <button type="button" id="decaid-pass" class="ghost small">Skip the plugin for now</button></span><p class="by-hand">In <b>Decaid</b> open <b>Plugins</b>, tap the cog, then <b>Install plugin</b>, then <b>GitHub Release</b>. Type <b>decadentcoffee/decadent-plugin</b> and tap <b>Install</b>. Decaid adds it switched off: on <b>Decadent</b> in that list, open the <b>⋮</b> menu and tap <b>Load</b>, then switch on <b>Auto-load on startup</b>. The Decadent app shows these steps too.</p></li>
       <li data-k="icons" data-home><span class="st" aria-hidden="true"></span><span class="what">Remove the browser, Play Store and Camera from Home</span><p class="by-hand">On Home, long-press the browser (<b>Chrome</b> or <b>Internet</b>), <b>Play Store</b> and <b>Camera</b>, and tap <b>Remove</b> on each. The apps stay installed.</p></li>
       <li data-k="launcher" data-home><span class="st" aria-hidden="true"></span><span class="what">Set Home to 3 rows and 5 columns</span><p class="by-hand">Long-press empty space, tap <b>Launcher Settings</b>. Set <b>Row count 3</b>, <b>Column count 5</b>, and turn on <b>Close app drawer on opening an app</b>.</p></li>
