@@ -190,11 +190,13 @@ if (/[?&]safe\b/.test(location.search) || (/[?&]tour/.test(location.search) && /
   const paint = () => {
     const s = now(); if (!s) return;
     at.textContent = `Safe mode · ${ORDER.indexOf(s) + 1} of ${ORDER.length} · ${NAMES[s] || s}`;
-    const finRunning = s === "finish" && document.getElementById("fin-run") && !document.getElementById("fin-run").hidden && document.getElementById("fin-after").hidden;
+    // A restart that failed has stopped the last steps: the bar offers the page's own Reconnect, not "Working…".
+    const finStopped = s === "finish" && !document.getElementById("fin-reconnect-row").hidden;
+    const finRunning = s === "finish" && !finStopped && document.getElementById("fin-run") && !document.getElementById("fin-run").hidden && document.getElementById("fin-after").hidden;
     const finYou = s === "finish" && document.getElementById("fin-you") && !document.getElementById("fin-you").hidden;
     const stopped = s === "running" && !document.getElementById("run-back").hidden;
     nextB.disabled = (s === "running" && !stopped) || finRunning;
-    nextB.textContent = stopped ? "Check again ›" : s === "running" || finRunning ? "Working…" : finYou ? "Finish for me ›" : s === "undone" ? "Start again ›" : "Next ›";
+    nextB.textContent = stopped ? "Check again ›" : finStopped ? "Reconnect ›" : s === "running" || finRunning ? "Working…" : finYou ? "Finish for me ›" : s === "undone" ? "Start again ›" : "Next ›";
     backB.disabled = s === "start" || (s === "running" && !stopped);
   };
   bar.addEventListener("click", (e) => {
@@ -203,7 +205,7 @@ if (/[?&]safe\b/.test(location.search) || (/[?&]tour/.test(location.search) && /
     const s = now();
     if (s === "finish") { // last steps: Finish for me first, then on to Undo once they are done
       const you = document.getElementById("fin-you"), after = document.getElementById("fin-after");
-      const b = you && !you.hidden ? document.getElementById("fin-go") : after && !after.hidden ? document.querySelector(FORWARD.finish) : null;
+      const b = !document.getElementById("fin-reconnect-row").hidden ? document.getElementById("fin-reconnect") : you && !you.hidden ? document.getElementById("fin-go") : after && !after.hidden ? document.querySelector(FORWARD.finish) : null;
       if (b) b.click(); return;
     }
     const b = document.querySelector(FORWARD[s]); if (b) b.click();

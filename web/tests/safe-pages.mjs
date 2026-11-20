@@ -40,6 +40,15 @@ try {
     await sleep(18500); const late = await p.eval(`document.getElementById("connect-slow").textContent`);
     check("Allow hint after 20 s", early[0] === false && early[1] === "" && late.startsWith("Still waiting. Look at the tablet: if no message shows, unlock it"), { early, late }); await p.close(); }
 
+  // Cancel while the Allow is awaited: the wait ends, the page says so without an error, and Connect works again.
+  { const p = await open("?safe&hold=allow&to=connect"); await p.eval(`document.getElementById("connect").click()`); await sleep(500);
+    const during = await p.eval(`[document.getElementById("connect-cancel").hidden, document.getElementById("connect").disabled]`);
+    await p.eval(`document.getElementById("connect-cancel").focus(); document.getElementById("connect-cancel").click()`); await sleep(500);
+    const after = await p.eval(`[document.getElementById("connect-cancel").hidden, document.getElementById("connect").disabled, document.getElementById("connect-slow").textContent, document.getElementById("connect-error").hidden, document.getElementById("connect-hint").hidden, document.activeElement.id]`);
+    await p.eval(`document.getElementById("connect").click()`); await sleep(500);
+    const again = await p.eval(`[document.getElementById("connect-cancel").hidden, document.getElementById("connect-slow").textContent]`);
+    check("Cancel during the Allow wait", during[0] === false && during[1] === true && JSON.stringify(after) === JSON.stringify([true, false, "Cancelled. Choose Connect tablet to try again.", true, true, "connect"]) && again[0] === false && again[1] === "" && p.consoleErrors.length === 0, { during, after, again, errors: p.consoleErrors }); await p.close(); }
+
   // The share post says what this visit did, with the apps really switched off (98: two refused).
   const posts = [
     ["both", "?safe&to=finished", (t) => t.startsWith("I cleaned up the tablet on my Decent espresso machine: 98 unneeded apps and background services switched off, and a quiet Home screen")],
@@ -58,6 +67,14 @@ try {
     const got = await p.eval(`(() => { const li = document.querySelector('#fin-steps [data-k="restart"]'); return { list: [...document.getElementById("fin-byhand-list").children].map((l) => l.textContent), why: li.querySelector(".fin-why").textContent, inline: getComputedStyle(li.querySelector(".by-hand")).display }; })()`);
     const place = got.list.find((t) => t.startsWith("On Home, swipe up")) || "";
     check("written steps after a failed restart", ok && /Decaid and Settings/.test(place) && !/Decadent/.test(place) && got.list.length === 7 && got.why === "Do it by hand: see below." && got.inline === "none", got); await p.close(); }
+
+  // Safe mode's own bar after a failed restart: it offers Reconnect, and Reconnect carries the last steps to the end.
+  { const p = await open("?safe&to=finish&restart=fail&net=all"); await until(p, `${visible} === "finish" && !document.getElementById("fin-you").hidden`);
+    const next = `document.querySelector('.tour [data-go="next"]')`;
+    await p.eval(`${next}.click()`); await until(p, `!document.getElementById("fin-error").hidden`, 20000); await sleep(200);
+    const bar = await p.eval(`[${next}.textContent, ${next}.disabled]`);
+    await p.eval(`${next}.click()`); const done = await until(p, `!document.getElementById("fin-after").hidden`, 60000);
+    check("safe-mode bar after a failed restart", bar[0] === "Reconnect ›" && bar[1] === false && done && p.consoleErrors.length === 0, { bar, done, errors: p.consoleErrors }); await p.close(); }
 
   // The restart says it is expected and how long it has been.
   { const p = await open("?safe&to=finish&net=all"); await until(p, `${visible} === "finish" && !document.getElementById("fin-you").hidden`);

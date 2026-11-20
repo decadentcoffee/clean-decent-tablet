@@ -64,26 +64,42 @@ function waitingForAllow(on) {
   clearTimeout(slowTimer); $("connect-slow").textContent = "";
   if (on) slowTimer = setTimeout(() => { $("connect-slow").textContent = "Still waiting. Look at the tablet: if no message shows, unlock it, unplug the cable and plug it back in."; }, SLOW_MS);
 }
+// Cancel while the tablet's Allow is awaited (D-41). The wait itself cannot be stopped, so Cancel closes the USB
+// device under it and the page stops listening; a later Allow on the tablet is kept by the tablet and costs nothing.
+const CANCELLED = Symbol("cancelled");
+let cancelAllow = null;
+function allowWait(device, going) {
+  going.catch(() => {}); // an abandoned wait ends with an error nobody reads
+  $("connect-hint").hidden = false; $("connect-cancel").hidden = false; waitingForAllow(true);
+  return Promise.race([going, new Promise((_, no) => { cancelAllow = () => no(CANCELLED); })]).catch(async (e) => {
+    if (e === CANCELLED) { try { await device?.raw.close(); } catch {} going.then((t) => t.close()).catch(() => {}); }
+    throw e;
+  }).finally(() => { cancelAllow = null; });
+}
 async function connect() {
   setError("connect-error"); const btn = $("connect"); btn.disabled = true; btn.textContent = "Connecting…";
+  let cancelled = false;
   try {
     // Safe mode, hold=allow: the tablet never answers the Allow, as when its message is missed.
-    if (DEMO && qs.get("hold") === "allow") { $("connect-hint").hidden = false; waitingForAllow(true); await new Promise(() => {}); }
+    if (DEMO && qs.get("hold") === "allow") await allowWait(null, new Promise(() => {}));
     if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", original: qs.get("original") === "1", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", asks: qs.get("asks") ? +qs.get("asks") : DEMO_KIND === "nodecaid" && qs.get("decaid") === "add" ? 4 : 0, fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
     else {
       // A second Connect in one visit (after Back to start): let go of the first connection, or the tablet never answers.
       if (tablet) { const old = tablet; tablet = null; try { await old.close(); } catch {} }
       const device = await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
       if (!device) throw new Error("No device selected");
-      $("connect-hint").hidden = false; waitingForAllow(true);
-      tablet = await connectTablet(device, new AdbWebCredentialStore("Decent tablet setup"));
+      tablet = await allowWait(device, connectTablet(device, new AdbWebCredentialStore("Decent tablet setup")));
     }
     checking();
     working("Getting the tablet ready…");
     await tablet.prepare(FILES);
     await review();
-  } catch (e) { if (current === "review") show("connect"); setError("connect-error", plainError(e)); }
-  finally { btn.disabled = false; btn.textContent = "Connect tablet"; $("connect-hint").hidden = true; waitingForAllow(false); }
+  } catch (e) { if (current === "review") show("connect"); if (e === CANCELLED) cancelled = true; else setError("connect-error", plainError(e)); }
+  finally {
+    const had = document.activeElement === $("connect-cancel");
+    btn.disabled = false; btn.textContent = "Connect tablet"; $("connect-hint").hidden = true; $("connect-cancel").hidden = true; waitingForAllow(false);
+    if (cancelled) { $("connect-slow").textContent = "Cancelled. Choose Connect tablet to try again."; if (had) btn.focus(); }
+  }
 }
 
 let FORCE = ""; // " --force" once the person accepts an untested firmware on the tested model
@@ -476,10 +492,12 @@ async function restartTablet() {
 async function reconnectByHand() {
   setError("fin-error"); $("fin-reconnect-row").hidden = true;
   try {
-    const device = await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
-    if (!device) throw new Error("No device selected");
-    tablet = await connectTablet(device, new AdbWebCredentialStore("Decent tablet setup"));
-    await tablet.prepare(FILES);
+    if (!DEMO) { // safe mode keeps its pretend tablet: nothing there reaches USB
+      const device = await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
+      if (!device) throw new Error("No device selected");
+      tablet = await connectTablet(device, new AdbWebCredentialStore("Decent tablet setup"));
+      await tablet.prepare(FILES);
+    }
     finState("restart", "done");
     await runFinish(true);
   } catch (e) { setError("fin-error", plainError(e)); $("fin-reconnect-row").hidden = false; }
@@ -873,6 +891,7 @@ function init() {
   byHandList();
   $("to-next").onclick = () => show("next");
   $("fin-reconnect").onclick = reconnectByHand;
+  $("connect-cancel").onclick = () => cancelAllow && cancelAllow();
   $("app-groups").addEventListener("change", (e) => {
     const t = e.target;
     if (t.dataset.pkg) { if (t.checked) keep.delete(t.dataset.pkg); else keep.add(t.dataset.pkg); }
