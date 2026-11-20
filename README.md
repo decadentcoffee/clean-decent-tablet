@@ -120,7 +120,7 @@ Nothing that came with the tablet is uninstalled, so everything you use is still
 - **Want an app that Clean up switched off?** Untick it on the webpage before you start. Or turn it back on later in **Settings → Apps**: open the filter, show disabled apps, open the app and tap **Enable**.
 - **YouTube** is kept, just not on the Home screen. Add it as above.
 
-The original Decent app is in the app list as **AndroWish**, the program it runs on. On a tablet with no Decaid the new Home leads with its **Decent** icon, with **Update Decent** on the second page.
+The original Decent app runs on a program called **AndroWish**, and only its **Decent** icon opens it: AndroWish opened from the app list shows nothing. So the new Home always keeps that icon. On a tablet with no Decaid the Home leads with it, with **Update Decent** on the second page; with Decaid it sits on the second page, between Decent's other apps.
 
 ## ↩️ Undo
 

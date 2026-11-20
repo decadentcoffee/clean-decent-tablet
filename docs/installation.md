@@ -174,7 +174,7 @@ Tap the search bar to find an app that is further down the list. To put any othe
 
 To go back to Samsung's Home: `adb shell cmd role add-role-holder --user 0 android.app.role.HOME com.sec.android.app.launcher`
 
-**The original Decent app on the new Home.** On a tablet with no Decaid, the setup page puts **Decent**, Coffee Flow and SE Profiler on the first page, and **Update Decent** and Settings on the second (D-38, D-40). Those two icons are shortcuts that only the page can add: by hand, switch Home back to One UI Home to use them. With Decaid on the tablet they are left out. AndroWish in the app list opens no app by itself.
+**The original Decent app on the new Home.** On a tablet with no Decaid, the setup page puts **Decent**, Coffee Flow and SE Profiler on the first page, and **Update Decent** and Settings on the second (D-38, D-40). Those two icons are shortcuts that only the page can add: by hand, switch Home back to One UI Home to use them. With Decaid on the tablet, **Decent** alone goes on the second page, between SE Profiler and Coffee Flow (D-42). AndroWish in the app list opens no app by itself, so that icon is the only way to the original app.
 
 **Keep One UI Home installed and enabled.** Samsung's recent-apps screen comes from it, even with another launcher as Home.
 

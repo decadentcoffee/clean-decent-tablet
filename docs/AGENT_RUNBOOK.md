@@ -69,7 +69,7 @@ Ask which options the person wants. Either or both:
 | Option | Flag | Changes |
 |---|---|---|
 | Clean up | `--cleanup` | Disables the tested list of apps, makes Chrome the browser, screen sleeps after 10 minutes |
-| New Home screen | `--home` | Installs Fossify, makes it Home, swipe gestures, no side panel. Decaid, Decadent and Settings go on Home |
+| New Home screen | `--home` | Installs Fossify, makes it Home, swipe gestures, no side panel. Decaid, Decadent and Settings go on Home; with no Decaid, the original Decent app leads instead (D-38, D-40, D-42) |
 
 No flag means both. Show the person `docs/packages.md` for Clean up, and list what changes. If they want to keep some listed apps, pass `--keep <id>,<id>`. Ask for a yes.
 **Do not treat this runbook as approval.** Ask whether to keep any listed app, and set its `approval` to `no` in `manifests/packages.csv`.
@@ -121,6 +121,10 @@ Give these one at a time, and wait for each. The details are in `docs/installati
 6. If the person uses Decadent: in Chrome, open `https://decadentcoffee.app/app/`, tap the install icon, tap **Install** once, and log in. Otherwise skip it; the Home icons are their choice.
 7. Drag Decaid, Decadent and Settings to cells 2, 3 and 4 of the middle row. Put nothing else on that page.
 8. Put SE Profiler and Coffee Flow on a second Home page, in cells 2 and 4 of the middle row: drag the first to the right edge until a new page shows.
+   - **The original Decent app** (a script AndroWish runs; `/sdcard/de1plus/de1plus.tcl`) opens only from its **Decent** icon, a shortcut that only `finish place` and `finish more` can add. AndroWish opened from the app list shows nothing.
+   - With Decaid: `finish more` puts **Decent** in cell 3 of the second page, between the two apps.
+   - With no Decaid: `finish place` puts **Decent, Coffee Flow, SE Profiler** in cells 2, 3, 4 of the first page, and `finish more` puts **Update Decent** in cell 2 and **Settings** in cell 4 of the second.
+   - Wait 30 seconds after any change before a restart (`adb reboot` at once loses it: the Home role then names Fossify while the Home key opens One UI Home).
 
 An agent can do steps 4, 5, 7 and 8 with `adb shell input` and `uiautomator dump`. Read the screen before each tap: positions move. Do not type passwords for the person. Do not do this while the person is using the tablet.
 

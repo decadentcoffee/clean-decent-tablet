@@ -49,6 +49,12 @@ build() { getprop ro.build.PDA; }
 
 is_protected() { for w in $PROTECTED; do [ "$w" = "$1" ] && return 0; done; return 1; }
 installed() { pm list packages --user "$USER_ID" 2>/dev/null | grep -qx "package:$1"; }
+# usable <package>: on the tablet and able to open. Samsung switches off apps nobody has opened for a while
+# ("auto_disabler": the app reads as disabled, state 4, disabled until used) and the app comes back on when it is
+# opened (reference tablet, 21 Nov 2026: AZ Screen Recorder and seven preloaded apps). Such an app is still there.
+usable() {
+  case "$(state_of "$1")" in enabled) return 0 ;; disabled) dumpsys package "$1" 2>/dev/null | grep -q "User $USER_ID:.* enabled=4 " ;; *) return 1 ;; esac
+}
 state_of() {
   installed "$1" || { echo absent; return; }
   if pm list packages -d --user "$USER_ID" 2>/dev/null | grep -qx "package:$1"; then echo disabled; else echo enabled; fi
@@ -364,7 +370,16 @@ grid_box() { # Fossify's Home grid, else its largest view
 home_labels() { grep 'package="org.fossify.home"' "$UIN" | grep -qE '( text|content-desc)="[^"]'; }
 # home_wait [labels]: press Home until Fossify's own screen can be read (with its icon labels, when asked). A tablet
 # that has just restarted needs a while: straight after the restart the first read found no Home at all.
+# The Home role can name Fossify while the Home key still opens the tablet's own Home (reference tablet, 21 Nov 2026:
+# a restart straight after the role was set; every Home step then read "cannot find the Home screen"). Asking for the
+# role again cures it.
+home_mend() {
+  is_fossify || return 0
+  cmd package resolve-activity --brief --user "$USER_ID" -a android.intent.action.MAIN -c android.intent.category.HOME 2>/dev/null | tail -n 1 | grep -q "^$FOSSIFY/" && return 0
+  cmd role add-role-holder --user "$USER_ID" android.app.role.HOME "$FOSSIFY" >/dev/null 2>&1; sleep 1
+}
 home_wait() {
+  home_mend
   _hend=$(( $(date +%s) + $(tmo 60) ))
   while :; do
     wake; go_home
@@ -384,17 +399,25 @@ home_spot() { # label: centre of its icon on Home (grid or dock), if there is on
 # that AndroWish pinned to Samsung's Home. A pinned shortcut stays with the Home app it was pinned to, so Fossify starts
 # without it. "Original mode" is a tablet that has that app and no Decaid: Home then leads with it (owner, 20 Nov 2026).
 DE1PLUS="${DE1PLUS_DIR:-/sdcard/de1plus}"; WISH=tk.tcl.wish
-has_original() { [ -f "$DE1PLUS/de1plus.tcl" ] && [ "$(state_of "$WISH")" = enabled ]; }
+has_original() { [ -f "$DE1PLUS/de1plus.tcl" ] && usable "$WISH"; }
 original_mode() { has_original && ! installed net.tadel.reaprime; }
 # AndroWish pins the shortcut again, to the Home app now in charge, when a script asks it to. The script here asks for
 # that and nothing else: it loads none of the Decent app, so nothing reaches the machine. Fossify takes the icon without
 # a question and puts it in the first free cell of the page that is showing (reference tablet, 20 Nov 2026).
 pin_ask() { # label script icon: AndroWish asks the Home app for one shortcut of the Decent app. pin_end follows it.
-  # AndroWish names a new shortcut "pinned-<how many it has>". When one was removed from the middle, that name is
-  # taken: Android then pins the older shortcut again, under its own label, and the wanted icon never comes
-  # (reference tablet, 21 Nov 2026: Decent's two with a third named pinned-3 gave a second Decent). So no request then.
+  # AndroWish names a new shortcut "pinned-<how many it has>". Two things can make that name one that is taken, and
+  # Android then pins the older shortcut again, under its own label, so the wanted icon never comes.
+  # 1. Dead records. After Undo and a new set-up, a restart brings back the records of the removed Home's icons:
+  #    counted, pinned by nothing (reference tablet, 21 Nov 2026: a count of 4 with two pinned, and Update Decent
+  #    refused on a clean set-up). Android drops them whenever it tidies any package's shortcuts, so it is asked to
+  #    tidy a package that does not exist: nothing else changes, and the count is true again.
+  # 2. An icon removed by hand. The count then names an icon that is still there. No request is made: 2 when the
+  #    icon in the way is on this Home (Undo and a new set-up cure it), 3 when it is on the tablet's own Home.
+  cmd shortcut clear-shortcuts --user "$USER_ID" decent.setup.none >/dev/null 2>&1
   _n="$(cmd shortcut get-shortcuts --user "$USER_ID" --flags 15 "$WISH" 2>/dev/null | grep -c 'ShortcutInfo {')"
-  dumpsys shortcut 2>/dev/null | grep -q "Pinned: pinned-$_n\$" && return 1
+  _own="$(dumpsys shortcut 2>/dev/null | awk -v id="pinned-$_n" '/Launcher: /{l=$2} $1=="Pinned:" && $2==id {print l; exit}')"
+  say "INFO pin $1: AndroWish has $_n shortcuts"
+  case "$_own" in "") ;; org.fossify.home) return 2 ;; *) return 3 ;; esac
   _t="${PIN_DIR:-/sdcard/Download}/decent-setup-pin.tcl"
   cat > "$_t" <<PIN_EOF || return 1
 catch {
@@ -404,18 +427,18 @@ catch {
 }
 after 3000 exit
 PIN_EOF
-  am force-stop "$WISH" 2>/dev/null
+  am force-stop "$WISH" >/dev/null 2>&1
   am start -a android.intent.action.VIEW -t application/x-tcl -d "file://$_t" -n "$WISH/.AndroWishLauncher" >/dev/null 2>&1
   sleep "${PIN_WAIT_S:-6}" # Android takes the request only while AndroWish is on the screen: no Home press before it has asked
 }
-pin_end() { am force-stop "$WISH" 2>/dev/null; rm -f "${PIN_DIR:-/sdcard/Download}/decent-setup-pin.tcl"; }
+pin_end() { am force-stop "$WISH" >/dev/null 2>&1; rm -f "${PIN_DIR:-/sdcard/Download}/decent-setup-pin.tcl"; }
 pin_original() {
   go_home; ui_dump
   [ -n "$(home_spot Decent)" ] && return 0
   # Fossify 1.10.0 crashes when a shortcut arrives on a Home with no icon at all, and Android then forgets which Home
   # app was chosen (reference tablet, 20 Nov 2026). So the other icons go first, and an empty Home is left alone.
   home_labels || return 1
-  pin_ask Decent de1plus.tcl de1plus_icon_v2.png || return 1
+  pin_ask Decent de1plus.tcl de1plus_icon_v2.png || return $?
   # With one Home page Fossify puts the new icon on a second page it makes for it; with two it lands on the first.
   # From the second page, a slow drag to the left edge turns the page and drops it in the first column.
   _pe=$(( $(date +%s) + $(tmo 20) )); _ok=1
@@ -436,18 +459,23 @@ pin_original() {
   pin_end
   return $_ok
 }
+# pin_two <label> <script> <icon> <column>: a shortcut of the Decent app on the second Home page, in the middle row.
+# With one Home page Fossify makes the second page for the new icon; with two it lands on the first, and one slow
+# drag to the right edge carries it over. An icon already on Home, on either page, is left where the person has it.
 # "Update Decent" is the Decent app's own updater: a second shortcut, to appupdate.tcl (install_update_app_icon in the
-# app's gui.tcl). It goes on the second page, where Settings joins it (owner, 20 Nov 2026). With one Home page Fossify
-# makes the second page for it; an icon that is already on Home, on either page, is left where the person has it.
-pin_update() {
-  lab="Update Decent"
-  [ -f "$DE1PLUS/appupdate.tcl" ] && [ -f "$DE1PLUS/cloud_download_icon.png" ] || { say "SKIP finish more $lab not on this tablet"; return 0; }
+# app's gui.tcl). It goes on the second page, where Settings joins it (owner, 20 Nov 2026).
+PIN_TAKEN="its icon was removed from Home by hand before. Choose Undo to put the Home screen back, then set it up again"
+PIN_GONE="an icon of the Decent app was removed from the tablet's own Home screen before, and Android cannot make this one"
+pin_two() {
+  lab="$1"; _ps="$2"; _pi="$3"; _pc="$4"
+  [ -f "$DE1PLUS/$_ps" ] && [ -f "$DE1PLUS/$_pi" ] || { say "SKIP finish more $lab not on this tablet"; return 0; }
   go_home; ui_dump
   home_labels || { say "MANUAL finish more $lab Home has no icons yet"; return 0; }
   _u="$(home_spot "$lab")"; _one="$(home_sig)"
   if [ -z "$_u" ]; then page_two; [ "$_one" != "$(home_sig)" ] && _u="$(home_spot "$lab")"; fi
   [ -n "$_u" ] && { go_home; say "SKIP finish more $lab already on Home"; return 0; }
-  pin_ask "$lab" appupdate.tcl cloud_download_icon.png || { say "MANUAL finish more $lab could not add its icon"; return 0; }
+  pin_ask "$lab" "$_ps" "$_pi"
+  case $? in 0) ;; 2) say "MANUAL finish more $lab $PIN_TAKEN"; return 0 ;; 3) say "MANUAL finish more $lab $PIN_GONE"; return 0 ;; *) say "MANUAL finish more $lab could not add its icon"; return 0 ;; esac
   _pe=$(( $(date +%s) + $(tmo 20) )); _on=0; _q=""
   while :; do
     pause; go_home
@@ -458,16 +486,36 @@ pin_update() {
   done
   pin_end
   [ "$_on" = 0 ] && { go_home; say "MANUAL finish more $lab could not add its icon"; return 0; }
-  if [ "$_on" = 2 ]; then # to the second cell of the middle row, the place of the first of two icons
-    gb="$(grid_box)"
-    if [ -n "$gb" ]; then
-      set -- $gb; cw=$(( ($3 - $1) / 5 )); rh=$(( ($4 - $2) / 3 ))
-      cell="$(( $1 + cw )) $(( $2 + rh )) $(( $1 + cw * 2 )) $(( $2 + 2 * rh ))"
-      in_box $_q $cell || { drag $_q $(( $1 + cw + cw / 2 )) $(( $2 + rh + rh / 2 )); pause; }
+  if [ "$_on" = 1 ]; then
+    # It landed on the first page. Two moves carry it over: to the last column of its own row, then a short hold
+    # at the right edge. The hold grows until the page turns once: 1.2 s did it on the reference tablet, and 4 s
+    # turned two pages (21 Nov 2026). A cell that holds an icon is never dropped on: that would make a folder.
+    _away="MANUAL finish more $lab is on Home: drag it to the second Home page"
+    go_home; ui_dump; _q="$(home_spot "$lab")"; gb="$(grid_box)"
+    [ -n "$_q" ] && [ -n "$gb" ] || { say "$_away"; return 0; }
+    set -- $gb; cw=$(( ($3 - $1) / 5 )); _qy="${_q#* }"; _lx=$(( $1 + cw * 4 + cw / 2 )); _ex=$(( $3 - 3 ))
+    if ! in_box $_q $(( $1 + cw * 4 )) $2 $3 $4; then
+      [ -z "$(node_at $_lx $_qy)" ] || { say "$_away"; return 0; }
+      drag $_q $_lx $_qy
     fi
+    for _t in ${PIN_EDGE_MS:-1200 1800 2400}; do
+      go_home; ui_dump; _q="$(home_spot "$lab")"; [ -n "$_q" ] || break
+      drag $_q $_ex $_qy $_t
+    done
+    _one=""; go_home; ui_dump && _one="$(home_sig)"; page_two; _q="$(home_spot "$lab")"
+    { [ -n "$_q" ] && [ "$_one" != "$(home_sig)" ]; } || { go_home; say "$_away"; return 0; }
+  fi
+  gb="$(grid_box)"
+  if [ -n "$gb" ]; then
+    set -- $gb; cw=$(( ($3 - $1) / 5 )); rh=$(( ($4 - $2) / 3 ))
+    cell="$(( $1 + cw * (_pc - 1) )) $(( $2 + rh )) $(( $1 + cw * _pc )) $(( $2 + 2 * rh ))"
+    _tx=$(( $1 + cw * (_pc - 1) + cw / 2 )); _ty=$(( $2 + rh + rh / 2 ))
+    # Its cell, unless the person keeps something there: then it stays where it landed.
+    in_box $_q $cell || [ -n "$(node_at $_tx $_ty)" ] || { drag $_q $_tx $_ty; pause; }
   fi
   go_home; log_change finish "more:$lab" - ok; say "DONE finish more $lab"
 }
+pin_update() { pin_two "Update Decent" appupdate.tcl cloud_download_icon.png 2; }
 
 fin_status() {
   if has_original; then say "STATUS original_app=yes"; else say "STATUS original_app=no"; fi
@@ -652,9 +700,9 @@ place_one() {
   case "$lab" in
     Decaid) installed net.tadel.reaprime || { say "SKIP finish place $lab not installed"; return 0; } ;;
     Decadent) has_webapk || { say "SKIP finish place $lab not installed"; return 0; } ;;
-    "Coffee Flow") [ "$(state_of com.pressensor.coffeeflow)" = enabled ] || { say "SKIP finish place $lab not on this tablet"; return 0; } ;;
-    "SE Profiler") [ "$(state_of hu.kavekalmar.sep)" = enabled ] || { say "SKIP finish place $lab not on this tablet"; return 0; } ;;
-    Decent) pin_original || { say "MANUAL finish place $lab could not add its icon"; return 0; } ;;
+    "Coffee Flow") usable com.pressensor.coffeeflow || { say "SKIP finish place $lab not on this tablet"; return 0; } ;;
+    "SE Profiler") usable hu.kavekalmar.sep || { say "SKIP finish place $lab not on this tablet"; return 0; } ;;
+    Decent) pin_original; case $? in 0) ;; 2) say "MANUAL finish place $lab $PIN_TAKEN"; return 0 ;; 3) say "MANUAL finish place $lab $PIN_GONE"; return 0 ;; *) say "MANUAL finish place $lab could not add its icon"; return 0 ;; esac ;;
   esac
   go_home; ui_dump
   gb="$(grid_box)"; [ -n "$gb" ] || { say "MANUAL finish place $lab cannot find the Home screen"; return 0; }
@@ -717,7 +765,7 @@ drawer_spot() {
 }
 place_two() { # package label column
   lab="$2"; col="$3"
-  [ "$(state_of "$1")" = enabled ] || { say "SKIP finish more $lab not on this tablet"; return 0; }
+  usable "$1" || { say "SKIP finish more $lab not on this tablet"; return 0; }
   go_home; ui_dump
   gb="$(grid_box)"; [ -n "$gb" ] || { say "MANUAL finish more $lab cannot find the Home screen"; return 0; }
   set -- $gb; cw=$(( ($3 - $1) / 5 )); rh=$(( ($4 - $2) / 3 ))
@@ -757,6 +805,10 @@ fin_more() {
   is_fossify || { say "SKIP finish more home screen option not used"; say "OK finish more"; return 0; }
   home_wait || :
   if original_mode; then pin_update; place_two com.android.settings Settings 4; go_home; say "OK finish more"; return 0; fi
+  # With Decaid in charge the original Decent app keeps one icon, in the middle of the second page: opened from the
+  # app list AndroWish runs nothing, so without it the app could not be opened at all (owner, 21 Nov 2026). It goes
+  # first: on a Home with one page Fossify makes the second page for it.
+  has_original && pin_two Decent de1plus.tcl de1plus_icon_v2.png 3
   _c=2
   echo "$MORE_APPS" > "$DIR/more.tmp"
   while IFS=: read -r _pk _lb <&3; do place_two "$_pk" "$_lb" $_c; _c=$((_c+2)); done 3< "$DIR/more.tmp" # two apps: cells 2 and 4, either side of the middle

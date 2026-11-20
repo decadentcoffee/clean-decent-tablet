@@ -37,7 +37,18 @@ cat > "$T/bin/am" <<'S'
 #!/bin/bash
 [ "$1" = start ] || { echo 0; exit 0; }
 a=""; d=""; while [ $# -gt 0 ]; do case "$1" in -a) a="$2"; shift ;; -d) d="$2"; shift ;; esac; shift; done
-echo "am $a $d" >> "$SIM/events"; . "$(dirname "$0")/_simui"; go am "${d:-$a}"; echo "Starting: Intent { act=$a }"
+echo "am $a $d" >> "$SIM/events"; . "$(dirname "$0")/_simui"
+# AndroWish asked to pin a shortcut: it names it pinned-<how many it has, dead records included>. A name that is taken
+# pins the shortcut that has it, under its own label; a new one lands on Home.
+case "$d" in *decent-setup-pin.tcl)
+  lab="$(sed -n 's/.*borg shortcut add "\([^"]*\)".*/\1/p' "${d#file://}")"; n=$(( $(grep -c . "$SIM/shortcut.pins") + $(grep -c . "$SIM/shortcut.dead") )); id="pinned-$n"
+  old="$(awk -v id="$id" '$2==id {sub(/^[^ ]+ [^ ]+ /, ""); print; exit}' "$SIM/shortcut.pins")"
+  if [ -n "$old" ]; then lab="$old"; else echo "org.fossify.home $id $lab" >> "$SIM/shortcut.pins"; fi
+  echo "pin $id $lab" >> "$SIM/events"; : > "$SIM/shortcut.dead"; x=$(( 700 + n * 10 )); y=260
+  echo "<node index=\"9\" text=\"\" resource-id=\"\" class=\"android.view.View\" package=\"org.fossify.home\" content-desc=\"$lab\" checkable=\"false\" checked=\"false\" bounds=\"[$((x-90)),$((y-90))][$((x+90)),$((y+90))]\"/>" >> "$SIM/added"
+  echo "Starting: Intent { act=$a }"; exit 0 ;;
+esac
+go am "${d:-$a}"; echo "Starting: Intent { act=$a }"
 S
 # The screen: a fixture file per screen; input and am move between them by transitions.tsv. Home also drops
 # removed icons and shows dropped ones. uiautomator writes the screen on one line, like the real one.
@@ -94,6 +105,7 @@ case "$1" in
    elif [ $(( $5 - $3 )) -lt -100 ]; then go swipe-up -; elif [ $(( $5 - $3 )) -gt 100 ]; then go swipe-down -; fi ;;
  text) go text "${2//%s/ }" ;;
  draganddrop) l="$(hit "$2" "$3")"; [ "$l" != - ] && { case "$(scr)" in drawer*) echo home > "$SIM/screen" ;; esac; x=$4 y=$5
+   grep -vF "content-desc=\"$l\"" "$SIM/added" > "$SIM/added.2" 2>/dev/null; mv "$SIM/added.2" "$SIM/added" # an icon moves: it is not copied
    echo "<node index=\"9\" text=\"\" resource-id=\"\" class=\"android.view.View\" package=\"org.fossify.home\" content-desc=\"$l\" checkable=\"false\" checked=\"false\" bounds=\"[$((x-90)),$((y-90))][$((x+90)),$((y+90))]\"/>" >> "$SIM/added"; } ;;
  motionevent) case "$2" in
    DOWN) l="$(hit "$3" "$4")"; [ "$l" != - ] && { echo "$l" > "$SIM/dragging"; case "$(scr)" in drawer*) echo home > "$SIM/screen" ;; esac; } ;;
@@ -111,8 +123,10 @@ cat > "$T/bin/dumpsys" <<'S'
 #!/bin/bash
 case "$1" in
  account) echo "Accounts: $(grep -c . "$SIM/accounts")"; while read -r a; do echo "    Account {name=$a, type=com.google}"; done < "$SIM/accounts" ;;
- package) echo "Packages:"; echo "  Package [$2]"; echo "    versionName=$(cat "$SIM/ver.$2" 2>/dev/null || echo 1.0)"; echo "    versionName=0.9-factory"
+ package) echo "Packages:"; echo "  Package [$2]"; grep -qx "$2" "$SIM/asleep" 2>/dev/null && echo "    User 0: ceDataInode=1 installed=true hidden=false stopped=false notLaunched=false enabled=4 instant=false"; echo "    versionName=$(cat "$SIM/ver.$2" 2>/dev/null || echo 1.0)"; echo "    versionName=0.9-factory"
    case "$2" in org.chromium.webapk.a5c1d2) echo '          Authority: "decadentcoffee.app": -1' ;; org.chromium.webapk.*) echo '          Authority: "example.test": -1' ;; esac ;;
+ shortcut) for l in $(cut -d' ' -f1 "$SIM/shortcut.pins" | sort -u); do echo "      Launcher: $l  Package user: 0  Owner user: 0"; echo "        Package: tk.tcl.wish  User: 0"
+   awk -v l="$l" '$1==l {print "          Pinned: " $2}' "$SIM/shortcut.pins"; done ;;
 esac
 exit 0
 S
@@ -142,6 +156,11 @@ if [ "$1" = wifi ]; then case "$2" in # like Android, status names the network
   set-wifi-enabled) echo "$3" > "$SIM/wifi.enabled" ;;
   connect-network) printf '%s|%s|%s\n' "$3" "$4" "${5:-}" > "$SIM/wifi.args"; [ "${SIM_WIFI_FAIL:-0}" = 1 ] || echo "$3" > "$SIM/wifi"; echo "Connection initiated" ;;
 esac; exit 0; fi
+if [ "$1" = shortcut ]; then case "$2" in # dead records go when any package's shortcuts are tidied
+  clear-shortcuts) echo "shortcut clear $5" >> "$SIM/events"; : > "$SIM/shortcut.dead" ;;
+  get-shortcuts) cat "$SIM/shortcut.pins" "$SIM/shortcut.dead" | grep . | sed 's/.*/ShortcutInfo {id=***, flags=0x8a [PinIc-fStr]/' ;;
+esac; exit 0; fi
+if [ "$1" = package ] && [ "$2" = resolve-activity ]; then echo "$(cat "$SIM/role.home")/.Home"; exit 0; fi
 if [ "$1" = role ]; then r="${5##*.}"; r="$(echo "$r" | tr 'A-Z' 'a-z')"
   case "$2" in get-role-holders) cat "$SIM/role.$r" ;; add-role-holder) echo "$6" > "$SIM/role.$r" ;; esac
 fi
@@ -303,4 +322,34 @@ grep -vxE 'hu.kavekalmar.sep|com.pressensor.coffeeflow|com.hecorat.screenrecorde
 fin more
 [ "$(grep -c '^SKIP finish more .* not on this tablet$' "$T/o")" = 2 ] && tail -n 1 "$T/o" | grep -qx 'OK finish more' && ok "finish more skips apps the tablet does not have" || { bad "more absent"; cat "$T/o"; }
 printf 'com.sec.android.app.launcher\n' > "$SIM/role.home"; fin more; grep -qx 'SKIP finish more home screen option not used' "$T/o" && ok "finish more skips without the Home option" || bad "more without home"
+# The original Decent app's icons are shortcuts AndroWish pins. Samsung's Home holds its two (pinned-0, pinned-1).
+# The simulated Home has one page, so only the first-page icon (finish place Decent) can end DONE here.
+mkdir -p "$T/de1plus" "$T/pin"; for f in de1plus.tcl de1plus_icon_v2.png appupdate.tcl cloud_download_icon.png; do echo x > "$T/de1plus/$f"; done
+export DE1PLUS_DIR="$T/de1plus" PIN_DIR="$T/pin" PIN_WAIT_S=0 PIN_EDGE_MS=1
+SAM="com.sec.android.app.launcher"; pins() { printf '%s\n' "$@" > "$SIM/shortcut.pins"; : > "$SIM/shortcut.dead"; : > "$SIM/events"; : > "$SIM/added"; echo home > "$SIM/screen"; }
+printf 'org.fossify.home\n' > "$SIM/role.home"; { cat "$SIM/installed"; echo tk.tcl.wish; } | sort -u > "$T/i"; cp "$T/i" "$SIM/installed"
+grep -vx net.tadel.reaprime "$SIM/installed" > "$T/i"; cp "$T/i" "$SIM/installed"
+fin status; grep -qx 'STATUS original_app=yes' "$T/o" && ok "status names the original Decent app" || { bad "original status"; cat "$T/o"; }
+# A dead record from a Home that was removed makes the count 3: tidied first, the new icon is pinned-2, not pinned-3.
+pins "$SAM pinned-0 Decent" "$SAM pinned-1 Update Decent"; echo "gone pinned-2 Decent" > "$SIM/shortcut.dead"
+fin place no-decadent
+grep -qx 'shortcut clear decent.setup.none' "$SIM/events" && grep -qx 'pin pinned-2 Decent' "$SIM/events" && grep -qx 'DONE finish place Decent' "$T/o" && grep -q 'content-desc="Decent"' "$SIM/added" && ok "original mode: Decent is pinned to the new Home, dead records tidied first" || { bad "pin original"; cat "$T/o" "$SIM/events"; }
+fin more; grep -qx 'pin pinned-3 Update Decent' "$SIM/events" && ok "original mode: Update Decent is asked for under the next free name" || { bad "pin update"; cat "$T/o" "$SIM/events"; }
+# An icon removed from the new Home by hand: the next name is one this Home still holds. No request; Undo cures it.
+pins "$SAM pinned-0 Decent" "$SAM pinned-1 Update Decent" "org.fossify.home pinned-3 Update Decent"
+fin place no-decadent
+grep -q '^MANUAL finish place Decent its icon was removed from Home by hand before\. Choose Undo' "$T/o" && ! grep -q '^pin ' "$SIM/events" && ! grep -q 'content-desc="Decent"' "$SIM/added" && ok "an icon removed from the new Home by hand: no request, and the step says to Undo" || { bad "pin taken"; cat "$T/o" "$SIM/events"; }
+# The Decent icon removed from the tablet's own Home long ago: the next name is Update Decent's there.
+pins "$SAM pinned-1 Update Decent"
+fin place no-decadent
+grep -q "^MANUAL finish place Decent an icon of the Decent app was removed from the tablet's own Home screen before" "$T/o" && ! grep -q '^pin ' "$SIM/events" && ok "an icon removed from the tablet's own Home: no request, and the step says why" || { bad "pin gone"; cat "$T/o" "$SIM/events"; }
+# Samsung switched AndroWish off for lack of use (disabled until used): the app is still there, and still asked.
+pins "$SAM pinned-0 Decent" "$SAM pinned-1 Update Decent"; echo tk.tcl.wish >> "$SIM/disabled"; echo tk.tcl.wish > "$SIM/asleep"
+fin status; grep -qx 'STATUS original_app=yes' "$T/o" && ok "an original app Samsung switched off for lack of use still counts" || { bad "asleep original"; cat "$T/o"; }
+: > "$SIM/asleep"; fin status; grep -qx 'STATUS original_app=no' "$T/o" && ok "an original app switched off by hand does not" || { bad "disabled original"; cat "$T/o"; }
+grep -vx tk.tcl.wish "$SIM/disabled" > "$T/i"; cp "$T/i" "$SIM/disabled"
+# With Decaid the original app keeps one icon, asked for by the second-page step; without the app nothing is asked.
+echo net.tadel.reaprime >> "$SIM/installed"; pins "$SAM pinned-0 Decent" "$SAM pinned-1 Update Decent"
+fin more; grep -qx 'pin pinned-2 Decent' "$SIM/events" && ! grep -q 'Update Decent' "$T/o" && ok "with Decaid the second-page step asks for the Decent icon, and not Update Decent" || { bad "pin with decaid"; cat "$T/o" "$SIM/events"; }
+rm "$T/de1plus/de1plus.tcl"; pins "$SAM pinned-0 Decent"; fin more; ! grep -q '^pin ' "$SIM/events" && ! grep -q 'Decent$\|Decent ' "$T/o" && ok "no original Decent app: no icon is asked for" || { bad "pin without original"; cat "$T/o" "$SIM/events"; }
 echo; [ $fails = 0 ] && echo "ALL SIM CHECKS PASSED" || { echo "$fails SIM CHECK(S) FAILED"; exit 1; }

@@ -76,6 +76,15 @@ try {
     await p.eval(`${next}.click()`); const done = await until(p, `!document.getElementById("fin-after").hidden`, 60000);
     check("safe-mode bar after a failed restart", bar[0] === "Reconnect ›" && bar[1] === false && done && p.consoleErrors.length === 0, { bar, done, errors: p.consoleErrors }); await p.close(); }
 
+  // The second-page step names what this tablet gets: Decent's other apps, with the original app's icon when the
+  // tablet has that app beside Decaid, or Update Decent and Settings when it stays on the original app.
+  for (const [name, q, want, note] of [["Decaid alone", "?safe", "Put Decent's other apps on a second Home page", false],
+    ["Decaid and the original app", "?safe&original=1", "Put the original Decent app and Decent's other apps on a second Home page", true],
+    ["the original app alone", "?safe=nodecaid&original=1&on=cleanup,home", "Put Update Decent and Settings on a second Home page", false]]) {
+    const p = await open(q + "&to=finished&net=all"); const done = await until(p, `!document.getElementById("fin-after").hidden`);
+    const got = await p.eval(`(() => { const li = document.querySelector('#fin-steps [data-k="more"]'); return [li.querySelector(".what").textContent, !li.querySelector('[data-more="kept"]').hidden]; })()`);
+    check(`second-page step: ${name}`, done && got[0] === want && got[1] === note, got); await p.close(); }
+
   // The restart says it is expected and how long it has been.
   { const p = await open("?safe&to=finish&net=all"); await until(p, `${visible} === "finish" && !document.getElementById("fin-you").hidden`);
     await p.eval(`document.getElementById("fin-go").click()`);

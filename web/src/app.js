@@ -559,8 +559,10 @@ async function runFinish(afterRestart = false) {
   const icons = original ? ["Decent", "Coffee Flow", "SE Profiler"] : ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
   if (ours) paintHome(homeKind(decaidThere, onHome, original));
   FIN("place").querySelector(".place-note").hidden = !original;
-  FIN("more").querySelector(".what").textContent = original ? "Put Update Decent and Settings on a second Home page" : "Put Decent's other apps on a second Home page";
-  for (const n of FIN("more").querySelectorAll("[data-more]")) n.hidden = (n.dataset.more === "original") !== original;
+  // With Decaid the original Decent app keeps one icon, on the second page with Decent's other apps (D-42).
+  const kept = ours && finOriginal && decaidThere;
+  FIN("more").querySelector(".what").textContent = original ? "Put Update Decent and Settings on a second Home page" : kept ? "Put the original Decent app and Decent's other apps on a second Home page" : "Put Decent's other apps on a second Home page";
+  for (const n of FIN("more").querySelectorAll("[data-more]")) n.hidden = n.dataset.more === "kept" ? !kept : (n.dataset.more === "original") !== original;
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
   const [w, h] = FIN("place").querySelectorAll(".place-list"); w.textContent = said(false); h.innerHTML = said(true);
   // The last step names only the apps it opens: Decadent when it is, or will be, on the tablet.
