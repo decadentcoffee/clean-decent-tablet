@@ -38,9 +38,21 @@ function plainError(err) {
   const m = String(err && err.message || err);
   if (/claim|Unable to claim|in use|busy/i.test(m)) return "Another program is using the tablet. Close Android Studio, Samsung software or any other Android tool. If you have used ADB on this computer, run: adb kill-server. Then unplug the tablet, plug it back in and try again.";
   if (/No device selected|NotFoundError|cancel/i.test(m)) return "No tablet was selected. Choose Connect tablet again and pick your tablet in the list. If it isn't listed, check USB debugging is on and the cable carries data.";
+  // Windows answers "Access denied" (a SecurityError) when another program or driver already holds the tablet, not the tablet's Allow.
+  if ((err && err.name === "SecurityError") || /SecurityError|Access denied/i.test(m)) return "Windows didn't let the browser use the tablet. Another program or driver has it: close Android Studio, Samsung Smart Switch and any other Android tool. If you have used ADB on this computer, run: adb kill-server. Then unplug the tablet, plug it back in and try again.";
   if (/auth|reject|denied/i.test(m)) return "The tablet didn't allow this computer. Unlock it, tap Allow on the USB debugging message, and try again.";
   if (/disconnect|transfer|network|closed/i.test(m)) return "The connection to the tablet dropped. Check the cable, and try again. Anything already done is saved in the record on the tablet, so it's safe to run again.";
   return `Something went wrong: ${m}`;
+}
+// An error this page words itself (a download, a checksum): shown as it is, never as a script failure.
+const said = (text) => Object.assign(new Error(text), { plain: true });
+// A stopped run says what happened in plain words; the script's own line goes under Show details. Its one action
+// reads the tablet again, so the choices on the next screen (undo included) come from the record on the tablet.
+function stopRun(e) {
+  busy = false; $("run-title").textContent = "Stopped"; $("run-lead").hidden = true; $("run-back").hidden = false;
+  const text = e && e.plain ? e.message : plainError(e);
+  setError("run-error", text.startsWith("Something went wrong") ? "The tablet stopped partway. What it changed so far is kept and recorded on the tablet. Check the tablet again, then run the setup again or put things back." : text);
+  const raw = String(e && e.message || e), log = $("log"); if (!log.textContent.includes(raw)) log.textContent += `${log.textContent ? "\n" : ""}${raw}`;
 }
 
 function supported() { return DEMO || ("usb" in navigator && window.isSecureContext); }
@@ -93,7 +105,12 @@ async function review() {
   // What the tablet reports, then whether that pairing has been tested: never the tested values themselves.
   const ok = tested, word = tested ? "Tested" : newBuild ? "Firmware not tested" : "Not tested";
   $("device-name").dataset.state = ok ? "ok" : "warn";
-  $("device-name").replaceChildren(
+  // In the preview the pretend tablet never reads as a real connection.
+  if (previewing) $("device-name").replaceChildren(
+    el("span", { className: "found-mark", ariaHidden: "true", textContent: "✓" }),
+    el("span", { className: "found-what" }, el("small", { textContent: "Preview" }), el("b", { textContent: "Example tablet" }),
+      el("span", { textContent: "Your tablet's model and firmware show here once it is connected." })));
+  else $("device-name").replaceChildren(
     el("span", { className: "found-mark", ariaHidden: "true", textContent: ok ? "✓" : "!" }),
     el("span", { className: "found-what" }, el("small", { textContent: "Detected" }),
       el("b", { textContent: info ? `Samsung ${info[1]}` : "Unknown tablet" }),
@@ -280,7 +297,7 @@ let changedAt = 0; // when the last change on the tablet finished: Android saves
 async function isInstalled(pkg) { return (await tablet.run(`pm list packages ${pkg}`)).includes(`package:${pkg}`); }
 
 async function runSetup() {
-  show("running"); busy = true; setError("run-error"); $("run-back").hidden = true;
+  show("running"); busy = true; setError("run-error"); $("run-back").hidden = true; $("run-lead").hidden = false;
   const bar = $("bar"), label = $("bar-label"), log = $("log"); log.textContent = "";
   const on = (l) => progress(l, bar, label, log);
   try {
@@ -296,19 +313,19 @@ async function runSetup() {
       if (decaidFile) decaidBytes = new Uint8Array(await decaidFile.arrayBuffer());
       else {
         const res = await fetch("decaid-latest.apk").catch(() => null);
-        if (!res || !res.ok) throw new Error("Decaid could not be downloaded. Check this computer's internet connection and try again. Nothing was installed.");
+        if (!res || !res.ok) throw said("Decaid could not be downloaded. Check this computer's internet connection and try again. Nothing was installed.");
         decaidBytes = new Uint8Array(await res.arrayBuffer());
       }
       if (!DEMO) {
-        const latest = await latestApk(decaid.url).catch(() => { throw new Error("The Decaid file could not be checked with GitHub. Check this computer's internet connection and try again. Nothing was installed."); });
-        if ((await sha256(decaidBytes)) !== latest.sha) throw new Error(decaidFile ? `That file isn't the latest Decaid${latest.version ? ` (${latest.version})` : ""}. Download it again with the link on the Decaid step, or let this page get it. Nothing was installed.` : "The Decaid download did not match Decent's checksum. Try again. Nothing was installed.");
+        const latest = await latestApk(decaid.url).catch(() => { throw said("The Decaid file could not be checked with GitHub. Check this computer's internet connection and try again. Nothing was installed."); });
+        if ((await sha256(decaidBytes)) !== latest.sha) throw said(decaidFile ? `That file isn't the latest Decaid${latest.version ? ` (${latest.version})` : ""}. Download it again with the link on the Decaid step, or let this page get it. Nothing was installed.` : "The Decaid download did not match Decent's checksum. Try again. Nothing was installed.");
       }
     }
     $("run-title").textContent = "Installing the launcher…";
     const fossify = APKS.find((a) => a.name === "fossify");
     if (wantHome && !(await isInstalled(fossify.pkg))) {
       const bytes = DEMO ? new Uint8Array(1) : new Uint8Array(await (await fetch("fossify.apk")).arrayBuffer());
-      if (!DEMO && (await sha256(bytes)) !== fossify.sha) throw new Error("The launcher download failed its checksum. Nothing was installed.");
+      if (!DEMO && (await sha256(bytes)) !== fossify.sha) throw said("The launcher download failed its checksum. Nothing was installed.");
       await installApk(fossify, bytes, on);
     }
     if (decaidBytes) {
@@ -336,7 +353,7 @@ async function runSetup() {
     $("fin-done").textContent = wantClean ? "The clean-up is done." : wantHome ? "The new Home screen is in." : decaidBytes ? "Decaid is installed." : "";
     if (wantClean || wantHome) changedAt = Date.now();
     busy = false; wantHomeDone = wantHome; ranChange = wantClean || wantHome || undid; show("finish"); startFinish();
-  } catch (e) { busy = false; setError("run-error", plainError(e)); $("run-title").textContent = "Stopped"; $("run-back").hidden = false; }
+  } catch (e) { stopRun(e); }
 }
 
 // Last steps. The owner joins Wi-Fi and signs in to Google; the core script's `finish` steps drive the rest
@@ -348,7 +365,13 @@ function finState(k, state, why) {
   const li = FIN(k); if (!li) return;
   li.dataset.state = state;
   li.querySelector(".st").textContent = { run: "…", done: "✓", skip: "–", manual: "!", you: "?" }[state] || "";
-  li.title = why || "";
+  // The glyph is only a picture: the state is also said in words, and a step left for you says why on screen.
+  let word = li.querySelector(".what + .vh"), line = li.querySelector(".fin-why");
+  if (!word) li.querySelector(".what").after(word = el("span", { className: "vh" }), line = el("p", { className: "fin-why" }));
+  word.textContent = `: ${{ run: "working on it", done: "done", skip: "not needed", manual: "left for you", you: "waiting for you" }[state] || ""}`;
+  line.textContent = state === "manual" && why ? `Not done here: ${why}.` : ""; line.hidden = !line.textContent;
+  const shown = [...$("fin-steps").children].filter((s) => !s.hidden), n = (st) => shown.filter((s) => s.dataset.state === st).length;
+  $("fin-sum").textContent = `${n("done") + n("skip")} of ${shown.length} steps done${n("manual") ? `, ${n("manual")} left for you` : ""}.`;
 }
 async function finStatus() {
   const st = parseStatus(await tablet.setup("finish status"));
@@ -369,7 +392,8 @@ async function finStatus() {
 function stopPoll() { clearInterval(finPoll); finPoll = null; }
 async function startFinish() {
   $("fin-you").hidden = FOR_DECADENT; $("fin-run").hidden = true; $("fin-after").hidden = true; shareBox(false);
-  for (const li of $("fin-steps").children) { delete li.dataset.state; li.querySelector(".st").textContent = ""; }
+  for (const li of $("fin-steps").children) { delete li.dataset.state; li.querySelector(".st").textContent = ""; for (const x of li.querySelectorAll(".what + .vh, .fin-why")) x.remove(); }
+  $("fin-sum").textContent = ""; $("fin-back").hidden = false;
   try { await finStatus(); } catch (e) { setError("fin-error", plainError(e)); }
   stopPoll();
   if (autoFinish()) return;
@@ -454,7 +478,7 @@ function outcome(lines, k) {
   return k === "updates" && lines.some((l) => l.startsWith("OK finish")) ? "skip" : "manual";
 }
 async function runFinish(afterRestart = false) {
-  stopPoll(); busy = true;
+  stopPoll(); busy = true; $("fin-back").hidden = true; // no leaving while the tablet is being driven (D-22)
   $("fin-you").hidden = true; $("fin-run").hidden = false; $("fin-after").hidden = true; setError("fin-error");
   $("fin-run-h").textContent = "Finishing the tablet…"; $("fin-keep").hidden = false;
   try { await finStatus(); } catch { /* keep the last reading */ }
@@ -483,15 +507,17 @@ async function runFinish(afterRestart = false) {
     if (plan[0] === "restart" && !afterRestart) {
       finState("restart", "run");
       try { await restartTablet(); finState("restart", "done"); }
-      catch { finState("restart", "manual"); busy = false; setError("fin-error", "The tablet didn't come back on its own. Unplug it and plug it back in, unlock it, tap Allow if it asks, then choose Reconnect the tablet."); $("fin-reconnect-row").hidden = false; return; }
+      catch { finState("restart", "manual"); busy = false; $("fin-back").hidden = false; setError("fin-error", "The tablet didn't come back on its own. Unplug it and plug it back in, unlock it, tap Allow if it asks, then choose Reconnect the tablet."); $("fin-reconnect-row").hidden = false; return; }
     }
     for (const k of plan) {
       if (k === "restart") continue; // done above, or by hand before Reconnect
       finState(k, "run");
+      // From Decadent's way in an account is never asked for (D-36): without one the updates are skipped, not left for the person.
+      if (k === "updates" && FOR_DECADENT && finWifi && finAcct !== "yes") { finState(k, "skip"); continue; }
       if (k === "updates" && (!finWifi || finAcct !== "yes")) { finState(k, "manual", finWifi ? "needs a Google account" : "needs Wi-Fi"); continue; }
       if (k === "decadent" && !finWifi) { finState(k, "manual", "needs Wi-Fi"); continue; }
       if (k === "open") { await openApps(); finState(k, "done"); continue; }
-      if (k === "plugin" && !(await decaidReady())) { finState(k, "manual", decaidPass ? "skipped" : "Decaid's first questions were not answered"); continue; }
+      if (k === "plugin" && !(await decaidReady())) { finState(k, "manual", decaidPass ? "skipped for now" : "Decaid's first questions were not answered"); continue; }
       if (k === "plugin") finState(k, "run");
       let lines;
       try { lines = await tablet.setup(`finish ${k}${k === "place" && !onHome ? " no-decadent" : ""}${k === "place" && samsung && decadentHad ? " if-missing" : ""}`); } catch (e) { lines = [`MANUAL finish ${k} ${e.message}`]; }
@@ -520,9 +546,11 @@ function finishLeft() {
   $("fin-left-h").textContent = none ? "All done" : FOR_DECADENT && left.children.length === 1 ? "One thing left" : "Left for you";
   if (none) { const item = document.createElement("li"); item.textContent = "Nothing. The tablet is ready."; left.append(item); }
   $("fin-run-h").textContent = "Finished"; $("fin-keep").hidden = true;
-  if (FOR_DECADENT) { $("fin-h").textContent = none ? "Your machine is Decadent" : "Nearly there"; $("fin-done").textContent = ""; $("refused").textContent = ""; }
+  // D-36 (5): logging in to Decadent is the one thing that may be left when the machine is Decadent.
+  const loginOnly = decadentIn && left.children.length === 1;
+  if (FOR_DECADENT) { $("fin-h").textContent = none || loginOnly ? "Your machine is Decadent" : "Nearly there"; $("fin-done").textContent = ""; $("refused").textContent = ""; }
   $("fin-lead").textContent = none ? "The tablet is ready." : FOR_DECADENT && left.children.length === 1 ? "One thing is left for you, below." : "Nearly ready: a few things are left for you, below.";
-  $("fin-after").hidden = false; shareBox(!FOR_DECADENT);
+  $("fin-after").hidden = false; $("fin-back").hidden = false; shareBox(!FOR_DECADENT);
 }
 
 const undoOff = new Set(); // apps the person chose to leave off
@@ -568,7 +596,7 @@ function syncUndo() {
 async function runUndo() {
   const c = chosen(), wantH = c.undoHome, wantA = c.undoApps;
   if (!wantH && !wantA) return;
-  show("running"); busy = true; setError("run-error"); $("run-back").hidden = true;
+  show("running"); busy = true; setError("run-error"); $("run-back").hidden = true; $("run-lead").hidden = false;
   $("run-title").textContent = "Putting things back…";
   const bar = $("bar"), label = $("bar-label"), log = $("log"); log.textContent = ""; bar.removeAttribute("value"); label.textContent = "";
   const on = (l) => progress(l, bar, label, log);
@@ -584,15 +612,17 @@ async function runUndo() {
     // Undo first, then any new change chosen with it (say, the original Home screen back and Clean up).
     if (want.decaid || want.decadent || want.plugin || want.cleanup || want.home) { $("opt-undo-apps").checked = false; $("opt-undo-home").checked = false; await toConfirm(); return; }
     show("undone");
-  } catch (e) { busy = false; setError("run-error", plainError(e)); $("run-title").textContent = "Stopped"; $("run-back").hidden = false; }
+  } catch (e) { stopRun(e); }
 }
 
-// Preview mode, on the plain page only (safe mode keeps its own bar). Until a tablet is connected, scrolling on
-// past the bottom of a screen moves to the next one and scrolling up past its top goes back, so the whole flow can
-// be looked through without pressing anything. Past Connect it is a preview: a pretend tablet fills the screens,
-// nothing in them can be pressed, and the tablet picture moves with the scroll instead of playing by itself.
-// Real work starts only from Connect tablet. Each move waits for the scroll that made it to settle.
-let previewing = false;
+// Preview mode, on the plain page only (safe mode keeps its own bar). It starts only from Preview the steps on the
+// first screen. Then, until a tablet is connected, scrolling on past the bottom of a screen (or Space, Page Down or
+// the down arrow there) moves to the next one and scrolling up past its top goes back, so the whole flow can be
+// looked through. Past Connect a pretend tablet fills the screens, nothing in them can be pressed, and the tablet
+// picture moves with the scroll instead of playing by itself. Without it a scroll only plays the first screen's
+// picture and never changes the screen. Real work starts only from Connect tablet. Each move waits for the scroll
+// that made it to settle.
+let previewing = false, touring = false;
 const FLOW = ["start", "about", "usb", "connect", "review", "confirm", "running", "finish", "next"];
 const FLOW_NAME = { about: "Before you start", usb: "USB debugging", connect: "Connect", review: "Preview: choose", confirm: "Preview: Decaid", running: "Preview: working", finish: "Preview: finish", next: "Preview: what to do next" };
 const LONG = { start: 1100, running: 1100 }; // these screens play their picture as the scroll goes on
@@ -611,11 +641,12 @@ function previewLog(p) {
   const row = log.scrollHeight / Math.max(t, 1); log.scrollTop = Math.max(0, row * n - log.clientHeight / 2);
 }
 const navOn = () => !DEMO && !busy && !moving && (previewing || !tablet) && FLOW.includes(current);
+const moves = () => navOn() && touring; // the screen changes with the scroll only once the preview was asked for
 const atEnd = () => scrollY + innerHeight >= document.documentElement.scrollHeight - 2;
 const atTop = () => scrollY <= 0;
 function hint() {
   const next = FLOW[FLOW.indexOf(current) + 1];
-  const on = navOn() && next && atEnd();
+  const on = moves() && next && atEnd();
   hintEl.toggleAttribute("data-on", !!on); if (!on) return;
   const r = document.querySelector("main").getBoundingClientRect();
   hintEl.style.left = `${r.left + r.width / 2}px`;
@@ -640,15 +671,15 @@ function nudge(dy) {
   // After a move, the gesture that made it has to stop (a 250 ms gap) before the next one counts.
   const t = performance.now(), gap = t - lastNudge; lastNudge = t;
   if (settle) { if (gap < 250 || t < quietUntil) return; settle = false; }
-  if (!navOn()) return;
+  if (!navOn() || (!touring && !LONG[current])) return;
   const need = LONG[current] || 160;
   if (dy > 0) {
     if (!atEnd()) return;
     pull = 0; prog = Math.min(need, prog + dy); scrubTo(current, prog / need); hint();
-    if (prog >= need) move(1);
+    if (prog >= need && touring) move(1);
   } else {
     if (prog > 0 && atEnd()) { prog = Math.max(0, prog + dy); scrubTo(current, prog / need); hint(); return; }
-    if (!atTop()) return;
+    if (!atTop() || !touring) return;
     pull -= dy; if (pull >= 160) move(-1);
   }
 }
@@ -672,7 +703,7 @@ async function previewShow(to) {
     show("confirm"); return;
   }
   if (to === "running") {
-    show("running"); setError("run-error"); $("run-back").hidden = true;
+    show("running"); setError("run-error"); $("run-back").hidden = true; $("run-lead").hidden = false;
     $("run-title").textContent = "Switching off apps…"; previewLog(0);
     return;
   }
@@ -687,21 +718,22 @@ async function previewShow(to) {
   }
 }
 function scrollNav() {
-  if (DEMO) return;
+  if (DEMO) { $("preview-start").hidden = true; return; } // safe mode has its own Next / Back bar
   document.body.append(hintEl);
   addEventListener("wheel", (e) => nudge(e.deltaMode === 1 ? e.deltaY * 16 : e.deltaY), { passive: true });
   let ty = null;
   addEventListener("touchstart", (e) => { ty = e.touches[0].clientY; }, { passive: true });
   addEventListener("touchmove", (e) => { if (ty == null) return; const y = e.touches[0].clientY; nudge((ty - y) * 2.5); ty = y; }, { passive: true });
   addEventListener("keydown", (e) => {
-    if (e.target.closest("input, textarea, select, [contenteditable]")) return;
+    if (!touring || e.target.closest("input, textarea, select, [contenteditable]")) return;
     const d = { PageDown: 1, ArrowDown: 1, " ": e.shiftKey ? -1 : 1, PageUp: -1, ArrowUp: -1 }[e.key];
     if (d && (d > 0 ? atEnd() : atTop())) nudge(d * 220);
   });
   addEventListener("scroll", hint, { passive: true }); addEventListener("resize", hint);
   document.addEventListener("scrub-to", (e) => { if (!navOn() || !LONG[current]) return; prog = e.detail * LONG[current]; scrubTo(current, e.detail); hint(); });
   // Get started in the preview box: leave the preview and begin for real, where the start page's button goes.
-  $("preview-exit").onclick = () => { if (!previewing) return; exitPreview(); show("usb"); navStep = current; scrubTo(current, 0); hint(); };
+  $("preview-start").onclick = () => { touring = true; move(1); };
+  $("preview-exit").onclick = () => { if (!previewing) return; touring = false; exitPreview(); show("usb"); navStep = current; scrubTo(current, 0); hint(); };
   // A button press moves on for real: start the new screen's picture from the beginning.
   new MutationObserver(() => { if (moving || current === navStep) return; navStep = current; if (!navOn()) { hint(); return; } prog = 0; scrubTo(current, 0); hint(); }).observe(document.querySelector("main"), { subtree: true, attributes: true, attributeFilter: ["hidden"] });
   navStep = current; scrubTo(current, 0); hint();
@@ -797,6 +829,7 @@ function init() {
     syncChoices();
   });
   $("undo-go").onclick = runUndo;
+  $("run-again").onclick = () => review().catch((e) => { show("connect"); setError("connect-error", plainError(e)); });
   // Untested firmware or model: the options appear only once the owner accepts, and every change then runs with --force.
   for (const id of ["accept-build", "accept-model"]) $(id).addEventListener("change", async (e) => {
     FORCE = e.target.checked ? " --force" : "";

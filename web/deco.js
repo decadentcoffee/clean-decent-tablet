@@ -12,7 +12,7 @@
   if (cap) {
     capText = document.createElement("span"); capText.className = "cap-text"; capText.textContent = cap.textContent;
     const nav = document.createElement("span"); nav.className = "frames"; nav.setAttribute("role", "group"); nav.setAttribute("aria-label", "Animation frame");
-    nav.innerHTML = '<button type="button" data-frame="off" aria-label="Apps switching off"><i></i></button><button type="button" data-frame="home" aria-label="The new Home screen"><i></i></button>';
+    nav.innerHTML = '<button type="button" tabindex="-1" data-frame="off" aria-label="Apps switching off"><i></i></button><button type="button" tabindex="-1" data-frame="home" aria-label="The new Home screen"><i></i></button>';
     cap.replaceChildren(nav, capText);
     frames = [...nav.querySelectorAll("button")];
   }
@@ -170,7 +170,7 @@
 if (/[?&]safe\b/.test(location.search) || (/[?&]tour/.test(location.search) && /[?&]demo/.test(location.search))) {
   const ORDER = ["start", "about", "usb", "connect", "review", "confirm", "running", "finish", "next", "undo", "undone"];
   const NAMES = { start: "Start", about: "Before you start", usb: "USB debugging", connect: "Connect", review: "Choose", confirm: "Decaid installation", running: "Working", finish: "Finish", next: "What to do next", undo: "Undo", undone: "Put back" };
-  const FORWARD = { start: "#more", about: "#start", usb: "#usb-next", connect: "#connect", review: "#do-setup", confirm: "#confirm-go", finish: "#to-next", next: "#do-undo", undo: "#undo-go", undone: '[data-step="undone"] [data-back="start"]' };
+  const FORWARD = { start: "#more", about: "#start", usb: "#usb-next", connect: "#connect", review: "#do-setup", confirm: "#confirm-go", running: "#run-again", finish: "#to-next", next: "#do-undo", undo: "#undo-go", undone: '[data-step="undone"] [data-back="start"]' };
   const bar = document.createElement("div");
   bar.className = "tour";
   bar.innerHTML = '<button type="button" data-go="back">‹ Back</button><span class="tour-at" aria-live="polite"></span><button type="button" data-go="next">Next ›</button>';
@@ -182,9 +182,10 @@ if (/[?&]safe\b/.test(location.search) || (/[?&]tour/.test(location.search) && /
     at.textContent = `Safe mode · ${ORDER.indexOf(s) + 1} of ${ORDER.length} · ${NAMES[s] || s}`;
     const finRunning = s === "finish" && document.getElementById("fin-run") && !document.getElementById("fin-run").hidden && document.getElementById("fin-after").hidden;
     const finYou = s === "finish" && document.getElementById("fin-you") && !document.getElementById("fin-you").hidden;
-    nextB.disabled = s === "running" || finRunning;
-    nextB.textContent = s === "running" || finRunning ? "Working…" : finYou ? "Finish for me ›" : s === "undone" ? "Start again ›" : "Next ›";
-    backB.disabled = s === "start" || s === "running";
+    const stopped = s === "running" && !document.getElementById("run-back").hidden;
+    nextB.disabled = (s === "running" && !stopped) || finRunning;
+    nextB.textContent = stopped ? "Check again ›" : s === "running" || finRunning ? "Working…" : finYou ? "Finish for me ›" : s === "undone" ? "Start again ›" : "Next ›";
+    backB.disabled = s === "start" || (s === "running" && !stopped);
   };
   bar.addEventListener("click", (e) => {
     const go = e.target.closest("button")?.dataset.go; if (!go) return;

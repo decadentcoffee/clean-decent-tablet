@@ -143,14 +143,14 @@
       <li><b>New Home screen:</b> three large icons, Decaid, Decadent and Settings, and swipe gestures so apps get the whole screen.</li>
   </ul></div>
   <p class="reassure">No changes will be made without your OK.</p>
-  <div class="row"><button id="more" class="primary">Get started</button></div>
+  <div class="row"><button type="button" id="preview-start" class="ghost">Preview the steps</button><button id="more" class="primary">Get started</button></div>
   </div>
 </section>
 
 <section data-step="about" hidden>
   <h2>Before you start</h2>
   <h3>You need</h3>
-  <ul><li>A computer with Chrome or Edge.</li><li>A USB cable that carries data.</li><li>A Samsung tablet supplied by Decent Espresso: model SM-X133, shown in <b>Settings → About tablet</b>.</li></ul>
+  <ul><li>A computer with Chrome or Edge. On Windows, close Android Studio, Samsung Smart Switch and any other Android tool first: Windows lets only one program use the tablet.</li><li>A USB cable that carries data.</li><li>A Samsung tablet supplied by Decent Espresso: model SM-X133, shown in <b>Settings → About tablet</b>.</li></ul>
   <p class="reassure">These changes aren't permanent and nothing is deleted, so you can try it and revert easily.</p>
   <details class="byhand">
     <summary>Rather set Decadent up by hand?</summary>
@@ -240,11 +240,11 @@
 
 <section data-step="running" hidden>
   <h2 id="run-title">Working…</h2>
-  <p class="lead">Keep the cable plugged in.</p>
+  <p class="lead" id="run-lead">Keep the cable plugged in.</p>
   <div class="meter"><progress id="bar"></progress> <span id="bar-label"></span></div>
   <p id="run-error" class="alert" role="alert" hidden></p>
   <details><summary>Show details</summary><pre id="log" aria-live="off"></pre></details>
-  <div class="row" id="run-back" hidden><button class="ghost" data-back="review">Back</button></div>
+  <div class="row" id="run-back" hidden><span></span><button type="button" id="run-again" class="primary">Check the tablet again</button></div>
 </section>
 
 <section data-step="finish" hidden>
@@ -275,6 +275,7 @@
 
   <div id="fin-run" hidden>
     <h3 id="fin-run-h">Finishing the tablet…</h3>
+    <p id="fin-sum" class="vh" role="status"></p>
     <p id="fin-keep" class="muted">Keep the cable plugged in, and leave the tablet alone until this is done. It takes about five minutes. A Decaid that has never been opened asks you a few questions first.</p>
     <ol class="fin-steps" id="fin-steps">
       <li data-k="restart"><span class="st" aria-hidden="true"></span><span class="what">Restart the tablet</span><span class="needs-you" id="allow-ask" role="status" hidden><b>The tablet needs you.</b> It restarted and is asking to allow USB debugging again. On the tablet, tick <b>Always allow from this computer</b>, then tap <b>Allow</b>. This page carries on by itself.</span><p class="by-hand">Restart the tablet: hold the power key, then tap <b>Restart</b>.</p></li>
@@ -308,7 +309,7 @@
     <textarea id="share-text" rows="4" readonly aria-labelledby="share-h"></textarea>
     <p class="share-row"><button type="button" id="share-copy" class="ghost small">Copy</button> <button type="button" id="share-send" class="ghost small" hidden>Share…</button> <span id="share-done" class="muted" role="status"></span></p>
   </section>
-  <div class="row"><button class="ghost" data-back="start">Back to start</button></div>
+  <div class="row" id="fin-back"><button class="ghost" data-back="start">Back to start</button></div>
 </section>
 
 <section data-step="next" hidden>

@@ -59,7 +59,7 @@ Only two steps need you: joining Wi-Fi and signing in to Google, plus logging in
 
 ## 👀 What you'll see
 
-The webpage walks you through twelve screens. Without a tablet plugged in, you can scroll through them all as a preview: a pretend tablet fills the screens and nothing can be pressed. Choose **Get started** to begin for real. These pictures are captured with the built-in safe mode (`?safe`), which pretends to be a tablet and has Next / Back buttons.
+The webpage walks you through twelve screens. Without a tablet plugged in, choose **Preview the steps** on the first screen and scroll through them all: a pretend tablet fills the screens and nothing can be pressed. Choose **Get started** to begin for real. These pictures are captured with the built-in safe mode (`?safe`), which pretends to be a tablet and has Next / Back buttons.
 
 <table>
 <tr>
@@ -108,7 +108,7 @@ The webpage is online at [decadentcoffee.app/clean-decent-tablet](https://decade
 4. Open `http://localhost:8000` in **Chrome or Edge**. WebUSB needs Chrome or Edge, and an `https://` address or `localhost`.
 5. If you have ever used Android tools on this computer, run `adb kill-server` first. Only one program can use the tablet at a time.
 
-To look around without a tablet, scroll down the page (the preview), or open `http://localhost:8000/?safe` (safe mode: a pretend tablet with Next / Back). Safe mode also works online: [decadentcoffee.app/clean-decent-tablet/?safe](https://decadentcoffee.app/clean-decent-tablet/?safe).
+To look around without a tablet, choose **Preview the steps** and scroll down the page, or open `http://localhost:8000/?safe` (safe mode: a pretend tablet with Next / Back). Safe mode also works online: [decadentcoffee.app/clean-decent-tablet/?safe](https://decadentcoffee.app/clean-decent-tablet/?safe).
 
 ## ❓ What if I use one of the other apps?
 

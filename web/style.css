@@ -543,11 +543,11 @@ footer { text-align: center; text-wrap: balance; }
 }
 
 /* Review only: test-mode bar (?demo&tour). */
-.tour { position: fixed; left: 1rem; bottom: 1rem; z-index: 60; display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.55rem; border-radius: 999px; background: rgba(20, 10, 4, 0.9); border: 1px solid rgba(255, 232, 214, 0.18); color: var(--ink-2); font-size: 0.9rem; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
-.tour button { font: inherit; font-weight: 600; color: var(--ink); background: transparent; border: 1px solid rgba(255, 232, 214, 0.25); border-radius: 999px; padding: 0.35rem 0.9rem; cursor: pointer; }
+.tour { position: fixed; left: 1rem; bottom: 1rem; max-width: calc(100vw - 2rem); box-sizing: border-box; z-index: 60; display: flex; align-items: center; gap: 0.6rem; padding: 0.45rem 0.55rem; border-radius: 999px; background: rgba(20, 10, 4, 0.9); border: 1px solid rgba(255, 232, 214, 0.18); color: var(--ink-2); font-size: 0.9rem; -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.tour button { white-space: nowrap; font: inherit; font-weight: 600; color: var(--ink); background: transparent; border: 1px solid rgba(255, 232, 214, 0.25); border-radius: 999px; padding: 0.35rem 0.9rem; cursor: pointer; }
 .tour button[data-go="next"] { background: var(--accent); color: #2a1406; border-color: var(--accent); }
 .tour button:disabled { opacity: 0.45; cursor: default; }
-.tour-at { min-width: 12rem; text-align: center; font-variant-numeric: tabular-nums; }
+.tour-at { flex: 0 1 12rem; min-width: 0; text-align: center; font-variant-numeric: tabular-nums; }
 
 /* Last steps: what only the owner can do, then the automatic steps with their fallbacks. */
 .fin-you > li { margin-bottom: 1rem; }
@@ -555,6 +555,9 @@ footer { text-align: center; text-wrap: balance; }
 .fin-steps { list-style: none; padding: 0; margin: 1rem 0; display: grid; gap: 0.55rem; }
 .fin-steps li { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); align-items: start; gap: 0.2rem 0.6rem; padding: 0.7rem 0.9rem; border-radius: 0.8rem; background: rgba(255, 240, 225, 0.04); color: var(--ink-2); }
 .fin-steps .st { width: 1.4rem; height: 1.4rem; border-radius: 50%; display: grid; place-items: center; font-size: 0.85rem; font-weight: 700; border: 1px solid var(--hair-2); }
+.fin-steps .fin-why { grid-column: 2; margin: 0.2rem 0 0; color: var(--accent); }
+.fin-steps .fin-why[hidden] { display: none; }
+.vh { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .fin-steps .by-hand { grid-column: 2; margin: 0.3rem 0 0; display: none; color: var(--ink); }
 .fin-steps li[data-state="run"] { color: var(--ink); }
 .fin-steps li[data-state="run"] .st { border-color: var(--accent); color: var(--accent); }
