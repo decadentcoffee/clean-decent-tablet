@@ -142,21 +142,15 @@
       <li><b>Clean up:</b> about 100 bundled apps and background services are switched off, not deleted, and any can be brought back later. Chrome becomes the browser, and the screen sleeps after 10 minutes.</li>
       <li><b>New Home screen:</b> three large icons, Decaid, Decadent and Settings, and swipe gestures so apps get the whole screen.</li>
   </ul></div>
-  <div class="row"><button id="more" class="primary">More information</button></div>
+  <p class="reassure">No changes will be made without your OK.</p>
+  <div class="row"><button id="more" class="primary">Get started</button></div>
   </div>
 </section>
 
 <section data-step="about" hidden>
   <h2>Before you start</h2>
-  <div class="two">
-    <div><h3>What stays</h3><ul>
-      <li>Decent's own apps, including the original Decent app.</li>
-      <li>Bluetooth, Wi-Fi, Settings, the keyboard and Samsung updates.</li>
-      <li>The tablet's own system software: no rooting, no custom firmware, no factory reset.</li>
-    </ul></div>
-    <div><h3>You need</h3>
-  <ul><li>A computer with Chrome or Edge.</li><li>A USB cable that carries data.</li><li>A Samsung tablet supplied by Decent Espresso: model SM-X133, shown in <b>Settings → About tablet</b>.</li></ul></div>
-  </div>
+  <h3>You need</h3>
+  <ul><li>A computer with Chrome or Edge.</li><li>A USB cable that carries data.</li><li>A Samsung tablet supplied by Decent Espresso: model SM-X133, shown in <b>Settings → About tablet</b>.</li></ul>
   <p class="reassure">These changes aren't permanent and nothing is deleted, so you can try it and revert easily.</p>
   <details class="byhand">
     <summary>Rather set Decadent up by hand?</summary>
@@ -169,7 +163,7 @@
     <p>The clean-up and the Home screen can be done by hand too: <a href="https://github.com/decadentcoffee/clean-decent-tablet/blob/main/docs/installation.md" target="_top" rel="noopener">the full written guide</a>.</p>
   </details>
   <p id="unsupported" class="alert" hidden>This browser can't connect to a tablet. Open this page in Chrome or Edge on a computer, at an https address.</p>
-  <div class="row"><button class="ghost" data-back="start">Back</button><button id="start" class="primary">Get started</button></div>
+  <div class="row"><button class="ghost" data-back="start">Back</button><button id="start" class="primary">Next</button></div>
 </section>
 
 <section data-step="usb" hidden>
@@ -182,13 +176,13 @@
     <li>Turn on <b>USB debugging</b>, and tap OK.</li>
     <li>Plug the tablet into this computer, and leave it unlocked.</li>
   </ol>
-  <div class="row"><button class="ghost" data-back="about">Back</button><button id="usb-next" class="primary">Done, next</button></div>
+  <div class="row"><button class="ghost" data-back="about">Back</button><button id="usb-next" class="primary">Connect your tablet</button></div>
 </section>
 
 <section data-step="connect" hidden>
   <h2>Connect the tablet</h2>
   <ol class="big">
-    <li>Choose <b>Connect tablet</b>. Your browser lists USB devices. Pick your tablet (it may say SAMSUNG or SM-X133) and choose <b>Connect</b>.</li>
+    <li>Your browser lists USB devices. Pick your tablet (it may say SAMSUNG or SM-X133) and choose <b>Connect</b>.</li>
     <li>On the tablet, tick <b>Always allow from this computer</b>, then tap <b>Allow</b>.</li>
   </ol>
   <p class="reassure">Nothing is changed without your OK, see what to disable and pick options next.</p>
@@ -235,12 +229,12 @@
   <p class="lead">Keep the cable plugged in until it finishes. It takes a few minutes.</p>
   <p id="decaid-have" class="note" hidden><b>Decaid is already on this tablet.</b> Nothing to install. Choose <b>Set up this tablet</b> to go on.</p>
   <fieldset id="decaid-choice" class="choices" hidden><legend>Decaid is Decent's newer app, and it isn't on this tablet yet.</legend>
-    <label class="choice"><input type="radio" name="decaid" id="decaid-add" value="add" checked> <span><b>Install Decaid</b> (recommended)<br>Decadent talks to the DE1 through Decaid.</span></label>
-    <div id="decaid-get" class="note"><p>First <a id="decaid-link" rel="noopener">download the latest Decaid</a>, then choose the downloaded file:</p>
-      <p><label>Decaid file <input type="file" id="decaid-file" accept=".apk"></label></p></div>
+    <label class="choice"><input type="radio" name="decaid" id="decaid-add" value="add" checked> <span><b>Install Decaid</b> (recommended)<br>Decadent talks to the DE1 through Decaid. This page gets Decent's latest release from GitHub and checks it against the checksum GitHub lists before it installs anything.</span></label>
+    <details id="decaid-get" class="pick"><summary>Paranoid? Upload your own</summary>
+      <p class="note"><a id="decaid-link" rel="noopener">Download the latest Decaid</a> from Decent yourself, then choose the downloaded file. It gets the same check.</p>
+      <p><label>Decaid file <input type="file" id="decaid-file" accept=".apk"></label></p></details>
     <label class="choice"><input type="radio" name="decaid" id="decaid-skip" value="skip"> <span><b>Skip Decaid</b><br>Keep using the original Decent app. You can install Decaid later.</span></label>
   </fieldset>
-  <p id="decaid-missing" class="alert" role="alert" hidden>Choose the Decaid file you downloaded, or choose <b>Skip Decaid</b>.</p>
   <div class="row"><button class="ghost" data-back="review">Back</button><button id="confirm-go" class="primary">Set up this tablet</button></div>
 </section>
 

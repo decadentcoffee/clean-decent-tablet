@@ -18,7 +18,7 @@ const CASES = [
   ["sign-up way in, app already there: the plugin check is ticked", "?safe=done&decadent=installed&for=decadent", "undo-apps,undo-home", ["decaid open", "plugin", "place"]],
   ["sign-up way in, no Decaid, Home and Clean up unticked", "?safe=nodecaid&for=decadent&on=", "cleanup,home", ["decaid open", "plugin", "updates", "decadent", "place"]],
   ["sign-up way in, Clean up unticked", "?safe&for=decadent&on=home", "cleanup,home", ["decaid open", "plugin", "icons", "launcher", "updates", "decadent", "place", "more"]],
-  ["sign-up way in, app there but no Decaid: Decaid, then the plugin", "?safe=nodecaid&decadent=installed&for=decadent&on=", "cleanup,home", ["decaid open", "plugin"]],
+  ["sign-up way in, app there but no Decaid: Decaid, then the plugin", "?safe=nodecaid&decadent=installed&for=decadent&on=", "cleanup,home", ["decaid open", "plugin", "place if-missing"]],
   ["Decadent already there: check the plugin", "?safe=done&decadent=installed&on=plugin", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
 ];
 const browser = await Browser.launch();

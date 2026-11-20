@@ -75,7 +75,7 @@ function checking() {
   $("device-name").replaceChildren(
     el("span", { className: "found-mark found-spin", ariaHidden: "true" }),
     el("span", { className: "found-what" }, el("small", { textContent: "Connected" }), el("b", { textContent: "Checking the tablet…" }),
-      el("span", { textContent: "Its model, firmware and what has been changed before." })));
+      el("span", { textContent: "Its model, firmware and what has been changed before. This can take a minute." })));
   for (const id of ["unsupported-model", "new-firmware", "already", "setup-part", "do-setup"]) $(id).hidden = true;
   show("review");
 }
@@ -263,6 +263,8 @@ function chosenList() {
 function progress(line, bar, label, log) {
   const p = parseProgress(line);
   if (p) { bar.max = p.total; bar.value = p.n; label.textContent = `${p.n} of ${p.total}`; }
+  // After the last app the tablet waits 30 seconds for Android to save the changes: say so, or the full bar looks stuck.
+  if (/^INFO waiting/.test(line)) label.textContent = "All switched off. Saving the changes takes about 30 seconds…";
   if (/^(DONE|REFUSED|FAIL|OK|MANUAL)/.test(line)) { log.textContent += line + "\n"; log.scrollTop = log.scrollHeight; }
 }
 
@@ -287,9 +289,9 @@ async function runSetup() {
     const decaid = APKS.find((a) => a.name === "decaid");
     let decaidBytes = null;
     const decaidFile = $("decaid-file").files[0];
-    if (!decaidHave && $("decaid-add").checked && (decaidFile || (FOR_DECADENT && want.decaid && !DEMO))) {
-      // From Decadent's way in the page fetches Decent's latest release itself (this site passes it on unchanged);
-      // either way the bytes are checked against the checksum GitHub lists before anything is installed.
+    if (!decaidHave && $("decaid-add").checked && (decaidFile || !DEMO)) {
+      // The page fetches Decent's latest release itself (this site passes it on unchanged), unless the person chose
+      // a file of their own; either way the bytes are checked against the checksum GitHub lists before anything is installed.
       $("run-title").textContent = decaidFile ? "Checking the Decaid file…" : "Downloading Decaid…";
       if (decaidFile) decaidBytes = new Uint8Array(await decaidFile.arrayBuffer());
       else {
@@ -299,7 +301,7 @@ async function runSetup() {
       }
       if (!DEMO) {
         const latest = await latestApk(decaid.url).catch(() => { throw new Error("The Decaid file could not be checked with GitHub. Check this computer's internet connection and try again. Nothing was installed."); });
-        if ((await sha256(decaidBytes)) !== latest.sha) throw new Error(`That file isn't the latest Decaid${latest.version ? ` (${latest.version})` : ""}. Download it again with the link on the Decaid step. Nothing was installed.`);
+        if ((await sha256(decaidBytes)) !== latest.sha) throw new Error(decaidFile ? `That file isn't the latest Decaid${latest.version ? ` (${latest.version})` : ""}. Download it again with the link on the Decaid step, or let this page get it. Nothing was installed.` : "The Decaid download did not match Decent's checksum. Try again. Nothing was installed.");
       }
     }
     $("run-title").textContent = "Installing the launcher…";
@@ -659,7 +661,7 @@ async function previewShow(to) {
   if (to === "next") { show("next"); return; }
   if (to === "confirm") {
     decaidHave = await isInstalled(APKS.find((a) => a.name === "decaid").pkg);
-    $("decaid-have").hidden = !decaidHave; $("decaid-choice").hidden = decaidHave; $("decaid-missing").hidden = true;
+    $("decaid-have").hidden = !decaidHave; $("decaid-choice").hidden = decaidHave;
     show("confirm"); return;
   }
   if (to === "running") {
@@ -703,7 +705,7 @@ let decaidNamed = false;
 function nameDecaid() {
   if (decaidHave || decaidNamed || DEMO) return;
   decaidNamed = true;
-  latestApk(APKS.find((a) => a.name === "decaid").url).then((l) => { if (l.version) $("decaid-link").textContent = `download the latest Decaid (${l.version})`; }).catch(() => { decaidNamed = false; });
+  latestApk(APKS.find((a) => a.name === "decaid").url).then((l) => { if (l.version) $("decaid-link").textContent = `Download the latest Decaid (${l.version})`; }).catch(() => { decaidNamed = false; });
 }
 
 // What this visit adds, fixed when the person leaves the choose screen: an undo that runs first must not change it.
@@ -713,7 +715,7 @@ async function toConfirm() {
   decaidHave = await isInstalled(APKS.find((a) => a.name === "decaid").pkg);
   $("decaid-add").checked = want.decaid; $("decaid-skip").checked = !want.decaid; $("decaid-get").hidden = !want.decaid;
   if (FOR_DECADENT) { runSetup(); return; }
-  $("decaid-have").hidden = !decaidHave; $("decaid-choice").hidden = decaidHave; $("decaid-missing").hidden = true;
+  $("decaid-have").hidden = !decaidHave; $("decaid-choice").hidden = decaidHave;
   $("confirm-h").textContent = decaidHave ? "Ready to start" : "Decaid installation";
   nameDecaid();
   show("confirm");
@@ -739,7 +741,8 @@ function init() {
   }
   $("more").onclick = () => show("about");
   $("start").onclick = () => show("usb");
-  $("usb-next").onclick = () => show("connect");
+  // One press: the Connect screen opens with the browser's device list already up. Its own button is the second try.
+  $("usb-next").onclick = () => { show("connect"); connect(); };
   $("connect").onclick = connect;
   $("do-setup").onclick = async () => {
     const c = chosen(), none = !c.decaid && !c.decadent && !c.plugin && !c.cleanup && !c.home && !c.undoApps && !c.undoHome;
@@ -749,8 +752,7 @@ function init() {
     if (c.undoApps || c.undoHome) { syncUndo(); show("undo"); return; }
     await toConfirm();
   };
-  for (const id of ["decaid-add", "decaid-skip"]) $(id).addEventListener("change", () => { $("decaid-get").hidden = !$("decaid-add").checked; $("decaid-missing").hidden = true; });
-  $("decaid-file").addEventListener("change", () => { $("decaid-missing").hidden = true; });
+  for (const id of ["decaid-add", "decaid-skip"]) $(id).addEventListener("change", () => { $("decaid-get").hidden = !$("decaid-add").checked; });
   // Finish: a ready-made post for anyone who wants to pass it on. Nothing is sent anywhere unless they choose to.
   // In production the tool runs at tablet.decadentcoffee.app inside the page at the public address; share that page.
   const pageUrl = location.hostname.endsWith("decadentcoffee.app") || location.hostname.endsWith(".pages.dev")
@@ -764,10 +766,7 @@ function init() {
     $("share-send").hidden = false;
     $("share-send").onclick = () => navigator.share({ title: "Clean theme for Decent Espresso Tablet", text: $("share-text").value }).catch(() => {});
   }
-  $("confirm-go").onclick = () => {
-    if (!decaidHave && $("decaid-add").checked && !$("decaid-file").files[0] && !(DEMO && qs.get("decaid") === "add")) { $("decaid-missing").hidden = false; $("decaid-file").focus(); return; }
-    runSetup();
-  };
+  $("confirm-go").onclick = () => runSetup();
   $("wifi-open").onclick = () => tablet && tablet.setup("finish wifi-open").catch(() => {});
   $("acct-open").onclick = () => tablet && tablet.setup("finish account-open").catch(() => {});
   $("acct-skip").onclick = () => { finAcct = "skip"; finStatus().catch(() => {}); };

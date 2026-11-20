@@ -64,7 +64,7 @@ The webpage walks you through twelve screens. Without a tablet plugged in, you c
 <table>
 <tr>
 <td width="50%"><img src="docs/img/web-start.png" alt="Start screen: A cleaner experience for your Decent, why we made this, and the two choices"><br><sub><b>1. Start.</b> What changes, what stays, and why we made it.</sub></td>
-<td width="50%"><img src="docs/img/web-about.png" alt="Before you start: what stays, and what you need"><br><sub><b>2. Before you start.</b> What stays, and what you need: Chrome or Edge, a data cable, the SM-X133.</sub></td>
+<td width="50%"><img src="docs/img/web-about.png" alt="Before you start: what you need"><br><sub><b>2. Before you start.</b> What you need: Chrome or Edge, a data cable, the SM-X133.</sub></td>
 </tr>
 <tr>
 <td width="50%"><img src="docs/img/web-usb.png" alt="Steps to turn on USB debugging on the tablet"><br><sub><b>3. Let the tablet talk to the computer.</b> Turn on USB debugging.</sub></td>
