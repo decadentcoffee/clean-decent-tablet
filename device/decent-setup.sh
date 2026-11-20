@@ -379,7 +379,56 @@ home_spot() { # label: centre of its icon on Home (grid or dock), if there is on
   _ln="$(ui_line 'text|content-desc' "$1" 'package="org.fossify.home"' 'EditText')"; [ -n "$_ln" ] && mid "$_ln"
 }
 
+# The original Decent app is not an app of its own: it is a script that AndroWish runs, and its Home icon is a shortcut
+# that AndroWish pinned to Samsung's Home. A pinned shortcut stays with the Home app it was pinned to, so Fossify starts
+# without it. "Original mode" is a tablet that has that app and no Decaid: Home then leads with it (owner, 20 Nov 2026).
+DE1PLUS="${DE1PLUS_DIR:-/sdcard/de1plus}"; WISH=tk.tcl.wish
+has_original() { [ -f "$DE1PLUS/de1plus.tcl" ] && [ "$(state_of "$WISH")" = enabled ]; }
+original_mode() { has_original && ! installed net.tadel.reaprime; }
+# AndroWish pins the shortcut again, to the Home app now in charge, when a script asks it to. The script here asks for
+# that and nothing else: it loads none of the Decent app, so nothing reaches the machine. Fossify takes the icon without
+# a question and puts it in the first free cell of the page that is showing (reference tablet, 20 Nov 2026).
+pin_original() {
+  go_home; ui_dump
+  [ -n "$(home_spot Decent)" ] && return 0
+  # Fossify 1.10.0 crashes when a shortcut arrives on a Home with no icon at all, and Android then forgets which Home
+  # app was chosen (reference tablet, 20 Nov 2026). So the other icons go first, and an empty Home is left alone.
+  home_labels || return 1
+  _t="${PIN_DIR:-/sdcard/Download}/decent-setup-pin.tcl"
+  cat > "$_t" <<PIN_EOF || return 1
+catch {
+  package require base64
+  set f [open "$DE1PLUS/de1plus_icon_v2.png" rb]; set d [read \$f]; close \$f
+  borg shortcut add "Decent" "file://$DE1PLUS/de1plus.tcl" [::base64::encode -maxlen 0 \$d]
+}
+after 3000 exit
+PIN_EOF
+  am force-stop "$WISH" 2>/dev/null
+  am start -a android.intent.action.VIEW -t application/x-tcl -d "file://$_t" -n "$WISH/.AndroWishLauncher" >/dev/null 2>&1
+  sleep "${PIN_WAIT_S:-6}" # Android takes the request only while AndroWish is on the screen: no Home press before it has asked
+  # With one Home page Fossify puts the new icon on a second page it makes for it; with two it lands on the first.
+  # From the second page, a slow drag to the left edge turns the page and drops it in the first column.
+  _pe=$(( $(date +%s) + $(tmo 20) )); _ok=1
+  while :; do
+    pause; go_home
+    if ui_dump && [ -n "$(home_spot Decent)" ]; then _ok=0; break; fi
+    _one="$(home_sig)"; page_two; _q="$(home_spot Decent)"
+    if [ -n "$_q" ] && [ "$_one" != "$(home_sig)" ]; then
+      _gb="$(grid_box)"
+      if [ -n "$_gb" ]; then
+        set -- $_gb; drag $_q $(( $1 + 3 )) $(( ($2 + $4) / 2 )) 6000
+        go_home; ui_dump && [ -n "$(home_spot Decent)" ] && _ok=0
+      fi
+      break
+    fi
+    [ "$(date +%s)" -ge "$_pe" ] && break
+  done
+  am force-stop "$WISH" 2>/dev/null; rm -f "$_t"
+  return $_ok
+}
+
 fin_status() {
+  if has_original; then say "STATUS original_app=yes"; else say "STATUS original_app=no"; fi
   if wifi_up; then say "STATUS wifi=connected"; else say "STATUS wifi=disconnected"; fi
   if [ "$(dumpsys account 2>/dev/null | grep -c 'type=com\.google}')" -gt 0 ]; then say "STATUS google_account=yes"; else say "STATUS google_account=no"; fi
   say "STATUS home=$(role_holder android.app.role.HOME)"
@@ -561,6 +610,9 @@ place_one() {
   case "$lab" in
     Decaid) installed net.tadel.reaprime || { say "SKIP finish place $lab not installed"; return 0; } ;;
     Decadent) has_webapk || { say "SKIP finish place $lab not installed"; return 0; } ;;
+    "Coffee Flow") [ "$(state_of com.pressensor.coffeeflow)" = enabled ] || { say "SKIP finish place $lab not on this tablet"; return 0; } ;;
+    "SE Profiler") [ "$(state_of hu.kavekalmar.sep)" = enabled ] || { say "SKIP finish place $lab not on this tablet"; return 0; } ;;
+    Decent) pin_original || { say "MANUAL finish place $lab could not add its icon"; return 0; } ;;
   esac
   go_home; ui_dump
   gb="$(grid_box)"; [ -n "$gb" ] || { say "MANUAL finish place $lab cannot find the Home screen"; return 0; }
@@ -662,6 +714,7 @@ place_two() { # package label column
 fin_more() {
   is_fossify || { say "SKIP finish more home screen option not used"; say "OK finish more"; return 0; }
   home_wait || :
+  if original_mode; then place_two com.android.settings Settings 3; go_home; say "OK finish more"; return 0; fi
   _c=2
   echo "$MORE_APPS" > "$DIR/more.tmp"
   while IFS=: read -r _pk _lb <&3; do place_two "$_pk" "$_lb" $_c; _c=$((_c+2)); done 3< "$DIR/more.tmp" # two apps: cells 2 and 4, either side of the middle
@@ -702,6 +755,10 @@ fin_place() {
   fi
   is_fossify || { say "SKIP finish place home screen option not used"; say "OK finish place"; return 0; }
   home_wait || :
+  if original_mode; then # no Decaid: the original Decent app leads, with Decent's two other apps; Settings goes to page two (fin_more)
+    place_one "Coffee Flow" 3; place_one "SE Profiler" 4; place_one Decent 2 # Decent last: see pin_original
+    go_home; say "OK finish place"; return 0
+  fi
   place_one Decaid 2
   # "finish place no-decadent": the owner left Decadent off, so its icon stays off Home even when it is installed.
   case " $ARGS " in *" no-decadent "*) say "SKIP finish place Decadent not wanted" ;; *) place_one Decadent 3 ;; esac

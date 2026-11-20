@@ -4,7 +4,7 @@ import APPS from "./apps.json";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const PKG = (i) => APPS[(i - 1) % APPS.length].pkg; // the i-th package, 1-based
 export class DemoTablet {
-  constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; this.asks = opts.asks || 0; this.fossify = this.done; }
+  constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.original = !!opts.original; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; this.asks = opts.asks || 0; this.fossify = this.done; }
   async prepare() {}
   async push(p) { this.pushed.push(p); }
   async run(c, onLine = () => {}) {
@@ -37,7 +37,7 @@ export class DemoTablet {
     if (a === "cleanup" && dry) { await say("PLAN system/screen_off_timeout: 2147483646 -> 600000"); await say("PLAN 1/100 disable com.netflix.mediaclient"); await say("PLAN 2/100 disable com.spotify.music"); await say("OK dry run: nothing changed"); }
     if (a === "finish") {
       const k = args.split(" ")[1];
-      if (k === "status") { await say(`STATUS wifi=${this.wifi ? "connected" : "disconnected"}`); await say(`STATUS google_account=${this.account ? "yes" : "no"}`); await say(`STATUS home=${this.fossify ? "org.fossify.home" : "com.sec.android.app.launcher"}`); await say(`STATUS decadent_app=${this.webapk ? "installed" : "none"}`); await say("OK finish status"); }
+      if (k === "status") { await say(`STATUS original_app=${this.original ? "yes" : "no"}`); await say(`STATUS wifi=${this.wifi ? "connected" : "disconnected"}`); await say(`STATUS google_account=${this.account ? "yes" : "no"}`); await say(`STATUS home=${this.fossify ? "org.fossify.home" : "com.sec.android.app.launcher"}`); await say(`STATUS decadent_app=${this.webapk ? "installed" : "none"}`); await say("OK finish status"); }
       if (k === "wifi-open") { await say("DONE finish wifi-open"); setTimeout(() => { this.wifi = true; }, 5000); }
       if (k === "account-open") { await say("DONE finish account-open"); setTimeout(() => { this.account = true; }, 5000); }
       if (k === "icons") await say(this.manual ? "MANUAL finish icons no Remove option appeared" : "DONE finish icons removed=3", 900);

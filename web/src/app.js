@@ -60,7 +60,7 @@ function supported() { return DEMO || ("usb" in navigator && window.isSecureCont
 async function connect() {
   setError("connect-error"); const btn = $("connect"); btn.disabled = true; btn.textContent = "Connecting…";
   try {
-    if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", asks: qs.get("asks") ? +qs.get("asks") : DEMO_KIND === "nodecaid" && qs.get("decaid") === "add" ? 4 : 0, fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
+    if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", original: qs.get("original") === "1", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", asks: qs.get("asks") ? +qs.get("asks") : DEMO_KIND === "nodecaid" && qs.get("decaid") === "add" ? 4 : 0, fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
     else {
       // A second Connect in one visit (after Back to start): let go of the first connection, or the tablet never answers.
       if (tablet) { const old = tablet; tablet = null; try { await old.close(); } catch {} }
@@ -359,7 +359,7 @@ async function runSetup() {
 // Last steps. The owner joins Wi-Fi and signs in to Google; the core script's `finish` steps drive the rest
 // through the tablet's screen. Decaid's first questions are a pause for the owner (decaidReady). The written instructions
 // are always on the screen as the second way; a step the tablet doesn't allow also lists its own under Left for you.
-let wantHomeDone = true, ranChange = true, finWifi = false, finAcct = null, finPoll = null, decadentHad = false, finHome = "";
+let wantHomeDone = true, ranChange = true, finWifi = false, finAcct = null, finPoll = null, decadentHad = false, finHome = "", finOriginal = false;
 const FIN = (s) => $("fin-steps").querySelector(`[data-k="${s}"]`);
 function finState(k, state, why) {
   const li = FIN(k); if (!li) return;
@@ -376,7 +376,7 @@ function finState(k, state, why) {
 async function finStatus() {
   const st = parseStatus(await tablet.setup("finish status"));
   finWifi = st.wifi === "connected";
-  decadentHad = st.decadent_app === "installed"; finHome = st.home || "";
+  decadentHad = st.decadent_app === "installed"; finHome = st.home || ""; finOriginal = st.original_app === "yes";
   if (finAcct !== "skip") finAcct = st.google_account === "yes" ? "yes" : "no";
   $("fin-wifi-state").textContent = finWifi ? "Connected ✓" : "Not connected";
   $("wifi-form").hidden = finWifi;
@@ -474,6 +474,8 @@ function outcome(lines, k) {
   const mine = lines.filter((l) => / finish /.test(` ${l} `) || l.startsWith("FAIL"));
   if (mine.some((l) => l.startsWith("MANUAL") || l.startsWith("FAIL"))) return "manual";
   if (mine.some((l) => l.startsWith("DONE"))) return "done";
+  // Updates with nothing to update are done, not left out: a dash there read as a step that did not run.
+  if (k === "updates" && mine.length && mine.every((l) => /^SKIP .* up to date$/.test(l))) return "done";
   if (mine.some((l) => l.startsWith("SKIP"))) return "skip";
   return k === "updates" && lines.some((l) => l.startsWith("OK finish")) ? "skip" : "manual";
 }
@@ -495,7 +497,13 @@ async function runFinish(afterRestart = false) {
     // On Samsung's own Home a Decadent that was already installed gets its icon only when Home shows none (place if-missing).
     ...((ours && (newHome || wantD)) || (samsung && wantD) ? ["place"] : []), ...(newHome && ours ? ["more"] : []), ...(decaidThere || onHome ? ["open"] : [])];
   // Name only the icons this tablet will get: Decaid if it is there, Decadent if wanted.
-  const icons = ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
+  // A tablet that stays on the original Decent app (no Decaid): Home leads with it and Decent's two other apps, and
+  // Settings goes to the second page (D-38). The Decent icon is a shortcut only the tablet step can add.
+  const original = ours && finOriginal && !decaidThere;
+  const icons = original ? ["Decent", "Coffee Flow", "SE Profiler"] : ours ? [...(decaidThere ? ["Decaid"] : []), ...(onHome ? ["Decadent"] : []), "Settings"] : ["Decadent"];
+  FIN("place").querySelector(".place-note").hidden = !original;
+  FIN("more").querySelector(".what").textContent = original ? "Put Settings on a second Home page" : "Put Decent's other apps on a second Home page";
+  for (const n of FIN("more").querySelectorAll("[data-more]")) n.hidden = (n.dataset.more === "original") !== original;
   const said = (b) => icons.map((n) => (b ? `<b>${n}</b>` : n)).join(", ").replace(/, ([^,]*)$/, " and $1");
   const [w, h] = FIN("place").querySelectorAll(".place-list"); w.textContent = said(false); h.innerHTML = said(true);
   // The last step names only the apps it opens: Decadent when it is, or will be, on the tablet.
