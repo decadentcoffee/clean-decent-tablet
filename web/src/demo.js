@@ -33,7 +33,7 @@ export class DemoTablet {
     if (a === "status") { for (const l of [`STATUS model=SM-X133`, `STATUS build=X133DXS5BZI3`, `STATUS undo_record=${this.done ? "present" : "none"}`, `STATUS home=${this.fossify ? "org.fossify.home" : "com.sec.android.app.launcher"}`, `STATUS decadent_app=${this.webapk ? "installed" : "none"}`, "STATUS app net.tadel.reaprime enabled"]) await say(l); }
     if (this.hold && !dry && (a === "cleanup" || a === "home")) { for (let i = 1; i <= 41; i++) await say(`DONE ${i}/100 ${PKG(i)}`, 0); await new Promise(() => {}); } // debug: stay on the running screen
     if (a === "cleanup" && !dry && this.fail === "run") { await say(`DONE 1/100 ${PKG(1)}`, 300); await say(`FAIL ${PKG(2)}: Unknown error. Stopped. Run undo to go back.`); return out; }
-    if (a === "cleanup" && !dry) { for (let i = 1; i <= 100; i += 9) await say(`DONE ${i}/100 ${PKG(i)}`, 60); await say("OK cleanup finished. Refused by Android: 2"); this.done = true; }
+    if (a === "cleanup" && !dry) { for (let i = 1; i <= 100; i++) await say(`${i === 37 || i === 71 ? "REFUSED" : "DONE"} ${i}/100 ${PKG(i)}`, i % 9 ? 0 : 60); await say("OK cleanup finished. Refused by Android: 2"); this.done = true; }
     if (a === "cleanup" && dry) { await say("PLAN system/screen_off_timeout: 2147483646 -> 600000"); await say("PLAN 1/100 disable com.netflix.mediaclient"); await say("PLAN 2/100 disable com.spotify.music"); await say("OK dry run: nothing changed"); }
     if (a === "finish") {
       const k = args.split(" ")[1];

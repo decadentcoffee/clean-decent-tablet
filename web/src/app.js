@@ -57,16 +57,25 @@ function stopRun(e) {
 
 function supported() { return DEMO || ("usb" in navigator && window.isSecureContext); }
 
+// The tablet's Allow can be missed (a locked screen, a message that never showed). After 20 s of waiting, say what to try.
+const SLOW_MS = 20000;
+let slowTimer = null;
+function waitingForAllow(on) {
+  clearTimeout(slowTimer); $("connect-slow").textContent = "";
+  if (on) slowTimer = setTimeout(() => { $("connect-slow").textContent = "Still waiting. Look at the tablet: if no message shows, unlock it, unplug the cable and plug it back in."; }, SLOW_MS);
+}
 async function connect() {
   setError("connect-error"); const btn = $("connect"); btn.disabled = true; btn.textContent = "Connecting…";
   try {
+    // Safe mode, hold=allow: the tablet never answers the Allow, as when its message is missed.
+    if (DEMO && qs.get("hold") === "allow") { $("connect-hint").hidden = false; waitingForAllow(true); await new Promise(() => {}); }
     if (DEMO) tablet = new DemoTablet({ slow: !qs.get("to"), decadent: qs.get("decadent") === "installed", done: DEMO_KIND === "done", noDecaid: DEMO_KIND === "nodecaid", original: qs.get("original") === "1", manual: DEMO_KIND === "manual", net: qs.get("net") || (qs.get("to") === "finished" ? "all" : null), hold: qs.get("to") === "running", asks: qs.get("asks") ? +qs.get("asks") : DEMO_KIND === "nodecaid" && qs.get("decaid") === "add" ? 4 : 0, fail: { model: "model", fail: "run", build: "build" }[DEMO_KIND] });
     else {
       // A second Connect in one visit (after Back to start): let go of the first connection, or the tablet never answers.
       if (tablet) { const old = tablet; tablet = null; try { await old.close(); } catch {} }
       const device = await AdbDaemonWebUsbDeviceManager.BROWSER.requestDevice();
       if (!device) throw new Error("No device selected");
-      $("connect-hint").hidden = false;
+      $("connect-hint").hidden = false; waitingForAllow(true);
       tablet = await connectTablet(device, new AdbWebCredentialStore("Decent tablet setup"));
     }
     checking();
@@ -74,7 +83,7 @@ async function connect() {
     await tablet.prepare(FILES);
     await review();
   } catch (e) { if (current === "review") show("connect"); setError("connect-error", plainError(e)); }
-  finally { btn.disabled = false; btn.textContent = "Connect tablet"; $("connect-hint").hidden = true; }
+  finally { btn.disabled = false; btn.textContent = "Connect tablet"; $("connect-hint").hidden = true; waitingForAllow(false); }
 }
 
 let FORCE = ""; // " --force" once the person accepts an untested firmware on the tested model
@@ -349,6 +358,7 @@ async function runSetup() {
     for (const el of document.querySelectorAll("[data-home]")) el.hidden = !wantHome;
     for (const el of document.querySelectorAll("[data-decaid]")) el.hidden = !decaidHave && !$("decaid-add").checked;
     const refused = (out.join("\n").match(/Refused by Android: (\d+)/) || [])[1];
+    shareText({ clean: wantClean, n: out.filter((l) => (parseProgress(l) || {}).kind === "DONE").length, home: wantHome });
     $("refused").textContent = refused && refused !== "0" ? `Android wouldn't switch off ${refused} of them, which is expected on some firmware.` : "";
     $("fin-done").textContent = wantClean ? "The clean-up is done." : wantHome ? "The new Home screen is in." : decaidBytes ? "Decaid is installed." : "";
     if (wantClean || wantHome) changedAt = Date.now();
@@ -369,7 +379,8 @@ function finState(k, state, why) {
   let word = li.querySelector(".what + .vh"), line = li.querySelector(".fin-why");
   if (!word) li.querySelector(".what").after(word = el("span", { className: "vh" }), line = el("p", { className: "fin-why" }));
   word.textContent = `: ${{ run: "working on it", done: "done", skip: "not needed", manual: "left for you", you: "waiting for you" }[state] || ""}`;
-  line.textContent = state === "manual" && why ? `Not done here: ${why}.` : ""; line.hidden = !line.textContent;
+  // The written steps are under Left for you and in "Rather do a step yourself?" below: the step only points there.
+  line.textContent = state === "manual" ? `${why ? `Not done here: ${why}. ` : ""}Do it by hand: see below.` : ""; line.hidden = !line.textContent;
   const shown = [...$("fin-steps").children].filter((s) => !s.hidden), n = (st) => shown.filter((s) => s.dataset.state === st).length;
   $("fin-sum").textContent = `${n("done") + n("skip")} of ${shown.length} steps done${n("manual") ? `, ${n("manual")} left for you` : ""}.`;
 }
@@ -407,12 +418,22 @@ function autoFinish() {
   if (finAcct !== "yes") finAcct = "skip";
   runFinish(); return true;
 }
+// The ready-made post says what this visit did: the clean-up with the number of apps really switched off, the Home screen, both or neither.
+let shareUrl = "";
+function shareText({ clean, n, home }) {
+  const apps = n == null ? "about 100 unneeded apps and background services" : `${n} unneeded ${n === 1 ? "app or background service" : "apps and background services"}`;
+  const did = clean && n !== 0 ? `I cleaned up the tablet on my Decent espresso machine: ${apps} switched off${home ? ", and a quiet Home screen with just what the DE1 needs" : ""}.`
+    : home ? "I gave the tablet on my Decent espresso machine a quiet Home screen with just what the DE1 needs."
+    : "I set up the tablet on my Decent espresso machine with this page. It can also switch off the bundled apps and add a quiet Home screen.";
+  $("share-text").value = `${did} Free, open source and fully undoable: ${shareUrl}`;
+}
 function shareBox(on) { document.querySelector('[data-step="finish"] .share').hidden = !on; }
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 // The tablet drops off USB while it restarts. Find it again: the browser keeps the permission, and the tablet
 // remembers this computer if "Always allow" was ticked.
 async function restartTablet() {
   if (DEMO) {
+    if (qs.get("restart") === "fail") { await wait(1500); throw new Error("reconnect"); }
     if (qs.get("allow")) { $("allow-ask").hidden = false; finState("restart", "you"); await wait(+qs.get("allow") || 3000); $("allow-ask").hidden = true; finState("restart", "run"); }
     await wait(1500); return;
   }
@@ -456,19 +477,25 @@ async function reconnectByHand() {
 // owner's to answer: the page opens Decaid, says so, asks the tablet again every few seconds, and carries on by itself
 // once Decaid's menu shows. True when Decaid is ready for the plugin step.
 let decaidPass = false;
+const DECAID_WAIT_MIN = 15;
 async function decaidReady() {
-  const ask = $("decaid-ask"), keep = $("fin-keep"), was = keep.textContent, until = Date.now() + 15 * 60000;
+  const ask = $("decaid-ask"), keep = $("fin-keep"), was = keep.textContent, from = Date.now(), until = from + DECAID_WAIT_MIN * 60000;
+  const count = () => { $("decaid-wait").textContent = `Waiting ${Math.min(DECAID_WAIT_MIN, Math.floor((Date.now() - from) / 60000) + 1)} of ${DECAID_WAIT_MIN} minutes.`; };
+  let tick = null;
   decaidPass = false;
   try {
     for (let first = true; Date.now() < until && !decaidPass; first = false) {
       const st = parseStatus(await tablet.setup(`finish decaid${first ? " open" : ""}`));
       if (st.decaid !== "asking") return st.decaid === "ready";
-      if (ask.hidden) { ask.hidden = false; finState("plugin", "you"); keep.textContent = "Keep the cable plugged in. Decaid is waiting for you on the tablet."; }
+      if (ask.hidden) {
+        ask.hidden = false; finState("plugin", "you"); count(); tick = setInterval(count, 15000);
+        keep.textContent = `Keep the cable plugged in. Decaid is waiting for you on the tablet. The page waits up to ${DECAID_WAIT_MIN} minutes, then leaves this step to you.`;
+      }
       await wait(2000);
     }
     return false;
   } catch { return false; }
-  finally { ask.hidden = true; keep.textContent = was; }
+  finally { clearInterval(tick); ask.hidden = true; keep.textContent = was; $("decaid-wait").textContent = ""; }
 }
 function outcome(lines, k) {
   const mine = lines.filter((l) => / finish /.test(` ${l} `) || l.startsWith("FAIL"));
@@ -511,11 +538,17 @@ async function runFinish(afterRestart = false) {
   FIN("open").querySelector(".what").textContent = "Open " + opens.join(", then ");
   FIN("open").querySelector(".by-hand").innerHTML = "Open " + opens.map((n) => `<b>${n}</b>`).join(" once, then ") + ".";
   for (const li of $("fin-steps").children) li.hidden = !plan.includes(li.dataset.k);
+  byHandList(); // the written steps as this visit has them, before anything can stop the run
   try {
     if (plan[0] === "restart" && !afterRestart) {
       finState("restart", "run");
+      // A restart is quiet for a few minutes: say it is expected, and how long it has been.
+      const rw = $("restart-wait"), from = Date.now();
+      const waited = () => { rw.hidden = !$("allow-ask").hidden; $("restart-waited").textContent = `Waited ${Math.round((Date.now() - from) / 1000)} s.`; };
+      waited(); const tick = setInterval(waited, 1000);
       try { await restartTablet(); finState("restart", "done"); }
       catch { finState("restart", "manual"); busy = false; $("fin-back").hidden = false; setError("fin-error", "The tablet didn't come back on its own. Unplug it and plug it back in, unlock it, tap Allow if it asks, then choose Reconnect the tablet."); $("fin-reconnect-row").hidden = false; return; }
+      finally { clearInterval(tick); rw.hidden = true; }
     }
     for (const k of plan) {
       if (k === "restart") continue; // done above, or by hand before Reconnect
@@ -539,6 +572,11 @@ async function openApps() {
   if (pkgs.includes("net.tadel.reaprime")) { await tablet.run("monkey -p net.tadel.reaprime -c android.intent.category.LAUNCHER 1"); await wait(6000); }
   const webapk = pkgs.find((p) => p.startsWith("org.chromium.webapk"));
   if (webapk) await tablet.run(`monkey -p ${webapk} -c android.intent.category.LAUNCHER 1`);
+}
+// "Rather do a step yourself?": the written steps for the steps this visit runs, in their current words.
+function byHandList() {
+  const list = $("fin-byhand-list"); list.textContent = "";
+  for (const li of $("fin-steps").children) { if (li.hidden) continue; const item = document.createElement("li"); item.innerHTML = li.querySelector(".by-hand").innerHTML; list.append(item); }
 }
 function finishLeft() {
   const left = $("fin-left"); left.textContent = "";
@@ -722,7 +760,7 @@ async function previewShow(to) {
     show("finish");
     $("fin-you").hidden = true; $("fin-run").hidden = false;
     for (const li of $("fin-steps").children) { li.hidden = false; finState(li.dataset.k, "done"); }
-    finishLeft();
+    byHandList(); finishLeft();
   }
 }
 function scrollNav() {
@@ -741,7 +779,8 @@ function scrollNav() {
   document.addEventListener("scrub-to", (e) => { if (!navOn() || !LONG[current]) return; prog = e.detail * LONG[current]; scrubTo(current, e.detail); hint(); });
   // Get started in the preview box: leave the preview and begin for real, where the start page's button goes.
   $("preview-start").onclick = () => { touring = true; move(1); };
-  $("preview-exit").onclick = () => { if (!previewing) return; touring = false; exitPreview(); show("usb"); navStep = current; scrubTo(current, 0); hint(); };
+  // Without WebUSB there is nothing to begin: back to the first screen, which says why.
+  $("preview-exit").onclick = () => { if (!previewing) return; touring = false; exitPreview(); show(supported() ? "usb" : "start"); navStep = current; scrubTo(current, 0); hint(); };
   // A button press moves on for real: start the new screen's picture from the beginning.
   new MutationObserver(() => { if (moving || current === navStep) return; navStep = current; if (!navOn()) { hint(); return; } prog = 0; scrubTo(current, 0); hint(); }).observe(document.querySelector("main"), { subtree: true, attributes: true, attributeFilter: ["hidden"] });
   navStep = current; scrubTo(current, 0); hint();
@@ -769,7 +808,7 @@ async function toConfirm() {
 }
 
 function init() {
-  if (!supported()) { $("unsupported").hidden = false; $("start").disabled = true; }
+  if (!supported()) { $("unsupported").hidden = false; $("start").disabled = true; $("unsupported-c").hidden = false; $("more").disabled = true; }
   if (FOR_DECADENT) {
     // The way in from Decadent: one short first screen, then straight to the cable. The by-hand way stays on offer.
     $("start-decadent").hidden = false; $("start-clean").hidden = true;
@@ -804,7 +843,7 @@ function init() {
   // In production the tool runs at tablet.decadentcoffee.app inside the page at the public address; share that page.
   const pageUrl = location.hostname.endsWith("decadentcoffee.app") || location.hostname.endsWith(".pages.dev")
     ? "https://decadentcoffee.app/clean-decent-tablet/" : location.origin + location.pathname;
-  $("share-text").value = `I cleaned up the tablet on my Decent espresso machine: about 100 unneeded apps and background services switched off, and a quiet Home screen with just what the DE1 needs. Free, open source and fully undoable: ${pageUrl}`;
+  shareUrl = pageUrl; shareText({ clean: true, home: true });
   $("share-copy").onclick = async () => {
     try { await navigator.clipboard.writeText($("share-text").value); $("share-done").textContent = "Copied."; }
     catch { $("share-text").select(); $("share-done").textContent = "Selected: press Ctrl+C or Cmd+C to copy."; }
@@ -819,7 +858,7 @@ function init() {
   $("acct-skip").onclick = () => { finAcct = "skip"; finStatus().catch(() => {}); };
   $("fin-go").onclick = () => runFinish();
   $("decaid-pass").onclick = () => { decaidPass = true; };
-  for (const li of $("fin-steps").children) { const item = document.createElement("li"); item.innerHTML = li.querySelector(".by-hand").innerHTML; $("fin-byhand-list").append(item); }
+  byHandList();
   $("to-next").onclick = () => show("next");
   $("fin-reconnect").onclick = reconnectByHand;
   $("app-groups").addEventListener("change", (e) => {

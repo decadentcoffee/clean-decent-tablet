@@ -20,10 +20,14 @@
   // On the plain page the picture never plays by itself: app.js sends "scrub" events ({step, p} with p 0..1)
   // as the visitor scrolls, and the start and running pictures follow them. Safe mode keeps the timed animations.
   const SCRUB = !/[?&](safe|demo)\b/.test(location.search);
+  // Decadent's way in (?for=decadent) opens on the Home picture and stays there: no switch-off, no frame bars.
+  const FOR_D = /[?&]for=decadent(&|$)/.test(location.search);
+  if (FOR_D && frames[0]) frames[0].parentElement.hidden = true;
   let scrub = { step: null, p: 0 };
 
   const ORDER = ["start", "about", "usb", "connect", "review", "confirm", "running", "finish", "next", "undo", "undone"];
   const DOT = { usb: 0, connect: 1, review: 2, confirm: 3, running: 4, finish: 5 };
+  const STEP_NAME = ["USB debugging", "Connect", "Choose", "Confirm", "Working", "Last steps"];
   const CABLE = new Set(["usb", "connect", "review", "confirm", "running", "undo"]);
   const SCREEN = { start: "run", usb: "settings", connect: "allow", review: "list", confirm: "list", finish: "clean", next: "clean", undo: "off", undone: "busy" };
   const CAPTION = {
@@ -39,6 +43,7 @@
     restore: "Turning apps back on.",
     undone: "As it shipped.",
     halt: "Stopped partway.",
+    decadent: "Decadent, Decaid and Settings on one quiet Home screen, one tap each.",
     idle: "Nothing changed on the tablet.",
   };
 
@@ -83,6 +88,7 @@
     const step = raw === "about" ? "start" : raw; // the second start page keeps the start picture
     if (step !== last) { before = last; last = step; }
     let screen = SCREEN[step];
+    if (step === "start" && FOR_D) atHome = true;
     if (step === "start" && atHome) screen = "clean";
     if (step === "running") screen = before === "undo" ? "restore" : "run";
     const part = document.getElementById("setup-part");
@@ -91,7 +97,7 @@
     const err = document.getElementById("run-error");
     const halted = step === "running" && err && !err.hidden;
     // The start picture always follows the scroll on the plain page; running only in the preview (app.js sends it).
-    const sp = !SCRUB ? null : raw === "start" ? (scrub.step === "start" ? scrub.p : 0) : raw === "running" && scrub.step === "running" ? scrub.p : null;
+    const sp = !SCRUB || (FOR_D && raw === "start") ? null : raw === "start" ? (scrub.step === "start" ? scrub.p : 0) : raw === "running" && scrub.step === "running" ? scrub.p : null;
     if (SCRUB && raw === "about") { atHome = true; screen = "clean"; }
     const rowsX = [...fig.querySelectorAll(".s-list .row.x")].sort((a, b) => parseFloat(a.style.getPropertyValue("--i")) - parseFloat(b.style.getPropertyValue("--i")));
     const fillBar = fig.querySelector(".onbar-fill");
@@ -109,12 +115,16 @@
     if (fig.dataset.screen !== screen) fig.dataset.screen = screen;
     fig.toggleAttribute("data-cable", CABLE.has(step));
     fig.toggleAttribute("data-halt", halted);
-    const text = halted ? CAPTION.halt : idle ? CAPTION.idle : step === "undone" ? CAPTION.undone : step === "start" ? (atHome ? CAPTION.home : CAPTION.pitch) : CAPTION[screen];
+    const text = halted ? CAPTION.halt : idle ? CAPTION.idle : step === "undone" ? CAPTION.undone : step === "start" ? (FOR_D ? CAPTION.decadent : atHome ? CAPTION.home : CAPTION.pitch) : CAPTION[screen];
     fig.dataset.view = step;
     if (capText && capText.textContent !== text) capText.textContent = text;
     for (const b of frames) b.setAttribute("aria-pressed", String((b.dataset.frame === "home") === atHome));
     fig.toggleAttribute("data-note", step === "start" && atHome);
     if (step in DOT && screen !== "restore") main.dataset.at = DOT[step]; else delete main.dataset.at;
+    // The dots are a picture: say the step in words, and nothing off the dotted steps.
+    const say = document.getElementById("step-say");
+    const said = "at" in main.dataset ? `Step ${+main.dataset.at + 1} of ${STEP_NAME.length}: ${STEP_NAME[main.dataset.at]}` : "";
+    if (say && say.textContent !== said) say.textContent = said;
   }
 
   // Fine print under the Home caption.
@@ -126,18 +136,18 @@
   let atHome = false, auto = null, seen = null;
   // Loops: switch-off (5.2 s), Home (8 s), again. With reduced motion it stops on Home.
   const still = matchMedia("(prefers-reduced-motion: reduce)");
-  function rest() { clearTimeout(auto); if (SCRUB) return; if (!still.matches) auto = setTimeout(() => { if (last === "start") { atHome = false; update(); arm(); } }, 8000); }
-  function arm() { clearTimeout(auto); if (SCRUB) return; auto = setTimeout(() => { if (last === "start" && !atHome) { atHome = true; update(); rest(); } }, 5200); }
+  function rest() { clearTimeout(auto); if (SCRUB || FOR_D) return; if (!still.matches) auto = setTimeout(() => { if (last === "start") { atHome = false; update(); arm(); } }, 8000); }
+  function arm() { clearTimeout(auto); if (SCRUB || FOR_D) return; auto = setTimeout(() => { if (last === "start" && !atHome) { atHome = true; update(); rest(); } }, 5200); }
   let picked = false, holding = false;
-  function onScroll() { if (SCRUB) return; if (last === "start" && !atHome && !picked && scrollY > innerHeight * 0.15) { atHome = true; update(); rest(); } }
+  function onScroll() { if (SCRUB || FOR_D) return; if (last === "start" && !atHome && !picked && scrollY > innerHeight * 0.15) { atHome = true; update(); rest(); } }
   addEventListener("scroll", onScroll, { passive: true });
-  fig.addEventListener("click", () => { if (SCRUB || last !== "start") return; atHome = false; update(); arm(); });
+  fig.addEventListener("click", () => { if (SCRUB || FOR_D || last !== "start") return; atHome = false; update(); arm(); });
   // The bars pick a frame. The loop waits while the pointer or keyboard focus is on them,
   // then carries on from the chosen frame at the usual pace.
   const resume = () => { if (last === "start") (atHome ? rest : arm)(); };
   for (const b of frames) b.addEventListener("click", (e) => {
     e.stopPropagation();
-    if (last !== "start") return;
+    if (last !== "start" || FOR_D) return;
     if (SCRUB) { document.dispatchEvent(new CustomEvent("scrub-to", { detail: b.dataset.frame === "home" ? 0.6 : 0 })); return; }
     picked = true; atHome = b.dataset.frame === "home"; update();
     if (holding) clearTimeout(auto); else resume();
@@ -150,7 +160,7 @@
     nav.addEventListener("focusout", (e) => { if (!nav.contains(e.relatedTarget) && holding && !nav.matches(":hover")) { holding = false; resume(); } });
   }
   document.addEventListener("scrub", (e) => { scrub = e.detail || { step: null, p: 0 }; update(); });
-  new MutationObserver(() => { update(); if (last === "start" && seen !== "start") { atHome = false; arm(); update(); } seen = last; }).observe(main, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
+  new MutationObserver(() => { update(); if (last === "start" && seen !== "start" && !FOR_D) { atHome = false; arm(); update(); } seen = last; }).observe(main, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
 
 
   // A sticky button row gets its fade only while content runs on beneath it.

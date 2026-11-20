@@ -118,7 +118,8 @@ Not tested: the browser's own device chooser, Windows, joining Wi-Fi and the Goo
 | Check the Decadent plugin alone | **Verified.** No restart; plugin step found it loaded and changed nothing; both apps opened (85 s) |
 | Stock tablet with Decaid, Decadent ticked alone | **Verified.** No restart, nothing switched off, Samsung's Home kept. Plugin step, then the app installed as a WebAPK and opened (114 s). The app is in Samsung's app list, not on its Home; the page now says how to add it |
 | `?for=decadent`, Clean up and New Home screen with Decadent already there | **Verified.** Own heading; restart, icons, grid, the three icons, the second page with SE Profiler and Coffee Flow in cells 2 and 4, apps opened (5 min) |
-| Every combination of the ticks, in safe mode | `web/tests/safe-matrix.mjs`: ten cases, the commands sent compared with the expected order |
+| Every combination of the ticks, in safe mode | `web/tests/safe-matrix.mjs`: 14 cases, the commands sent compared with the expected order |
+| Single screens, in safe mode (D-39) | `web/tests/safe-pages.mjs`: Decadent's start picture, the 20 s Allow hint, the step in words, the share post, the written steps after a failed restart, the waits at Decaid and the restart, a browser without WebUSB |
 
 Not tested on a real tablet: Decaid and Decadent ticked together on a tablet with no Decaid without the other two options; adding Decadent later to a tablet whose Home is already ours (safe mode only).
 | Plugin deleted in Decaid, then **Check the Decadent plugin** from `decadentcoffee.app/setup` (D-35) | **Verified.** Plugin installed again from the release, loaded, set to start, still linked (83 s) |
