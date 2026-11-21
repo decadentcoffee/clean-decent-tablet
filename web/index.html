@@ -159,7 +159,20 @@
     <p>You don't need this page to use Decadent. On the tablet:</p>
     <ol>
       <li>Install <b>Decaid</b> from <a href="https://github.com/decentespresso/decaid/releases/latest" target="_top" rel="noopener">its releases page</a>, open it and answer its first questions.</li>
-      <li>In Decaid open <b>Plugins</b>, tap the cog, then <b>Install plugin</b>, then <b>GitHub Release</b>. Type <b>decadentcoffee/decadent-plugin</b> and tap <b>Install</b>. Then on <b>Decadent</b> in that list, open the <b>⋮</b> menu and tap <b>Load</b>, and switch on <b>Auto-load on startup</b>.</li>
+      <li>Add the Decadent plugin in Decaid:
+        <ol id="byhand-plugin">
+          <li>Open Decaid from the Home screen of the tablet.</li>
+          <li>If Decaid shows its coffee screen, swipe in from the left edge of the screen. The <b>Dashboard</b> opens.</li>
+          <li>Tap <b>Plugins</b>.</li>
+          <li>Tap the cog at the top right.</li>
+          <li>Tap <b>Install plugin</b>.</li>
+          <li>Tap <b>GitHub Release</b>.</li>
+          <li>In <b>Repository</b>, type decadentcoffee/decadent-plugin.</li>
+          <li>Tap <b>Install</b>.</li>
+          <li>Find Decadent in the list. Tap the three dots beside it.</li>
+          <li>Tap <b>Load</b>.</li>
+          <li>Switch on <b>Auto-load on startup</b>. The plugin then starts with Decaid.</li>
+        </ol></li>
       <li>In Chrome open <b>decadentcoffee.app/app</b> and log in. The tablet links to your account by itself.</li>
     </ol>
     <p>The clean-up and the Home screen can be done by hand too: <a href="https://github.com/decadentcoffee/clean-decent-tablet/blob/main/docs/installation.md" target="_top" rel="noopener">the full written guide</a>.</p>
@@ -208,7 +221,7 @@
     <p class="note" id="row-decadent-fixed" hidden></p>
     <label class="choice" id="row-decaid" hidden><input type="checkbox" id="opt-decaid" checked> <span><b>Decaid</b><br>Decent's newer app for the DE1. It isn't on this tablet yet: this installs Decent's latest release.<span id="decaid-stay" hidden> Leave this unticked to stay on the original Decent app: the new Home screen then carries its icon. With Decaid, the original app keeps an icon on the second Home page.</span></span></label>
     <label class="choice" id="row-decadent" hidden><input type="checkbox" id="opt-decadent"> <span><b>Decadent</b><br>Our dial-in companion for the DE1: its plugin in Decaid, and the app as one icon on Home. Decadent needs an account, and early access is by invitation: <a href="https://decadentcoffee.app/" target="_blank" rel="noopener">join the list</a>.<span id="decadent-needs" class="muted" hidden><br>Decadent reaches the machine through Decaid, so tick Decaid as well.</span></span></label>
-    <label class="choice" id="row-plugin" hidden><input type="checkbox" id="opt-plugin"> <span><b>Check the Decadent plugin</b><br>Decadent is on this tablet. This looks in Decaid for its plugin, and adds it if it is missing.</span></label>
+    <label class="choice" id="row-plugin" hidden><input type="checkbox" id="opt-plugin"> <span><b>Add the Decadent plugin</b><br>This looks in Decaid for the Decadent plugin. It adds the plugin when it is missing, and switches it on.</span></label>
     <label class="choice" id="row-cleanup"><input type="checkbox" id="opt-cleanup" checked> <span><b>Clean up</b><br>Switch off <b id="count">0</b> more bundled <span id="count-apps">apps</span> and background services. Chrome becomes the browser. The screen sleeps after 10 minutes, with no stay-awake while charging.</span></label>
     <details id="pick" class="pick"><summary>Choose which apps to switch off <span id="picked" class="muted"></span></summary>
       <p class="note">All of these are ticked by default: that is the tested setup. Untick anything you want to keep. Switched-off apps stay installed, and you can turn any back on later in <b>Settings → Apps</b>.</p>
@@ -220,6 +233,7 @@
     <details id="undo-pick" class="pick" hidden><summary>Choose which apps to turn back on <span id="undo-picked" class="muted"></span></summary><div id="undo-app-list" class="app-group"></div></details>
     <label class="choice" id="row-undo-home" hidden><input type="checkbox" id="opt-undo-home"> <span><b>Put the original Home screen back</b><br>Samsung's Home screen returns with its icons exactly as they were: this page never touched them. The bottom buttons and side panel come back if you had them.</span></label>
     <label class="app sub" id="row-keep-apps" hidden><input type="checkbox" id="keep-apps"> <span>Keep Fossify Launcher and Decadent installed. Fossify keeps its layout, so you can switch back to it later in <b>Settings → Apps → Choose default apps → Home app</b>.</span></label>
+    <p class="note" id="only-plugin-row" hidden><span id="only-plugin-note" style="display:block;margin-bottom:.5rem">Does Decadent say its plugin is missing? This adds the plugin and changes nothing else.</span><button type="button" id="only-plugin" class="ghost small">Only add the Decadent plugin</button></p>
   </fieldset>
   <p id="opt-none" class="alert" role="alert" hidden>Choose at least one.</p>
   <p class="note">Nothing is deleted. Any app can be brought back later: turn it on again in <b>Settings → Apps</b>, or from its page in the Play Store, the normal way.</p>

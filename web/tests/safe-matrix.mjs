@@ -20,6 +20,9 @@ const CASES = [
   ["sign-up way in, Clean up unticked", "?safe&for=decadent&on=home", "cleanup,home", ["decaid open", "plugin", "icons", "launcher", "updates", "decadent", "place", "more"]],
   ["sign-up way in, app there but no Decaid: Decaid, then the plugin", "?safe=nodecaid&decadent=installed&for=decadent&on=", "cleanup,home", ["decaid open", "plugin", "place if-missing"]],
   ["Decadent already there: check the plugin", "?safe=done&decadent=installed&on=plugin", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
+  ["only the plugin (D-43): nothing else is ticked", "?safe&do=plugin", "plugin,cleanup,home", ["decaid open", "plugin"]],
+  ["only the plugin, app already there", "?safe=done&decadent=installed&do=plugin", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
+  ["only the plugin, from the sign-up way in", "?safe&for=decadent&do=plugin", "cleanup,home", ["decaid open", "plugin"]],
 ];
 const browser = await Browser.launch();
 let bad = 0;

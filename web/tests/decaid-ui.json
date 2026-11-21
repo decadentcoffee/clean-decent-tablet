@@ -1,0 +1,98 @@
+{
+  "decaid": "v0.9.2",
+  "commit": "875b7a6",
+  "source": "https://github.com/decentespresso/decaid.git",
+  "facts": [
+    {
+      "name": "Dashboard",
+      "kind": "label",
+      "where": "the screen behind the coffee screen",
+      "file": "lib/src/skin_feature/skin_exit_instructions.dart",
+      "has": "Dashboard contains app settings and skin selection."
+    },
+    {
+      "name": "edge swipe opens the Dashboard",
+      "kind": "fact",
+      "where": "coffee screen (a skin), Android",
+      "file": "lib/src/skin_feature/skin_exit_instructions.dart",
+      "has": "Swipe inward from either screen edge to open it."
+    },
+    {
+      "name": "Plugins",
+      "kind": "label",
+      "where": "Dashboard",
+      "file": "lib/src/launcher/launcher_view.dart",
+      "has": "label: 'Plugins'"
+    },
+    {
+      "name": "cog opens the plugin actions",
+      "kind": "fact",
+      "where": "Plugins, top right",
+      "file": "lib/src/widgets/page_action_menu.dart",
+      "has": "const Icon(LucideIcons.settings)"
+    },
+    {
+      "name": "Plugin actions",
+      "kind": "spoken",
+      "where": "Plugins, the cog (its name for a screen reader and for the setup tool)",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "tooltip: 'Plugin actions'"
+    },
+    {
+      "name": "Install plugin",
+      "kind": "label",
+      "where": "Plugins, cog menu",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "installLabel: 'Install plugin'"
+    },
+    {
+      "name": "GitHub Release",
+      "kind": "label",
+      "where": "Plugins, cog menu, Install plugin",
+      "file": "lib/src/widgets/page_action_menu.dart",
+      "has": "_installSource('github-release', 'GitHub Release')"
+    },
+    {
+      "name": "Check for updates",
+      "kind": "label",
+      "where": "Plugins, cog menu",
+      "file": "lib/src/widgets/page_action_menu.dart",
+      "has": "const Text('Check for updates')"
+    },
+    {
+      "name": "Repository",
+      "kind": "label",
+      "where": "Install from GitHub Release",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "labelText: 'Repository'"
+    },
+    {
+      "name": "Install",
+      "kind": "label",
+      "where": "Install from GitHub Release",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "child: const Text('Install')"
+    },
+    {
+      "name": "three dots open the plugin menu",
+      "kind": "fact",
+      "where": "Plugins, each plugin",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "Icon(LucideIcons.ellipsisVertical)"
+    },
+    {
+      "name": "Load",
+      "kind": "label",
+      "where": "Plugins, a plugin, three dots",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "isLoaded ? 'Unload' : 'Load'"
+    },
+    {
+      "name": "Auto-load on startup",
+      "kind": "label",
+      "where": "Plugins, a plugin",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "const Text('Auto-load on startup')"
+    }
+  ]
+}

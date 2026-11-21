@@ -13,6 +13,9 @@ const DEMO = qs.has("safe") || qs.has("demo");
 const DEMO_KIND = qs.get("safe") ?? qs.get("demo");
 // The way in. ?for=decadent comes from Decadent's sign-up: the same page, with Decadent ticked from the start.
 const FOR_DECADENT = qs.get("for") === "decadent";
+// Only the plugin (D-43): Decadent on the tablet says its plugin is missing and sends the person here. ?do=plugin, or the
+// "Only add the Decadent plugin" button on the choose screen: the plugin is ticked and nothing else is.
+let onlyPlugin = qs.get("do") === "plugin";
 
 const $ = (id) => document.getElementById(id);
 let tablet = null;
@@ -165,8 +168,8 @@ function shown() {
   const avail = APPS.filter((a) => appState[a.pkg] === "enabled").length;
   return {
     decaid: doAllowed && !decaidHave,
-    decadent: doAllowed && !!status && status.decadent_app !== "installed",
-    plugin: doAllowed && !!status && status.decadent_app === "installed",
+    decadent: doAllowed && !!status && status.decadent_app !== "installed" && !onlyPlugin,
+    plugin: doAllowed && !!status && (status.decadent_app === "installed" || onlyPlugin),
     cleanup: doAllowed && avail > 0,
     home: doAllowed && status && status.home !== FOSSIFY,
     undoApps: undoPlan.apps.length + undoPlan.appSettings.length > 0,
@@ -178,6 +181,7 @@ function choiceDefaults() {
   $("opt-cleanup").checked = v.cleanup; $("opt-home").checked = v.home;
   $("opt-decaid").checked = v.decaid; $("opt-decadent").checked = v.decadent && FOR_DECADENT; $("opt-plugin").checked = v.plugin && FOR_DECADENT;
   $("opt-undo-apps").checked = false; $("opt-undo-home").checked = false; $("keep-apps").checked = false;
+  if (onlyPlugin) { $("opt-cleanup").checked = false; $("opt-home").checked = false; $("opt-plugin").checked = v.plugin; }
 }
 // What the person has chosen, counting only the options on screen.
 function chosen() {
@@ -209,6 +213,7 @@ function syncChoices() {
   const c = chosen();
   $("row-decaid").hidden = !v.decaid || FOR_DECADENT; $("row-decadent").hidden = !v.decadent || FOR_DECADENT; $("row-plugin").hidden = !v.plugin || FOR_DECADENT;
   $("row-cleanup").hidden = !v.cleanup; $("pick").hidden = !c.cleanup;
+  $("only-plugin-row").hidden = !(doAllowed && !!status) || onlyPlugin;
   $("row-home").hidden = !v.home;
   const hasOriginal = !!status && status.original_app === "yes";
   $("decaid-stay").hidden = !hasOriginal;
@@ -545,7 +550,7 @@ async function runFinish(afterRestart = false) {
   const newHome = wantHomeDone, ours = finHome === FOSSIFY, samsung = finHome === "com.sec.android.app.launcher";
   const decaidThere = decaidHave || ($("decaid-add").checked && !!want.decaid);
   // From Decadent's way in the app is always wanted, also when an undo in this visit has just removed it.
-  const wantD = (FOR_DECADENT || want.decadent) && decaidThere, decadent = wantD && !decadentHad;
+  const wantD = ((FOR_DECADENT && !onlyPlugin) || want.decadent) && decaidThere, decadent = wantD && !decadentHad;
   const onHome = wantD || decadentHad; // Decadent's icon belongs on Home
   const plugin = (wantD || want.plugin) && decaidThere;
   const plan = [...(ranChange ? ["restart"] : []), ...(plugin ? ["plugin"] : []), ...(newHome && ours ? ["icons", "launcher"] : []),
@@ -840,6 +845,7 @@ async function toConfirm() {
 }
 
 function init() {
+  $("only-plugin").onclick = () => { onlyPlugin = true; choiceDefaults(); syncChoices(); $("opt-none").hidden = true; $("do-setup").focus(); };
   if (!supported()) { $("unsupported").hidden = false; $("start").disabled = true; $("unsupported-c").hidden = false; $("more").disabled = true; }
   if (FOR_DECADENT) {
     // The way in from Decadent: one short first screen, then straight to the cable. The by-hand way stays on offer.

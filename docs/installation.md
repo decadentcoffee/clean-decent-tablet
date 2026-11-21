@@ -238,7 +238,7 @@ Do this last. It has not been run on the reference tablet with these settings.
 2. Open Decaid from Home. Let it find the machine. If it does not, tap **Scan Again**.
 3. Press Home and open Decadent. It should show the machine.
 
-Phone control also needs the Decadent plugin inside Decaid. It is **not installed** on the reference tablet, and its install steps are not part of this guide yet.
+Phone control also needs the Decadent plugin inside Decaid. The setup page adds it: tick Decadent, or choose **Only add the Decadent plugin** (D-43). By hand: open Decaid, swipe in from the left edge of its coffee screen to reach the **Dashboard**, tap **Plugins**, tap the cog at the top right, tap **Install plugin**, tap **GitHub Release**, type `decadentcoffee/decadent-plugin` in **Repository**, tap **Install**. Then tap the three dots beside Decadent, tap **Load**, and switch on **Auto-load on startup**.
 
 ## 12. Each cold boot
 

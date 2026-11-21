@@ -85,6 +85,13 @@ try {
     const got = await p.eval(`(() => { const li = document.querySelector('#fin-steps [data-k="more"]'); return [li.querySelector(".what").textContent, !li.querySelector('[data-more="kept"]').hidden]; })()`);
     check(`second-page step: ${name}`, done && got[0] === want && got[1] === note, got); await p.close(); }
 
+  // "Only add the Decadent plugin" (D-43): one button unticks everything else and ticks the plugin.
+  { const p = await open("?safe&to=review"); await until(p, `${visible} === "review" && !document.getElementById("only-plugin-row").hidden`);
+    const before = await p.eval(`["cleanup","home","plugin"].map((k) => document.getElementById("opt-" + k).checked && !document.getElementById("row-" + k).hidden)`);
+    await p.eval(`document.getElementById("only-plugin").click()`);
+    const after = await p.eval(`[...["cleanup","home","plugin"].map((k) => document.getElementById("opt-" + k).checked && !document.getElementById("row-" + k).hidden), document.getElementById("only-plugin-row").hidden, document.getElementById("row-decadent").hidden, document.activeElement.id, document.querySelector("#row-plugin b").textContent]`);
+    check("Only add the Decadent plugin", JSON.stringify(before) === "[true,true,false]" && JSON.stringify(after) === JSON.stringify([false, false, true, true, true, "do-setup", "Add the Decadent plugin"]), { before, after }); await p.close(); }
+
   // The restart says it is expected and how long it has been.
   { const p = await open("?safe&to=finish&net=all"); await until(p, `${visible} === "finish" && !document.getElementById("fin-you").hidden`);
     await p.eval(`document.getElementById("fin-go").click()`);

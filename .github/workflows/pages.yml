@@ -25,6 +25,7 @@ jobs:
         working-directory: web
       - run: python3 scripts/render-packages.py && git diff --exit-code -- device web/src/apps.json README.md docs/packages.md
       - run: tests/sim-tablet.sh
+      - run: node --test web/tests/decaid-names.mjs web/tests/latest.mjs
       - run: npm run build
         working-directory: web
       - uses: actions/upload-pages-artifact@v3
