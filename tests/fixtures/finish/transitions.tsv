@@ -26,7 +26,15 @@ chrome_page	tap	More options	chrome_menu
 chrome_menu	tap	Install app	chrome_install
 chrome_install	tap	Install	chrome_page	webapk
 *	am	android.settings.ADD_ACCOUNT_SETTINGS	accounts
-# Decaid (labels from its 0.9.2 source). The owner's taps on the first-run screens are set by the test, not by the script.
+# Decaid (labels from its 0.9.2 source). The first-run screens in the order a new Decaid shows them; Android's own
+# questions sit between the account and the import. decaid_upload stands for a screen the script does not answer.
+decaid_welcome	tap	Get Started	decaid_login
+decaid_login	tap	Skip for now	decaid_allow1
+decaid_allow1	tap	Allow	decaid_allow2
+decaid_allow2	tap	Allow	decaid_allow3
+decaid_allow3	tap	Allow	decaid_import
+decaid_import	tap	Skip for now	decaid_scan
+other_allow	tap	Allow	home
 decaid_scan	tap	Continue to Dashboard	decaid_skin
 decaid_skin	key:KEYCODE_BACK	*	decaid_dash
 decaid_dash	tap	Plugins	decaid_plugins

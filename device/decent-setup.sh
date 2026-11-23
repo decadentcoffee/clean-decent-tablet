@@ -873,12 +873,29 @@ decaid_where() {
   elif [ -n "$(ui_line 'content-desc|text' '(Continue to )?Dashboard' "$D")" ]; then echo scan
   else echo asking; fi
 }
+# decaid_answer: answer one of a new Decaid's first questions the way a person in a hurry does (D-44). Get Started;
+# Skip for now on the Decent account and on the old-data import (both stay on Decaid's Dashboard, under Account and
+# Data); Continue offline when Decaid finds no internet; Allow on Android's own questions for Decaid (Bluetooth,
+# notifications, running in the background). An Android question is answered only when it names Decaid. True when it
+# tapped something. Anything it does not know is left on the screen for the person.
+ALLOW_PKGS='com\.android\.permissioncontroller|com\.google\.android\.permissioncontroller|com\.android\.settings'
+decaid_answer() {
+  for _q in 'Get Started' 'Skip for now' 'Continue offline'; do
+    _p="$(ui_find 'content-desc|text' "$_q" "$D")"
+    [ -n "$_p" ] && { tap $_p; return 0; }
+  done
+  if grep -E "package=\"($ALLOW_PKGS)\"" "$UIN" | grep -qE '(text|content-desc)="[^"]*Decaid[^"]*"'; then
+    _p="$(ui_find 'text' 'Allow' "package=\"($ALLOW_PKGS)\"")"
+    [ -n "$_p" ] && { tap $_p; return 0; }
+  fi
+  return 1
+}
 # decaid_menu <seconds>: bring Decaid to its menu. Prints dashboard, or what Decaid still shows when the time is up.
-# It answers none of Decaid's first questions: those are the owner's. It only leaves the coffee screen with Back, and
-# leaves "looking for the machine" by Decaid's own Dashboard button once Decaid has had time to find one. Neither
-# sends anything to the espresso machine.
+# It answers a new Decaid's first questions (decaid_answer), leaves the coffee screen with Back, and leaves "looking
+# for the machine" by Decaid's own Dashboard button once Decaid has had time to find one. None of these sends
+# anything to the espresso machine. ANSWERED counts the questions it answered.
 decaid_menu() {
-  _end=$(( $(date +%s) + $(tmo "$1") )); _scan=""; _w=asking; _acts=0
+  _end=$(( $(date +%s) + $(tmo "$1") )); _scan=""; _w=asking; _acts=0; ANSWERED=0
   while :; do
     ui_dump; _w="$(decaid_where)"
     case "$_w" in
@@ -889,19 +906,22 @@ decaid_menu() {
           _p="$(ui_find 'content-desc|text' '(Continue to )?Dashboard' "$D")"
           [ -n "$_p" ] && { _acts=$((_acts+1)); tap $_p; continue; }
         fi ;;
+      asking) [ $ANSWERED -lt 12 ] && decaid_answer && { ANSWERED=$((ANSWERED+1)); _end=$(( _end + $(tmo 15) )); continue; } ;;
     esac
     [ "$(date +%s)" -ge "$_end" ] && break
     pause
   done
   echo "$_w"
 }
-# finish decaid [open]: say whether Decaid is at its menu (ready) or still asking the owner something (asking).
-# The front end calls it until ready, so a Decaid that has never been opened is a pause, not a failure.
+# finish decaid [open]: say whether Decaid is at its menu (ready), on its way there with its first questions being
+# answered by this script (answering), or showing something this script does not answer (asking). The front end
+# calls it until ready, so a Decaid that has never been opened is a short wait, not a failure.
 fin_decaid() {
   installed "$DECAID" || { say "STATUS decaid=absent"; say "OK finish decaid"; return 0; }
   D="package=\"$DECAID\""
   case "$ARGS " in *" open "*) wake; monkey -p "$DECAID" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep "${UI_PAUSE_S:-3}" ;; esac
-  if [ "$(decaid_menu 20)" = dashboard ]; then say "STATUS decaid=ready"; else say "STATUS decaid=asking"; fi
+  _dm="$(decaid_menu 20; echo " $ANSWERED")"
+  case "$_dm" in dashboard*) say "STATUS decaid=ready" ;; asking*" 0") say "STATUS decaid=asking" ;; *) say "STATUS decaid=answering" ;; esac
   say "OK finish decaid"
 }
 

@@ -54,7 +54,7 @@ try {
     ["both", "?safe&to=finished", (t) => t.startsWith("I cleaned up the tablet on my Decent espresso machine: 98 unneeded apps and background services switched off, and a quiet Home screen")],
     ["clean-up only", "?safe&on=cleanup&to=finished", (t) => t.startsWith("I cleaned up the tablet on my Decent espresso machine: 98 unneeded apps and background services switched off. Free")],
     ["Home only", "?safe&on=home&to=finished", (t) => t.startsWith("I gave the tablet on my Decent espresso machine a quiet Home screen")],
-    ["neither", "?safe=done&decadent=installed&on=plugin&to=finished", (t) => t.startsWith("I set up the tablet on my Decent espresso machine with this page.")],
+    ["neither", "?safe=done&decadent=installed&on=decadent&to=finished", (t) => t.startsWith("I set up the tablet on my Decent espresso machine with this page.")],
   ];
   for (const [name, q, ok] of posts) {
     const p = await open(q + "&net=all"); const done = await until(p, `!document.getElementById("fin-after").hidden`);
@@ -85,28 +85,37 @@ try {
     const got = await p.eval(`(() => { const li = document.querySelector('#fin-steps [data-k="more"]'); return [li.querySelector(".what").textContent, !li.querySelector('[data-more="kept"]').hidden]; })()`);
     check(`second-page step: ${name}`, done && got[0] === want && got[1] === note, got); await p.close(); }
 
-  // "Only add the Decadent plugin" (D-43): one button unticks everything else and ticks the plugin.
-  { const p = await open("?safe&to=review"); await until(p, `${visible} === "review" && !document.getElementById("only-plugin-row").hidden`);
-    const before = await p.eval(`["cleanup","home","plugin"].map((k) => document.getElementById("opt-" + k).checked && !document.getElementById("row-" + k).hidden)`);
-    await p.eval(`document.getElementById("only-plugin").click()`);
-    const after = await p.eval(`[...["cleanup","home","plugin"].map((k) => document.getElementById("opt-" + k).checked && !document.getElementById("row-" + k).hidden), document.getElementById("only-plugin-row").hidden, document.getElementById("row-decadent").hidden, document.activeElement.id, document.querySelector("#row-plugin b").textContent]`);
-    check("Only add the Decadent plugin", JSON.stringify(before) === "[true,true,false]" && JSON.stringify(after) === JSON.stringify([false, false, true, true, true, "do-setup", "Add the Decadent plugin"]), { before, after }); await p.close(); }
+  // One Decadent option (D-44): no separate plugin row. With the app on the tablet the row says what it checks;
+  // ?do=plugin ticks Decadent and nothing else.
+  { const p = await open("?safe=done&decadent=installed&to=review"); await until(p, `${visible} === "review" && !document.getElementById("row-decadent").hidden`);
+    const got = await p.eval(`[!!document.getElementById("row-plugin"), !!document.getElementById("only-plugin"), document.getElementById("decadent-new").hidden, document.getElementById("decadent-have").hidden, /adds the plugin when it is missing/.test(document.getElementById("decadent-have").textContent), document.getElementById("opt-decadent").checked]`);
+    check("Decadent row with the app already there", JSON.stringify(got) === "[false,false,true,false,true,false]", got); await p.close(); }
+  { const p = await open("?safe&do=plugin&to=review"); await until(p, `${visible} === "review" && !document.getElementById("row-decadent").hidden`);
+    const got = await p.eval(`[...["cleanup","home","decadent"].map((k) => document.getElementById("opt-" + k).checked && !document.getElementById("row-" + k).hidden), document.getElementById("decadent-new").hidden]`);
+    check("?do=plugin ticks Decadent alone", JSON.stringify(got) === "[false,false,true,false]", got); await p.close(); }
 
   // The restart says it is expected and how long it has been.
   { const p = await open("?safe&to=finish&net=all"); await until(p, `${visible} === "finish" && !document.getElementById("fin-you").hidden`);
     await p.eval(`document.getElementById("fin-go").click()`);
-    const seen = await until(p, `!document.getElementById("restart-wait").hidden && /usually in under 3 minutes/.test(document.getElementById("restart-wait").textContent) && /^Waited \\d+ s\\.$/.test(document.getElementById("restart-waited").textContent)`, 5000);
+    const seen = await until(p, `!document.getElementById("restart-wait").hidden && /usually in under 3 minutes/.test(document.getElementById("restart-wait").textContent) && /If it then asks to allow USB debugging/.test(document.getElementById("restart-wait").textContent) && /^Waited \\d+ s\\.$/.test(document.getElementById("restart-waited").textContent)`, 5000);
     await until(p, `!document.getElementById("fin-after").hidden`);
     const gone = await p.eval(`document.getElementById("restart-wait").hidden`);
     check("restart wait line", seen && gone, { seen, gone }); await p.close(); }
 
-  // Decaid's first questions: how long the page waits, counted.
+  // A new Decaid's first questions are answered for the person (D-44): the page says so and never asks for them.
   { const p = await open("?safe=nodecaid&on=decaid,decadent&decaid=add&to=finished&net=all");
+    let asked = false; const auto = await until(p, `!document.getElementById("decaid-auto").hidden`);
+    const words = await p.eval(`document.getElementById("decaid-auto").textContent`);
+    for (;;) { const s = await p.eval(`[!document.getElementById("decaid-ask").hidden, !document.getElementById("fin-after").hidden]`); asked ||= s[0]; if (s[1]) break; await sleep(150); }
+    const end = await p.eval(`[document.getElementById("decaid-auto").hidden, document.querySelector('#fin-steps [data-k="plugin"]').dataset.state, document.getElementById("fin-decaid-later").hidden]`);
+    check("Decaid's first questions answered", auto && !asked && /answering its first questions/.test(words) && JSON.stringify(end) === '[true,"done",false]', { words, asked, end }); await p.close(); }
+  // A Decaid screen the page does not answer: it says Decaid needs the person, and counts how long it waits.
+  { const p = await open("?safe=nodecaid&on=decaid,decadent&decaid=add&answers=1&asks=4&to=finished&net=all");
     const asked = await until(p, `!document.getElementById("decaid-ask").hidden`);
-    const during = await p.eval(`[document.getElementById("decaid-wait").textContent, document.getElementById("fin-keep").textContent, document.getElementById("decaid-ask").textContent]`);
+    const during = await p.eval(`[document.getElementById("decaid-wait").textContent, document.getElementById("fin-keep").textContent, document.getElementById("decaid-ask").textContent, document.getElementById("decaid-auto").hidden]`);
     await until(p, `!document.getElementById("fin-after").hidden`);
     const after = await p.eval(`document.getElementById("decaid-wait").textContent`);
-    check("Decaid wait counted", asked && during[0] === "Waiting 1 of 15 minutes." && /waits up to 15 minutes, then leaves this step to you/.test(during[1]) && /waits up to 15 minutes/.test(during[2]) && after === "", { during, after }); await p.close(); }
+    check("Decaid wait counted", asked && during[0] === "Waiting 1 of 15 minutes." && /waits up to 15 minutes, then leaves this step to you/.test(during[1]) && /does not answer for you/.test(during[2]) && /waits up to 15 minutes/.test(during[2]) && during[3] === true && after === "", { during, after }); await p.close(); }
 
   // No WebUSB (any browser but Chrome or Edge): the first screen says so, Get started is off, the preview stays,
   // and the preview's Get started leads back to that first screen.

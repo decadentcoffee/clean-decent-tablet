@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="" resource-id="" class="android.view.View" package="net.tadel.reaprime" content-desc="Link your Decent account" checkable="false" checked="false" clickable="true" enabled="true" bounds="[0,0][1920,1200]"/>
+<node index="0" text="" resource-id="" class="android.widget.EditText" package="net.tadel.reaprime" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[600,400][1320,480]"/>
+<node index="0" text="" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="Skip for now" checkable="false" checked="false" clickable="true" enabled="true" bounds="[900,700][1100,780]"/>
+<node index="0" text="" resource-id="" class="android.widget.Button" package="net.tadel.reaprime" content-desc="Log in" checkable="false" checked="false" clickable="true" enabled="true" bounds="[1120,700][1320,780]"/>
+</hierarchy>

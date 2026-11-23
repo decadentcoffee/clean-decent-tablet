@@ -75,7 +75,7 @@ Labels: **Verified** = tested on a real device. **Documented** = from an officia
 | Webpage | All screens in Chromium with a pretend tablet | Pass |
 | Webpage connection code | Node over USB, reference tablet | **Not completed.** Found the tablet, then timed out after 25 minutes with no Allow tapped. Whether the prompt appeared was not seen |
 | Webpage | Real browser and real tablet | **Not run** |
-| Webpage on Windows | | **Not run.** The library's docs warn of Windows driver limits |
+| Webpage on Windows | Windows desktop, Chrome, the public page, 24 Nov 2026 | **Verified** by the owner: see "The webpage from Windows" |
 | Standard Home screen: three icons on a 5 × 3 grid | Reference tablet, 8 Nov 2026 | Pass. Labels line up with icons. On 3 × 3 they sat about 95 px right, a Fossify layout bug in landscape. A Settings icon hidden by the column change came back at 5 columns; removed |
 | `cleanup` and `home` separately, with undo after each | Simulated tablet, `tests/sim-tablet.sh`, 26 checks | Pass |
 | `scripts/setup.sh --dry-run` and `--home --dry-run` | Reference tablet, 8 Nov 2026 | Pass. Nothing to change, as expected on a tablet already set up |
@@ -104,7 +104,20 @@ The page ran from the local build, with the fixes of D-30 from run 3 on. The DE1
 | 4 | Stock, no Decaid | Both options, Skip Decaid, Decadent unticked | **Verified** after the D-30 fix. First try: the icon and grid steps ran before Home was ready after the restart and were left for the person. Home ends with Settings alone |
 | 5 | Stock, no Decaid | Both options, install Decaid from the downloaded file, Decadent wanted | **Verified.** No file and a wrong file are refused with nothing installed. Decaid 0.9.2 installed (122 MB in about 80 s with everything else). The page paused at Decaid's first questions, went on by itself when they were answered, installed the plugin into the new Decaid (loaded and set to start), then Decadent. Decadent, still logged in from before, linked the new Decaid by itself. Home and the list of switched-off apps ended identical to the start of the day |
 
-Not tested: the browser's own device chooser, Windows, joining Wi-Fi and the Google sign-in from the page (the tablet had both), a tablet with no Google account.
+Not tested here: joining Wi-Fi and the Google sign-in from the page (the tablet had both), a tablet with no Google account. The browser's own device chooser and Windows were run on 24 Nov 2026 (next section).
+
+## The webpage from Windows (24 Nov 2026)
+
+The owner, on a Windows desktop with Chrome, at the public address, with the reference tablet put back in the state a new tablet is in (Samsung's Home, no Decaid, no Decadent, nothing of this project on it). Decaid and Decadent ticked, Clean up and New Home screen left ticked.
+
+| Step | Result |
+|---|---|
+| Chrome's device list | **Verified.** It listed the tablet and connected on the first try. No driver step was needed on that PC |
+| The whole run | **Verified.** Every step ticked; Decadent open at its log-in. 13 minutes from the first change to the last icon |
+| Read off the tablet afterwards | Decaid 0.9.2 fetched and installed by the page, 92 apps switched off by the run, Fossify Home with both pages placed, swipe gestures, the Decadent app, the Decadent plugin loaded and set to start with Decaid |
+| Done by hand during the run | Decaid's first questions, and Allow USB debugging again after the restart. Both led to D-44 |
+
+Since D-44 (same day) the page answers Decaid's first questions itself. **Experimental:** that step has run on the simulated tablet and in safe mode only, not on a real tablet.
 
 
 | `finish more` (19 Nov 2026) | Home with one page | Second Home page | **Verified** by script over adb: SE Profiler, Coffee Flow and AZ Screen Recorder in the middle cells of a new second page, no third page; a second run skips all three. Its run from the webpage is **not tested** |

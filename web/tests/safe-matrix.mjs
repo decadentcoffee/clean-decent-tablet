@@ -19,10 +19,11 @@ const CASES = [
   ["sign-up way in, no Decaid, Home and Clean up unticked", "?safe=nodecaid&for=decadent&on=", "cleanup,home", ["decaid open", "plugin", "updates", "decadent", "place"]],
   ["sign-up way in, Clean up unticked", "?safe&for=decadent&on=home", "cleanup,home", ["decaid open", "plugin", "icons", "launcher", "updates", "decadent", "place", "more"]],
   ["sign-up way in, app there but no Decaid: Decaid, then the plugin", "?safe=nodecaid&decadent=installed&for=decadent&on=", "cleanup,home", ["decaid open", "plugin", "place if-missing"]],
-  ["Decadent already there: check the plugin", "?safe=done&decadent=installed&on=plugin", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
-  ["only the plugin (D-43): nothing else is ticked", "?safe&do=plugin", "plugin,cleanup,home", ["decaid open", "plugin"]],
-  ["only the plugin, app already there", "?safe=done&decadent=installed&do=plugin", "plugin,undo-apps,undo-home", ["decaid open", "plugin"]],
-  ["only the plugin, from the sign-up way in", "?safe&for=decadent&do=plugin", "cleanup,home", ["decaid open", "plugin"]],
+  ["Decadent already there: the same option checks the plugin (D-44)", "?safe=done&decadent=installed&on=decadent", "decadent,undo-apps,undo-home", ["decaid open", "plugin"]],
+  ["only Decadent (?do=plugin): the app is missing, so it is added, then the plugin", "?safe&do=plugin", "decadent,cleanup,home", ["decaid open", "plugin", "updates", "decadent", "place"]],
+  ["only Decadent, app already there: the plugin alone", "?safe=done&decadent=installed&do=plugin", "decadent,undo-apps,undo-home", ["decaid open", "plugin"]],
+  ["only Decadent, from the sign-up way in", "?safe&for=decadent&do=plugin", "cleanup,home", ["decaid open", "plugin", "updates", "decadent", "place"]],
+  ["only Decadent, from the sign-up way in, app already there", "?safe=done&decadent=installed&for=decadent&do=plugin", "undo-apps,undo-home", ["decaid open", "plugin"]],
 ];
 const browser = await Browser.launch();
 let bad = 0;
@@ -36,7 +37,7 @@ try {
         return vis === "finish" && !document.getElementById("fin-after").hidden ? "finished" : vis === "review" && !document.getElementById("opt-none").hidden ? "refused" : ""; })()`);
       if (state || Date.now() > end) break; await sleep(200);
     }
-    const rows = await page.eval(`["decaid","decadent","plugin","cleanup","home","undo-apps","undo-home"].filter((k) => !document.getElementById("row-" + k).hidden).join(",")`);
+    const rows = await page.eval(`["decaid","decadent","cleanup","home","undo-apps","undo-home"].filter((k) => !document.getElementById("row-" + k).hidden).join(",")`);
     const steps = await page.eval(`(globalThis.safeModeLog || []).filter((c) => c.startsWith("setup finish ") && !/finish status/.test(c)).map((c) => c.slice(13)).filter((c) => c !== "decaid")`);
     const shown = await page.eval(`[...document.getElementById("fin-steps").children].filter((l) => !l.hidden).map((l) => l.dataset.k).join(",")`);
     const okRows = rows === wantRows;

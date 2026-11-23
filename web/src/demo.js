@@ -4,7 +4,7 @@ import APPS from "./apps.json";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 const PKG = (i) => APPS[(i - 1) % APPS.length].pkg; // the i-th package, 1-based
 export class DemoTablet {
-  constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.original = !!opts.original; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; this.asks = opts.asks || 0; this.fossify = this.done; }
+  constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.original = !!opts.original; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; this.asks = opts.asks || 0; this.answers = opts.answers || 0; this.fossify = this.done; }
   async prepare() {}
   async push(p) { this.pushed.push(p); }
   async run(c, onLine = () => {}) {
@@ -44,7 +44,7 @@ export class DemoTablet {
       if (k === "launcher") await say("DONE finish launcher", 900);
       if (k === "updates") { await say("DONE finish update com.android.chrome", 1200); await say("SKIP finish update com.google.android.webview up to date", 300); await say("OK finish updates"); }
       if (k === "decadent") { this.webapk = true; await say("DONE finish decadent", 1200); }
-      if (k === "decaid") { await say(`STATUS decaid=${this.asks-- > 0 ? "asking" : "ready"}`, 600); await say("OK finish decaid"); }
+      if (k === "decaid") { await say(`STATUS decaid=${this.answers-- > 0 ? "answering" : this.asks-- > 0 ? "asking" : "ready"}`, 600); await say("OK finish decaid"); }
       if (k === "plugin") await say(this.manual ? "MANUAL finish plugin Decaid's menu did not show" : "DONE finish plugin", 1200);
       if (k === "more") { for (const l of ["SE Profiler", "Coffee Flow"]) await say(`DONE finish more ${l}`, 300); await say("OK finish more"); }
       if (k === "place") {

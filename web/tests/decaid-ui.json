@@ -93,6 +93,69 @@
       "where": "Plugins, a plugin",
       "file": "lib/src/settings/plugins_settings_view.dart",
       "has": "const Text('Auto-load on startup')"
+    },
+    {
+      "name": "Review",
+      "kind": "label",
+      "where": "Plugins, a plugin with an update that needs approval",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "child: const Text('Review')"
+    },
+    {
+      "name": "Approve and update",
+      "kind": "label",
+      "where": "Plugins, Review",
+      "file": "lib/src/settings/plugins_settings_view.dart",
+      "has": "child: const Text('Approve and update')"
+    },
+    {
+      "name": "Get Started",
+      "kind": "label",
+      "where": "a new Decaid, first screen",
+      "file": "lib/src/onboarding_feature/steps/welcome_step.dart",
+      "has": "label: 'Get Started'"
+    },
+    {
+      "name": "Skip for now",
+      "kind": "label",
+      "where": "a new Decaid, the Decent account question",
+      "file": "lib/src/onboarding_feature/steps/login_step.dart",
+      "has": "secondaryLabel: 'Skip for now'"
+    },
+    {
+      "name": "Skip for now (import)",
+      "kind": "fact",
+      "where": "a new Decaid, the old-data import question",
+      "file": "lib/src/import/widgets/import_source_picker.dart",
+      "has": "label: 'Skip for now'"
+    },
+    {
+      "name": "Continue offline",
+      "kind": "label",
+      "where": "a new Decaid with no internet",
+      "file": "lib/src/onboarding_feature/steps/login_step.dart",
+      "has": "label: 'Continue offline'"
+    },
+    {
+      "name": "Account",
+      "kind": "label",
+      "where": "Dashboard",
+      "file": "lib/src/launcher/launcher_view.dart",
+      "has": "label: 'Account'"
+    },
+    {
+      "name": "Data",
+      "kind": "label",
+      "where": "Dashboard",
+      "file": "lib/src/launcher/launcher_view.dart",
+      "has": "label: 'Data'"
+    },
+    {
+      "name": "Import from De1App",
+      "kind": "label",
+      "where": "Dashboard, Data",
+      "file": "lib/src/settings/data_management_page.dart",
+      "has": "child: const Text('Import from De1App')"
     }
   ]
 }

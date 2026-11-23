@@ -274,15 +274,22 @@ cp "$SIM/installed" "$T/installed.keep"; grep -v '^net.tadel.reaprime$' "$T/inst
 fin plugin; grep -qx 'SKIP finish plugin Decaid is not installed' "$T/o" && ok "finish plugin without Decaid: skipped" || { bad "plugin no decaid"; cat "$T/o"; }
 fin decaid open; grep -qx 'STATUS decaid=absent' "$T/o" && ok "finish decaid without Decaid: absent" || { bad "decaid absent"; cat "$T/o"; }
 { cat "$T/installed.keep"; echo net.tadel.reaprime; } | sort -u > "$SIM/installed"
-# A Decaid that has never been opened asks its first questions. Those are the owner's: nothing is tapped, the step says asking.
+# A Decaid that has never been opened asks its first questions. The script answers them (D-44): Get Started, Skip for
+# now on the account, Allow on Android's three questions for Decaid, Skip for now on the import; then the machine
+# search and the coffee screen, to Decaid's menu. One start may not get all the way: the front end asks again.
 echo decaid_welcome > "$SIM/decaid.start"; echo home > "$SIM/screen"; : > "$SIM/events"
-fin decaid open; grep -qx 'STATUS decaid=asking' "$T/o" && tail -n 1 "$T/o" | grep -qx 'OK finish decaid' && [ "$(cat "$SIM/screen")" = decaid_welcome ] && ! grep -q '^input tap' "$SIM/events" && ok "a new Decaid's first questions: asking, and nothing tapped for the owner" || { bad "decaid asking"; cat "$T/o" "$SIM/events"; }
-echo decaid_import > "$SIM/screen"; : > "$SIM/events"   # the owner tapped Get Started
-fin decaid; grep -qx 'STATUS decaid=asking' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_import ] && ! grep -q '^monkey' "$SIM/events" && ! grep -q '^input tap' "$SIM/events" && ok "asked again without open: still asking, Decaid not relaunched" || { bad "decaid asking again"; cat "$T/o" "$SIM/events"; }
+fin decaid open; n=0; while grep -qx 'STATUS decaid=answering' "$T/o" && [ $n -lt 6 ]; do fin decaid; n=$((n+1)); done
+grep -qx 'STATUS decaid=ready' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_dash ] && [ "$(grep -c '^input tap' "$SIM/events")" = 7 ] && [ "$(grep -c '^monkey' "$SIM/events")" = 1 ] && ok "a new Decaid's first questions are answered: six taps, then the machine search, ready at Decaid's menu" || { bad "decaid answered"; cat "$T/o" "$SIM/events"; }
+# A screen the script does not know stays for the person: asking, and nothing tapped.
+echo decaid_upload > "$SIM/screen"; : > "$SIM/events"
+fin decaid; grep -qx 'STATUS decaid=asking' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_upload ] && ! grep -q '^monkey' "$SIM/events" && ! grep -q '^input tap' "$SIM/events" && ok "a Decaid screen the script does not know: asking, nothing tapped, Decaid not relaunched" || { bad "decaid unknown screen"; cat "$T/o" "$SIM/events"; }
 t0=$(date +%s); fin plugin; t1=$(date +%s)
-grep -qx 'MANUAL finish plugin Decaid is asking its first questions' "$T/o" && [ $((t1-t0)) -lt 20 ] && [ ! -s "$SIM/decaid.plugin" ] && ok "finish plugin while Decaid is asking ends MANUAL in $((t1-t0)) s" || { bad "plugin while asking"; cat "$T/o"; }
-echo decaid_scan > "$SIM/screen"   # the owner answered the import question; Decaid now looks for the machine
-fin decaid; grep -qx 'STATUS decaid=ready' "$T/o" && [ "$(cat "$SIM/screen")" = decaid_dash ] && ok "after the questions: past the machine search and the coffee screen, ready at Decaid's menu" || { bad "decaid ready"; cat "$T/o"; }
+grep -qx 'MANUAL finish plugin Decaid is asking its first questions' "$T/o" && [ $((t1-t0)) -lt 20 ] && [ ! -s "$SIM/decaid.plugin" ] && ok "finish plugin on a screen it does not know ends MANUAL in $((t1-t0)) s" || { bad "plugin while asking"; cat "$T/o"; }
+# Android asking for another app is never answered, even over Decaid's start.
+echo other_allow > "$SIM/screen"; : > "$SIM/events"
+fin decaid; grep -qx 'STATUS decaid=asking' "$T/o" && [ "$(cat "$SIM/screen")" = other_allow ] && ! grep -q '^input tap' "$SIM/events" && ok "an Android question that does not name Decaid is left alone" || { bad "foreign allow"; cat "$T/o" "$SIM/events"; }
+# The plugin step alone also gets through the first questions (the script front end has no asking loop).
+echo decaid_welcome > "$SIM/screen"; : > "$SIM/events"
 fin plugin; grep -qx 'DONE finish plugin' "$T/o" && [ "$(tr '\n' ' ' < "$SIM/decaid.plugin" 2>/dev/null)" = "installed loaded autoload " ] && grep -q '^input text decadentcoffee/decadent-plugin' "$SIM/events" && [ "$(cat "$SIM/screen")" = decaid_dash ] && ok "finish plugin installs decadentcoffee/decadent-plugin through Decaid's installer, loads it and sets it to start with Decaid" || { bad "plugin install"; cat "$T/o"; }
 # A Decaid already set up opens on the coffee screen; one start does the whole step.
 rm -f "$SIM/decaid.plugin"; echo decaid_skin > "$SIM/decaid.start"; echo home > "$SIM/screen"

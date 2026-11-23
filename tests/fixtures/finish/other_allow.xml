@@ -1,0 +1,6 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<hierarchy rotation="1">
+<node index="0" text="Allow Maps to access this device's location?" resource-id="" class="android.widget.TextView" package="com.android.permissioncontroller" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[560,380][1360,520]"/>
+<node index="0" text="Allow" resource-id="com.android.permissioncontroller:id/permission_allow_button" class="android.widget.Button" package="com.android.permissioncontroller" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[620,560][1300,640]"/>
+<node index="0" text="Don't allow" resource-id="" class="android.widget.Button" package="com.android.permissioncontroller" content-desc="" checkable="false" checked="false" clickable="true" enabled="true" bounds="[620,660][1300,740]"/>
+</hierarchy>

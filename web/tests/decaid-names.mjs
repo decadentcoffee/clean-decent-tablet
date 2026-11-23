@@ -35,3 +35,18 @@ test("the setup script taps the controls Decaid has", () => {
   assert.match(body, /ui_find content-desc 'Plugins\[\^"\]\*'/);
   assert.match(body, /ui_find content-desc 'Install'/);
 });
+
+test("the first questions the setup script answers are Decaid's own, and the page names where the skipped ones live (D-44)", () => {
+  const sh = read("../../device/decent-setup.sh");
+  const body = sh.slice(sh.indexOf("decaid_answer() {"), sh.indexOf("\n}\n", sh.indexOf("decaid_answer() {")));
+  const loop = body.match(/for _q in ((?:'[^']+' ?)+);/);
+  assert.ok(loop, "the tap list of decaid_answer");
+  const taps = [...loop[1].matchAll(/'([^']+)'/g)].map((m) => m[1]);
+  assert.deepEqual(taps, ["Get Started", "Skip for now", "Continue offline"]);
+  for (const t of taps) assert.ok(labels.has(t), `"${t}" is not in Decaid ${ui.decaid}`);
+  // Android's own questions are answered only when they name Decaid.
+  assert.match(body, /Decaid\[\^"\]\*/);
+  const html = read("../index.html");
+  const later = html.match(/<p id="fin-decaid-later"[^>]*>(.*?)<\/p>/)[1];
+  for (const b of [...later.matchAll(/<b>([^<]+)<\/b>/g)].map((m) => m[1])) assert.ok(labels.has(b), `"${b}" is not a control in Decaid ${ui.decaid}`);
+});
