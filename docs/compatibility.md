@@ -18,7 +18,7 @@ Labels: **Verified** = tested on a real device. **Documented** = from an officia
 | Decaid `net.tadel.reaprime` | 0.9.2 (build 3191), updated inside Decaid. Port 8080 answered and the DE1 was connected. Installing it with this project is not tested: the tablet already had Decaid | 16 Nov 2026 |
 | Decadent plugin in Decaid, first install | **Verified** by script over adb on the reference tablet (Decaid 0.9.2, DE1 asleep): with no Decadent plugin in Decaid, `finish plugin` started from Android's Home, left Decaid's coffee screen, installed 0.43.0 from `decadentcoffee/plugin` (the repo is `decadentcoffee/decadent-plugin` since 18 Nov 2026; the new name was typed in run 5 below, into a Decaid installed minutes earlier, and Decaid records `decadentcoffee/decadent-plugin`, release v0.43.0, as the plugin's source), tapped Load and switched on Auto-load on startup. Decaid reported the plugin loaded and set to start; the seven other plugins were unchanged; the machine stayed asleep. The webpage's own run of this step: runs 3 and 5 below | 18 Nov 2026 |
 | `finish decaid` on a Decaid already set up | **Verified** on the reference tablet: `STATUS decaid=ready` from the coffee screen (Decaid's stock skin shows its own buttons in the screen read; the first version took them for questions and said `asking`, fixed 18 Nov 2026). Decaid's start-up screen read "Connecting to device" with **Continue to Dashboard**, as in the source | 18 Nov 2026 |
-| Decaid's first questions (`finish decaid` on a Decaid never opened) and the tap on Continue to Dashboard | Simulated tablet and the page's safe mode only. **Not run** on a real tablet: it needs Decaid's data cleared; labels are from Decaid 0.9.2's source | 18 Nov 2026 |
+| Decaid's first questions (`finish decaid` on a Decaid never opened) and the tap on Continue to Dashboard | **Verified** on the reference tablet by script over the cable: every question answered, `STATUS decaid=ready` at Decaid's menu (D-44). Through the webpage: safe mode only | 24 Nov 2026 |
 | AndroWish `tk.tcl.wish` | 1.0 | 3 Nov 2026 |
 | Chrome | 154.0.8037.92 | 3 Nov 2026 |
 | Android System WebView | 153.0.8010.36 | 3 Nov 2026 |
@@ -117,7 +117,7 @@ The owner, on a Windows desktop with Chrome, at the public address, with the ref
 | Read off the tablet afterwards | Decaid 0.9.2 fetched and installed by the page, 92 apps switched off by the run, Fossify Home with both pages placed, swipe gestures, the Decadent app, the Decadent plugin loaded and set to start with Decaid |
 | Done by hand during the run | Decaid's first questions, and Allow USB debugging again after the restart. Both led to D-44 |
 
-Since D-44 (same day) the page answers Decaid's first questions itself. **Experimental:** that step has run on the simulated tablet and in safe mode only, not on a real tablet.
+Since D-44 (same day) the setup answers Decaid's first questions itself. **Verified** by script over the cable on the reference tablet, with Decaid 0.9.2 started as new: Get Started, Skip for now on the account, Android's two Allows, OK on Samsung's "Stop optimizing battery usage?", Skip for now on the import, then Decaid's menu; `finish plugin` after it added the plugin and switched it on. The same through the webpage has run in safe mode only.
 
 
 | `finish more` (19 Nov 2026) | Home with one page | Second Home page | **Verified** by script over adb: SE Profiler, Coffee Flow and AZ Screen Recorder in the middle cells of a new second page, no third page; a second run skips all three. Its run from the webpage is **not tested** |

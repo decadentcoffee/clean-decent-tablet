@@ -32,7 +32,7 @@ decaid_welcome	tap	Get Started	decaid_login
 decaid_login	tap	Skip for now	decaid_allow1
 decaid_allow1	tap	Allow	decaid_allow2
 decaid_allow2	tap	Allow	decaid_allow3
-decaid_allow3	tap	Allow	decaid_import
+decaid_allow3	tap	OK	decaid_import
 decaid_import	tap	Skip for now	decaid_scan
 other_allow	tap	Allow	home
 decaid_scan	tap	Continue to Dashboard	decaid_skin

@@ -885,7 +885,8 @@ decaid_answer() {
     [ -n "$_p" ] && { tap $_p; return 0; }
   done
   if grep -E "package=\"($ALLOW_PKGS)\"" "$UIN" | grep -qE '(text|content-desc)="[^"]*Decaid[^"]*"'; then
-    _p="$(ui_find 'text' 'Allow' "package=\"($ALLOW_PKGS)\"")"
+    # Samsung's "Stop optimizing battery usage?" has OK where Android's own questions have Allow (reference tablet, 24 Nov 2026).
+    _p="$(ui_find 'text' 'Allow|OK' "package=\"($ALLOW_PKGS)\"")"
     [ -n "$_p" ] && { tap $_p; return 0; }
   fi
   return 1
