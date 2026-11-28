@@ -251,12 +251,15 @@ async function demoGoTo(to) {
 
 
 async function loadPlan() {
-  const plan = (await tablet.setup(`plan${FORCE}`)).find((l) => l.startsWith("PLAN disable="));
+  const lines = await tablet.setup(`plan${FORCE}`);
+  const plan = lines.find((l) => l.startsWith("PLAN disable="));
   const n = plan ? plan.match(/disable=(\d+)/)[1] : "?";
+  // Samsung switched these off for lack of use: they read as disabled but still show, so they are switched off too.
+  const asleep = new Set(((lines.find((l) => l.startsWith("PLAN asleep=")) || "").slice(12)).split(",").filter(Boolean));
   $("count").textContent = n; $("count-apps").textContent = +n === 1 ? "app" : "apps";
   const pkgs = async (flag) => new Set((await tablet.run(`pm list packages ${flag}`)).map((l) => l.replace(/^package:/, "").trim()).filter(Boolean));
   const [all, off] = await Promise.all([pkgs(""), pkgs("-d")]);
-  appState = Object.fromEntries(APPS.map((a) => [a.pkg, !all.has(a.pkg) ? "absent" : off.has(a.pkg) ? "disabled" : "enabled"]));
+  appState = Object.fromEntries(APPS.map((a) => [a.pkg, !all.has(a.pkg) ? "absent" : off.has(a.pkg) && !asleep.has(a.pkg) ? "disabled" : "enabled"]));
   renderApps();
 }
 

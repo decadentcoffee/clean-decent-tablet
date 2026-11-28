@@ -77,11 +77,15 @@ is_protected() {
 home_pkg() { sh_ cmd role get-role-holders --user "$USER_ID" android.app.role.HOME | head -1; }
 ime_pkg()  { sh_ settings get secure default_input_method | cut -d/ -f1; }
 
-# enabled | disabled | absent, for the current user.
+# enabled | disabled | asleep | absent, for the current user. asleep: Samsung switched it off for lack of use
+# (state 4, disabled until used). It still shows in the app list, the shell cannot change it, and opening it once
+# brings it back (device/decent-setup.sh, `asleep`).
 pkg_state() {
   local p="$1"
   if ! sh_ pm list packages --user "$USER_ID" | grep -qx "package:$p"; then echo absent; return; fi
-  if sh_ pm list packages -d --user "$USER_ID" | grep -qx "package:$p"; then echo disabled; else echo enabled; fi
+  if ! sh_ pm list packages -d --user "$USER_ID" | grep -qx "package:$p"; then echo enabled
+  elif sh_ dumpsys package "$p" | grep -q "User $USER_ID:.* enabled=4 "; then echo asleep
+  else echo disabled; fi
 }
 
 device_id() { echo "$(prop ro.product.model) $(prop ro.build.PDA)"; }

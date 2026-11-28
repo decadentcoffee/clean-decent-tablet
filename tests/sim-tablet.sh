@@ -134,8 +134,12 @@ cat > "$T/bin/pm" <<'S'
 #!/bin/bash
 case "$1" in
  list) if [ "$3" = -d ] || [ "${2:-}" = -d ]; then sed 's/^/package:/' "$SIM/disabled"; else sed 's/^/package:/' "$SIM/installed"; fi ;;
- disable-user) p="$4"; if [ "$p" = com.samsung.android.smartsuggestions ]; then echo "Failed to change state of package: $p"; exit 1; fi; echo "$p" >> "$SIM/disabled"; sort -u -o "$SIM/disabled" "$SIM/disabled" ;;
- enable) grep -vx "$4" "$SIM/disabled" > "$SIM/d2"; mv "$SIM/d2" "$SIM/disabled" ;;
+ disable-user) p="$4"; if [ "$p" = com.samsung.android.smartsuggestions ]; then echo "Failed to change state of package: $p"; exit 1; fi
+   # Samsung's "disabled until used" (state 4): the shell may not change it, as on the real tablet.
+   grep -qx "$p" "$SIM/asleep" 2>/dev/null && { echo "java.lang.SecurityException: Shell cannot change component state for null to 3"; exit 255; }
+   echo "$p" >> "$SIM/disabled"; sort -u -o "$SIM/disabled" "$SIM/disabled" ;;
+ enable) grep -qx "$4" "$SIM/asleep" 2>/dev/null && { echo "java.lang.SecurityException: Shell cannot change component state for null to 1"; exit 255; }
+   grep -vx "$4" "$SIM/disabled" > "$SIM/d2"; mv "$SIM/d2" "$SIM/disabled" ;;
  uninstall) grep -vx "$4" "$SIM/installed" > "$SIM/i2"; mv "$SIM/i2" "$SIM/installed"; echo "$4" >> "$SIM/uninstalled" ;;
  install) echo Success ;;
 esac
@@ -170,6 +174,9 @@ S
 cat > "$T/bin/monkey" <<'S'
 #!/bin/bash
 . "$(dirname "$0")/_simui"; echo "monkey $*" >> "$SIM/events"
+# Opening an app Samsung switched off for lack of use switches it back on; one with no icon ($SIM/noicon) cannot open.
+if grep -qx "$2" "$SIM/asleep" 2>/dev/null && ! grep -qx "$2" "$SIM/noicon" 2>/dev/null; then
+  grep -vx "$2" "$SIM/asleep" > "$SIM/a2"; mv "$SIM/a2" "$SIM/asleep"; grep -vx "$2" "$SIM/disabled" > "$SIM/d2"; mv "$SIM/d2" "$SIM/disabled"; fi
 [ "$2" = net.tadel.reaprime ] && [ -s "$SIM/decaid.start" ] && case "$(scr)" in decaid_*) ;; *) cat "$SIM/decaid.start" > "$SIM/screen" ;; esac
 exit 0
 S
@@ -220,6 +227,19 @@ reset() { rm -rf "$DECENT_DIR"; cp "$SIM/installed.start" "$SIM/installed"; cp "
 reset; run cleanup > "$T/o" 2>&1
 grep -qx com.sec.android.app.sbrowser "$SIM/disabled" && [ "$(cat "$SIM/role.home")" = com.sec.android.app.launcher ] && [ "$(get secure.navigation_mode)" = 0 ] && [ "$(get secure.edge_enable)" = 1 ] && [ "$(get system.screen_off_timeout)" = 600000 ] && ok "cleanup alone leaves Home, navigation and edge panel" || bad "cleanup alone"
 run undo >/dev/null 2>&1; sameset "$SIM/disabled" "$SIM/disabled.start" && sameset "$SIM/settings" "$SIM/settings.start" && ok "undo after cleanup alone" || bad "undo cleanup alone"
+# Samsung switched two listed apps off for lack of use (state 4): they read as disabled but still show their icons.
+# Cleanup opens each once and switches it off for good; one with no icon is left. Undo turns the woken one back on.
+A1=com.samsung.android.app.spage; A2=com.sec.android.app.kidshome; A3=com.samsung.sree
+reset; printf '%s\n' $A1 $A2 $A3 > "$SIM/asleep"; echo $A3 > "$SIM/noicon"; printf '%s\n' $A1 $A2 $A3 >> "$SIM/disabled"; cp "$SIM/disabled" "$T/d0"
+export WAKE_S=0 UI_PAUSE_S=0
+run plan > "$T/o" 2>&1; grep -q "^PLAN asleep=.*$A1" "$T/o" && grep -q "^PLAN asleep=.*$A2" "$T/o" && grep -q "^PLAN asleep=.*$A3" "$T/o" && ok "plan names the apps Samsung switched off for lack of use" || { bad "plan asleep"; cat "$T/o"; }
+: > "$SIM/events"; run cleanup > "$T/o" 2>&1
+! grep -qx $A1 "$SIM/asleep" && ! grep -qx $A2 "$SIM/asleep" && grep -qx $A1 "$SIM/disabled" && grep -qx $A2 "$SIM/disabled" && grep -q "^DONE .* $A1$" "$T/o" && grep -q "^monkey -p $A2 " "$SIM/events" \
+  && awk -F'\t' -v p=$A1 '$2=="disable" && $3==p && $4=="asleep" && $5=="ok" {f=1} END {exit !f}' "$DECENT_DIR/changes.tsv" && ok "an app Samsung switched off is opened once, then switched off for good" || { bad "asleep cleanup"; grep -E "spage|kidshome|sree" "$T/o"; cat "$SIM/events"; }
+grep -q "^SKIP .* $A3 switched off by Samsung and has no icon" "$T/o" && grep -qx $A3 "$SIM/asleep" && ok "one with no icon to open is left as Samsung put it" || { bad "asleep noicon"; grep sree "$T/o"; }
+run cleanup > "$T/o" 2>&1; ! grep -q '^DONE' "$T/o" && ok "a second cleanup after waking is a no-op for those apps" || { bad "asleep twice"; grep DONE "$T/o"; }
+run undo > "$T/o" 2>&1; ! grep -qx $A1 "$SIM/disabled" && ! grep -qx $A2 "$SIM/disabled" && grep -qx $A3 "$SIM/disabled" && ok "undo turns the woken apps back on" || { bad "asleep undo"; grep -E "spage|kidshome|sree" "$T/o"; }
+: > "$SIM/asleep"; : > "$SIM/noicon"; unset WAKE_S UI_PAUSE_S
 reset; run home --dry-run > "$T/o" 2>&1; [ "$(cat "$SIM/role.home")" = com.sec.android.app.launcher ] && grep -q '^PLAN' "$T/o" && ok "home dry run changes nothing" || bad "home dry"
 run home > "$T/o" 2>&1
 sameset "$SIM/disabled" "$SIM/disabled.start" && [ "$(cat "$SIM/role.home")" = org.fossify.home ] && [ "$(get secure.navigation_mode)" = 2 ] && [ "$(get secure.edge_enable)" = 0 ] && [ "$(cat "$SIM/role.browser")" = com.sec.android.app.sbrowser ] && ok "home alone disables nothing and keeps the browser" || bad "home alone"

@@ -53,6 +53,7 @@ while read -r pkg; do
   case "$(pkg_state "$pkg")" in
     disabled) echo "plan  pm enable --user $USER_ID $pkg"; plan+=("$pkg") ;;
     enabled)  echo "skip  $pkg (already enabled)" ;;
+    asleep)   echo "skip  $pkg (Samsung switched it off for lack of use; opening it turns it back on)" ;;
     absent)   echo "skip  $pkg (no longer installed; cannot re-enable, reinstall it)" ;;
   esac
 done <<< "$OURS"

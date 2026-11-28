@@ -33,6 +33,7 @@ while IFS=$'\t' read -r pkg batch orig; do
     absent)   echo "skip  $pkg (not installed for user $USER_ID)" ;;
     disabled) echo "skip  $pkg (already disabled; original state: $orig)" ;;
     enabled)  echo "plan  pm disable-user --user $USER_ID $pkg"; plan+=("$pkg") ;;
+    asleep)   echo "plan  open once, then pm disable-user --user $USER_ID $pkg (Samsung switched it off for lack of use; it still shows)"; plan+=("$pkg") ;;
   esac
 done < <(approved_rows)
 
@@ -51,6 +52,11 @@ fi
 refused=0
 for pkg in "${plan[@]}"; do
   before="$(pkg_state "$pkg")"
+  if [ "$before" = asleep ]; then
+    # The shell cannot change state 4. Opening the app once turns it back on.
+    sh_ monkey -p "$pkg" -c android.intent.category.LAUNCHER 1 >/dev/null; sleep 2
+    if [ "$(pkg_state "$pkg")" = asleep ]; then echo "skip  $pkg (switched off by Samsung and has no icon to open)"; continue; fi
+  fi
   out="$("${ADB[@]}" shell pm disable-user --user "$USER_ID" "$pkg" </dev/null 2>&1 | tr -d '\r')" || true
   after="$(pkg_state "$pkg")"
   if [ "$after" = disabled ]; then
@@ -72,5 +78,6 @@ done
 # (seen 3 Nov 2026: the last 5 of 24 came back after an immediate reboot).
 echo "waiting ${SETTLE_S:-30}s for Android to save the changes. Do not reboot yet."
 sleep "${SETTLE_S:-30}"
+sh_ input keyevent KEYCODE_HOME >/dev/null
 [ "$refused" = 0 ] || echo "$refused package(s) refused by Android. Set them to keep in the manifest."
 echo "batch $BATCH applied. Now run scripts/verify.sh and the manual checks in docs/debloating.md."

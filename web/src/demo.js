@@ -2,6 +2,7 @@
 // Its logs name the real packages from apps.json, so safe-mode screens read like a real run.
 import APPS from "./apps.json";
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+const ASLEEP = "com.samsung.android.app.spage";
 const PKG = (i) => APPS[(i - 1) % APPS.length].pkg; // the i-th package, 1-based
 export class DemoTablet {
   constructor(opts = {}) { this.done = !!opts.done; this.noDecaid = !!opts.noDecaid; this.original = !!opts.original; this.fail = opts.fail; this.manual = !!opts.manual; this.hold = !!opts.hold; this.pushed = []; this.wifi = opts.net === "wifi" || opts.net === "all"; this.account = opts.net === "all"; this.webapk = !!opts.decadent; this.slow = !!opts.slow; this.asks = opts.asks || 0; this.answers = opts.answers || 0; this.fossify = this.done; }
@@ -11,7 +12,8 @@ export class DemoTablet {
     (globalThis.safeModeLog ||= []).push(c); // what the page asked the tablet to do, for checking safe-mode runs
     if (c.includes("pm list packages net.tadel")) { if (this.noDecaid) return []; const l = "package:net.tadel.reaprime"; onLine(l); return [l]; }
     const pk = (list) => list.map((p) => `package:${p}`);
-    if (c === "pm list packages -d") return pk(this.done ? APPS.map((a) => a.pkg) : ["com.samsung.android.app.contacts"]);
+    // Samsung Free is one Samsung switched off for lack of use: it reads as disabled, and the plan names it asleep.
+    if (c === "pm list packages -d") return pk(this.done ? APPS.map((a) => a.pkg) : ["com.samsung.android.app.contacts", ASLEEP]);
     if (c === "pm list packages ") return pk(APPS.map((a) => a.pkg).filter((p) => p !== "com.sec.android.autodoodle.service"));
     return [];
   }
@@ -29,7 +31,7 @@ export class DemoTablet {
       await say(this.fail === "model" ? "CHECK untested-model" : this.fail === "build" ? "CHECK same-model-new-build" : "CHECK tested");
       if (this.fail === "model" || this.fail === "build") await say(`FAIL this tablet is ${m} ${b}, which has not been tested. Nothing changed.`);
     }
-    if (a === "plan") await say(this.done ? "PLAN disable=0 already-off-or-absent=100" : "PLAN disable=97 already-off-or-absent=3");
+    if (a === "plan") { await say(this.done ? "PLAN disable=0 already-off-or-absent=100" : "PLAN disable=98 already-off-or-absent=2"); await say(`PLAN asleep=${this.done ? "" : ASLEEP}`); }
     if (a === "status") { for (const l of [`STATUS model=SM-X133`, `STATUS build=X133DXS5BZI3`, `STATUS undo_record=${this.done ? "present" : "none"}`, `STATUS home=${this.fossify ? "org.fossify.home" : "com.sec.android.app.launcher"}`, `STATUS decadent_app=${this.webapk ? "installed" : "none"}`, `STATUS original_app=${this.original ? "yes" : "no"}`, "STATUS app net.tadel.reaprime enabled"]) await say(l); }
     if (this.hold && !dry && (a === "cleanup" || a === "home")) { for (let i = 1; i <= 41; i++) await say(`DONE ${i}/100 ${PKG(i)}`, 0); await new Promise(() => {}); } // debug: stay on the running screen
     if (a === "cleanup" && !dry && this.fail === "run") { await say(`DONE 1/100 ${PKG(1)}`, 300); await say(`FAIL ${PKG(2)}: Unknown error. Stopped. Run undo to go back.`); return out; }

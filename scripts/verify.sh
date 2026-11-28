@@ -50,6 +50,7 @@ while IFS=$'\t' read -r pkg batch orig; do
   [ -n "$pkg" ] || continue
   s="$(pkg_state "$pkg")"
   [ "$s" = enabled ] && info "approved for batch $batch but still enabled: $pkg"
+  [ "$s" = asleep ] && info "approved for batch $batch but switched off only by Samsung, so it still shows: $pkg (run scripts/disable.sh)"
 done < <(approved_rows)
 
 info "screen timeout $(sh_ settings get system screen_off_timeout) ms, stay-on-while-plugged $(sh_ settings get global stay_on_while_plugged_in), double-tap wake $(sh_ settings get system double_tab_to_wake_up)"

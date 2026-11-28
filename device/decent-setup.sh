@@ -53,8 +53,14 @@ installed() { pm list packages --user "$USER_ID" 2>/dev/null | grep -qx "package
 # ("auto_disabler": the app reads as disabled, state 4, disabled until used) and the app comes back on when it is
 # opened (reference tablet, 21 Nov 2026: AZ Screen Recorder and seven preloaded apps). Such an app is still there.
 usable() {
-  case "$(state_of "$1")" in enabled) return 0 ;; disabled) dumpsys package "$1" 2>/dev/null | grep -q "User $USER_ID:.* enabled=4 " ;; *) return 1 ;; esac
+  case "$(state_of "$1")" in enabled) return 0 ;; disabled) asleep "$1" ;; *) return 1 ;; esac
 }
+# asleep <package>: in that state 4. Its icon still shows in the app list, and the shell can neither disable nor
+# enable it there ("Shell cannot change component state"). Opening it once brings it back (reference tablet,
+# 28 Nov 2026: Samsung Free, Kids, Global Goals, OneDrive, Outlook, Maps and Messages had slipped past cleanup).
+asleep() { dumpsys package "$1" 2>/dev/null | grep -q "User $USER_ID:.* enabled=4 "; }
+# rouse <package>: open it once, so cleanup can switch it off properly. An app with no icon cannot be opened.
+rouse() { monkey -p "$1" -c android.intent.category.LAUNCHER 1 >/dev/null 2>&1; sleep "${WAKE_S:-2}"; ! asleep "$1"; }
 state_of() {
   installed "$1" || { echo absent; return; }
   if pm list packages -d --user "$USER_ID" 2>/dev/null | grep -qx "package:$1"; then echo disabled; else echo enabled; fi
@@ -144,13 +150,19 @@ home_settings() {
 }
 
 do_plan() {
-  n=0; skip=0
+  n=0; skip=0; sleepers=""
   while read -r batch pkg; do
     case "$batch" in ''|'#'*) continue ;; esac
     is_protected "$pkg" && die "$pkg is protected but listed for disabling. Fix packages-disable.txt."
-    case "$(state_of "$pkg")" in enabled) n=$((n+1)) ;; *) skip=$((skip+1)) ;; esac
+    case "$(state_of "$pkg")" in
+      enabled) n=$((n+1)) ;;
+      disabled) if asleep "$pkg"; then n=$((n+1)); sleepers="$sleepers${sleepers:+,}$pkg"; else skip=$((skip+1)); fi ;;
+      *) skip=$((skip+1)) ;;
+    esac
   done < "$LIST"
   say "PLAN disable=$n already-off-or-absent=$skip"
+  # Apps Samsung switched off for lack of use: they read as disabled but still show. Cleanup switches them off.
+  say "PLAN asleep=$sleepers"
 }
 
 do_cleanup() {
@@ -164,7 +176,7 @@ do_cleanup() {
   cleanup_settings || die "a setting failed. Stopped before disabling anything."
   disabled_now="$(pm list packages -d --user "$USER_ID")"
   all_now="$(pm list packages --user "$USER_ID")"
-  total=$(grep -cv '^#' "$LIST"); i=0; refused=0
+  total=$(grep -cv '^#' "$LIST"); i=0; refused=0; woke=0
   while read -r batch pkg; do
     case "$batch" in ''|'#'*) continue ;; esac
     i=$((i+1))
@@ -173,14 +185,23 @@ do_cleanup() {
     [ "$pkg" = "$(role_holder android.app.role.HOME)" ] && { say "SKIP $pkg is the Home app"; continue; }
     [ "$pkg" = "$(settings get secure default_input_method | cut -d/ -f1)" ] && { say "SKIP $pkg is the keyboard"; continue; }
     echo "$all_now" | grep -qx "package:$pkg" || { say "SKIP $i/$total $pkg not installed"; continue; }
-    echo "$disabled_now" | grep -qx "package:$pkg" && { say "SKIP $i/$total $pkg already disabled"; continue; }
+    before=enabled
+    if echo "$disabled_now" | grep -qx "package:$pkg"; then
+      asleep "$pkg" || { say "SKIP $i/$total $pkg already disabled"; continue; }
+      before=asleep
+    fi
     if [ "$DRY" = 1 ]; then say "PLAN $i/$total disable $pkg"; continue; fi
+    if [ "$before" = asleep ]; then
+      woke=1
+      rouse "$pkg" || { say "SKIP $i/$total $pkg switched off by Samsung and has no icon to open"; continue; }
+    fi
     out="$(pm disable-user --user "$USER_ID" "$pkg" 2>&1)"
-    if [ "$(state_of "$pkg")" = disabled ]; then log_change disable "$pkg" enabled ok; say "DONE $i/$total $pkg"
-    elif echo "$out" | grep -q 'Failed to change state'; then log_change disable "$pkg" enabled refused; say "REFUSED $i/$total $pkg"; refused=$((refused+1))
-    else log_change disable "$pkg" enabled fail; sleep 30; die "$pkg: $out. Stopped. Run undo to go back."; fi
+    if [ "$(state_of "$pkg")" = disabled ] && ! asleep "$pkg"; then log_change disable "$pkg" "$before" ok; say "DONE $i/$total $pkg"
+    elif echo "$out" | grep -q 'Failed to change state'; then log_change disable "$pkg" "$before" refused; say "REFUSED $i/$total $pkg"; refused=$((refused+1))
+    else log_change disable "$pkg" "$before" fail; sleep 30; die "$pkg: $out. Stopped. Run undo to go back."; fi
   done < "$LIST"
   if [ "$DRY" = 1 ]; then say "OK dry run: nothing changed"; return 0; fi
+  [ "$woke" = 1 ] && go_home
   say "INFO waiting 30 seconds for Android to save the changes. Do not reboot yet."
   sleep "${SETTLE_S:-30}"
   say "OK cleanup finished. Refused by Android: $refused"
@@ -249,10 +270,11 @@ do_undo() {
   fi
   if [ "$UNDO_APPS" = 1 ]; then
     # Packages this project disabled; never one that was already disabled. --pkgs limits it to some of them.
-    awk -F'\t' '$2=="disable" && $5=="ok" {print $3}' "$LOG" | sort -u | while read -r pkg; do
+    # One asleep before cleanup was usable then (opening it brought it back), so undo turns it back on.
+    awk -F'\t' '$2=="disable" && $5=="ok" {print $3, $4}' "$LOG" | sort -u | while read -r pkg before; do
       [ -n "$pkg" ] || continue
       if [ -n "$PKGS" ]; then case ",$PKGS," in *",$pkg,"*) ;; *) continue ;; esac; fi
-      if grep -qx "$pkg" "$DIR/original-disabled.txt"; then say "SKIP $pkg was disabled before this project"; continue; fi
+      if [ "$before" != asleep ] && grep -qx "$pkg" "$DIR/original-disabled.txt"; then say "SKIP $pkg was disabled before this project"; continue; fi
       case "$(state_of "$pkg")" in
         disabled)
           if [ "$DRY" = 1 ]; then say "PLAN enable $pkg"; continue; fi
